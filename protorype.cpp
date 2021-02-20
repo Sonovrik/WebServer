@@ -98,7 +98,7 @@ int		main(void){
 			
 			//if valid socket descriptor then add to read list
 			if(sd > 0)
-				FD_SET(sd , &readfds);
+				FD_SET(sd, &readfds);
 			
 			//highest file descriptor number, need it for the select function
 			if(sd > max_sd)
@@ -106,12 +106,12 @@ int		main(void){
 		}
 
 		//wait for an activity on one of the sockets, timeout is NULL, so wait indefinitely
-		int ret = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
+		int ret = select(max_sd + 1 , &readfds , NULL , NULL , NULL);
 
 		if (ret < 0)
 			std::cerr << "Select error" << std::endl; // continue ???
 		 
-		//If something happened on the master socket , then its an incoming connection
+		//If something happened on the master socket, then its an incoming connection
 		int new_socket;
 		if (FD_ISSET(master_socket, &readfds)){
 			if ((new_socket = accept(master_socket, (struct sockaddr *)&addr, (socklen_t*)&addrlen)) < 0){
@@ -139,8 +139,8 @@ int		main(void){
 			}
 		}
 
-		//else its some IO operation on some other socket (write, except)
 		
+		//else its some IO operation on some other socket (write, except)
 		int valread;
 		// std::string tmp = "<html><header></header><body>Hello World!!!</body></html>";
 		for (int i = 0; i < MAX_CLIENTS; i++){
