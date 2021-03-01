@@ -13,39 +13,51 @@ private:
 	std::string		_method;
 	std::string		_path;
 	std::string		_version;
-	static std::string const _methodsNames[]; 
 
 	// headers
 	std::map<std::string,std::string>	_headers;
 	// body
-	std::string		_body;
+	std::string					_body;
+
+	// errors
+	int							_statusCode;
+
+	// constants
+	static std::string const	_methodsNames[]; 
+	static std::string const	_headersNames[];
+	static int const			_numHeaders;
+	static int const			_numMethods;
 
 public:
 	Request();
 	~Request();
 	Request(Request const &);
-	Request &operator=(Request const &);
-
+	Request	&operator=(Request const &);
 
 	// parse request
-	bool	parse_start_line(std::string);
-	bool	parse_headers(std::string);
-	bool	push_map_node(std::string line);
+	bool	parseStartLine(std::string);
+	bool	parseBody(std::string);
+	bool	parseHeaders(std::string);
+	bool	setHeader(std::string);
+	bool	checkHeaderValue(std::string);
+	bool	checkRepeatHeader(std::pair<std::string, std::string>);
+	void	trimString(std::string &line);
 
 	// setters
-	void	set_method(std::string);
-	void	set_path(std::string);
-	void	set_version(std::string);
-	void	set_body(std::string);
-
-	void	set_headers(std::map<std::string,std::string>);
+	void	setMethod(std::string);
+	void	setPath(std::string);
+	void	setVersion(std::string);
+	void	setBody(std::string);
+	void	setHeaders(std::map<std::string,std::string>);
+	void	setStatusCode(int);
 
 	// getters
-
-	std::string const	&get_method(void) const;
-	std::string	const	&get_path(void) const;
-	std::string	const	&get_version(void) const;
-	std::string	const	&get_body(void) const;
+	std::string const	&getMethod(void) const;
+	std::string	const	&getPath(void) const;
+	std::string	const	&getVersion(void) const;
+	std::string	const	&getBody(void) const;
+	int const		 	&getStatusCode(void) const;
+	std::map<std::string,std::string> const &getHeaders(void) const;
 };
 
 #endif
