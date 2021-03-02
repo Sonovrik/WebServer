@@ -6,52 +6,53 @@
 #include <map>
 #include <vector>
 #include <fstream>
-#include <list>
 #include <array>
-
-typedef struct		s_location{
-	std::string		_name;
-	std::map<std::string, std::string>	_directives;
-}					location_t;
-
+#include "../Server.hpp"
 
 class ConfigParser{
 
 private:
 	// constants
-	static std::array<std::string, 2> const _blocks;
+	static std::array<std::string, 2> const		_blocks;
+	static std::array<std::string, 5> const		_directives;
+	static std::array<std::string, 8> const		_localDirectives;
 
-	size_t			_numberOfServers;
-	size_t			_numberOfLocations;
-	std::string		_serverName;
-	std::string		_ipToListen;
-	std::string		_root;
-	std::string		_maxBodySize;
+	// servers
+	int						_numberOfServers;
+	std::vector<Server>		_serversList;
 
+	// config inside lines
 	std::vector<std::string>	*_tokens;
-	size_t						_countLines;
 	std::vector<std::string>	_lines;
-
-	// location_t		_locations[];
-	std::string		_errorPage; // ???
+	size_t						_countLines;
 
 	void			trimString(std::string &line);
-	bool			checkBrackets(void);
-	bool			fullTokens(void);
-	bool			readConfig(const std::string &fileName);
-	bool			getNumberServers(void);
 
-	std::vector<std::string>	getTokens(std::vector<std::string>::iterator &it);
+	bool			readConfig(const std::string &fileName);
+
+	bool			checkBrackets(void);
+	bool			checkBlocks(void);
+	bool			checkMainDirectives(void);
+	bool			checkURIS(std::vector<location_t>	locations);
+
+	bool			fullTokens(void);
+	bool			fullServers(void);
+
+	bool			pushLocation(void);
+	bool			pushDirective(Server	&serv, size_t index);
+
+	bool						getLocation(size_t *index, location_t &location);
+	std::vector<std::string>	getTokens(std::string str);
 
 public:
 	ConfigParser();
 	~ConfigParser();
 
-	bool			parseConfig(const std::string &fileName);
+	bool					parseConfig(const std::string &fileName);
+	std::vector<Server>		getServers(void);
+	int						get_NumberOfServers(void);
 };
 
-
-// replace
 template<class T>
 bool			isInArray(T first, T last, const std::string &line){
 	size_t pos = 0;

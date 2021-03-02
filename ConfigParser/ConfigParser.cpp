@@ -2,20 +2,24 @@
 
 const std::array<std::string, 2> ConfigParser::_blocks = {"server", "location"};
 
-void		printVector(std::vector<std::string> &vector){
-	std::vector<std::string>::iterator it = vector.begin();
-	for (; it != vector.end(); it++){
-		std::cout << *it << std::endl;
-	}
+const std::array<std::string, 5> ConfigParser::_directives = {"server_name", "listen",
+												"root", "error_page", "max_body_size"};
+
+const std::array<std::string, 8> ConfigParser::_localDirectives = {"index", "root", "method",
+												"max_body_size", "autoindex", "cgi_extensions",
+												"cgi_path", "upload_storage"};
+
+std::vector<Server>		ConfigParser::getServers(void){
+	return _serversList;
+}
+
+int						ConfigParser::get_NumberOfServers(void){
+	return _numberOfServers;
 }
 
 ConfigParser::ConfigParser():
 	_tokens(NULL),
-	_serverName(""),
-	_ipToListen(""),
-	_root(""),
-	_maxBodySize(""),
-	_errorPage(""){}
+	_numberOfServers(0){}
 
 
 ConfigParser::~ConfigParser(){
@@ -38,7 +42,7 @@ void		ConfigParser::trimString(std::string &line){
 }
 
 bool	ConfigParser::readConfig(const std::string &fileName){
-	std::string line;
+	std::string line("");
 	std::ifstream in(fileName);
 
 	if (in.is_open() == false)
@@ -53,21 +57,20 @@ bool	ConfigParser::readConfig(const std::string &fileName){
 }
 
 bool			ConfigParser::checkBrackets(void){
-	size_t	b = 0;
-	size_t	len = 0;
-	size_t	pos = 0;
-	std::string		tmp;
+	size_t		b = 0;
+	size_t		len = 0;
+	std::string	tmp("");
 	
 	std::vector<std::string>::iterator it = _lines.begin();
 	for (; it < _lines.end(); it++){
 		tmp = *it;
 		len = tmp.size();
 		for (size_t i = 0; i < len; i++){
-			if (!isascii(tmp[i]) || tmp[i] == '\'' || tmp[i] == '\"' || tmp[i] == '\\')
+			if (!isascii(tmp[i]) || tmp[i] == '\'' || tmp[i] == '\"'
+				|| tmp[i] == '\\' || tmp[i] == ';')
 				return false;
 			else if (tmp[i] == '{'){
-				if (isInArray(_blocks.begin(), _blocks.end(), tmp) == false
-					|| i != len - 1)
+				if (!isInArray(_blocks.begin(), _blocks.end(), tmp) || i != len - 1)
 					return false;
 				b++;
 			}
@@ -78,69 +81,69 @@ bool			ConfigParser::checkBrackets(void){
 			}
 		}
 	}
+
 	if (b != 0)
 		return false;
-
 	return true;
 }
 
-std::vector<std::string>	ConfigParser::getTokens(std::vector<std::string>::iterator &it){
-	std::string		tmp("");
+std::vector<std::string>	ConfigParser::getTokens(std::string str){
+	std::string					tmp("");
 	std::vector<std::string>	tokens;
-	std::string		line = *it;
-	for (int i = 0; i < line.size(); i++){
-		if (line[i] == '{' || line[i] == '}' || line[i] == ';' 
-			|| line[i] == '\t' || line[i] == ' '){
+
+	for (size_t i = 0; i < str.size(); i++){
+		if (str[i] == '{' || str[i] == '}' || str[i] == '\t' || str[i] == ' '){
 			if (tmp.empty() == 0){
 				tokens.push_back(tmp);
 				tmp.clear();
 			}
 		}
 		else
-			tmp += line[i];
-		switch (line[i]){
+			tmp += str[i];
+		switch (str[i]){
 			case '{':
 				tokens.push_back("{");
 				break;
 			case '}':
 				tokens.push_back("}");
 				break;
-			case ';':
-				tokens.push_back(";");
-				break;
 			default:
 				break;
 		}
 	}
+
 	if (tmp.empty() == 0)
 		tokens.push_back(tmp);
-	
 	return tokens;
 }
 
-bool	ConfigParser::getNumberServers(){
+bool	ConfigParser::checkBlocks(void){
 	size_t		b = 0;
-	std::vector<std::string>::iterator it;
-	for (size_t i = 0; i < _countLines; i++){
+	size_t		i = 0;
+	std::vector<std::string>::iterator	it;
+
+	while (i < _countLines){
 		it = _tokens[i].begin();
 		if (_tokens[i].size() != 2 || *it != "server" || *(it + 1) != "{")
 			return false;
+		_numberOfServers++;
 		b = 1;
 		i++;
 		while(b != 0){
 			it = _tokens[i].begin();
 			if ((find(it, _tokens[i].end(), "{")) != _tokens[i].end()){
-				if (_tokens[i].size() != 3 || *it != "location" || *(it + 2) != "{")
+				if (_tokens[i].size() != 3 || *it != "location" || *(it + 2) != "{" || b != 1)
 					return false;
-				// need parse to locations[]
 				b++;
 			}
 			if ((it = find(_tokens[i].begin(), _tokens[i].end(), "}")) != _tokens[i].end())
 				b--;
 			i++;
 		}
-		i--;
 	}
+
+	if (_numberOfServers == 0)
+		return false;
 	return true;
 }
 
@@ -149,38 +152,146 @@ bool	ConfigParser::fullTokens(void){
 	std::vector<std::string>::iterator it = _lines.begin();
 	size_t	i = 0;
 	while (it != _lines.end()){
-		_tokens[i] = getTokens(it);
-		// printVector(_tokens[i]);
+		_tokens[i] = getTokens(*it);
 		i++;
 		it++;
 	}
 	_countLines = i;
-	if (getNumberServers() == false){
+	return true;
+}
+
+bool	ConfigParser::getLocation(size_t *index, location_t &location){
+	size_t	i = *index;
+	location._name = *(_tokens[i].begin() + 1);
+	while (_tokens[++i].back() != "}"){
+		std::pair<std::string, std::string>		p;
+		p.first = _tokens[i].front();
+		for (std::vector<std::string>::iterator it = _tokens[i].begin() + 1; it != _tokens[i].end(); it++){
+			p.second += *it;
+			if (it + 1 != _tokens[i].end())
+				p.second += " ";
+		}
+		if (location._directives.find(p.first) != location._directives.end()
+			|| !isInArray(_localDirectives.begin(), _localDirectives.end(), p.first))
+			return false;
+		location._directives.insert(p);
+	}
+	*index = i;
+	return true;
+}
+
+bool	ConfigParser::pushDirective(Server	&serv, size_t index){
+	int a = 0;
+	if (_tokens[index].front() == "server_name" && serv.get_serverName().empty())
+		a = 1;
+	else if (_tokens[index].front() == "root" && serv.get_root().empty())
+		a = 2;
+	else if (_tokens[index].front() == "max_body_size" && serv.get_maxBodySize() == 0)
+		a= 3;
+	else if (_tokens[index].front() == "listen" && serv.get_ip().empty())
+		a = 4;
+	else if (_tokens[index].front() == "error_page" && serv.get_errorPage().empty())
+		a = 5;
+	if (a == 0 || (a != 5 && _tokens[index].size() != 2)
+		|| (a == 5 && _tokens[index].size() != 3))
 		return false;
+
+	int		val = 0;
+	size_t	pos = 0;
+	switch (a){
+		case 1:
+			serv.set_serverName(_tokens[index].back());
+			break;
+		case 2:
+			serv.set_root(_tokens[index].back());
+			break;
+		case 3:
+			val = atoi(_tokens[index].back().c_str());
+			if (val < 8000 || val > 100000)
+				return false;
+			serv.set_maxBodySize(val);
+			break;
+		case 4:
+			if ((pos = _tokens[index].back().find(':')) == std::string::npos)
+				return false;
+			serv.set_ip(_tokens[index].back().substr(0, pos));
+			serv.set_port(atoi(_tokens[index].back().substr(pos + 1, _tokens[index].back().size()).c_str()));
+			break;
+		case 5:
+			serv.set_errorPage(*(_tokens[index].begin() + 1) + " " + *(_tokens[index].begin() + 2));
+			break;
+	}
+	return true;
+}
+
+bool	ConfigParser::checkURIS(std::vector<location_t>	locations){
+	std::vector<location_t>::iterator it = locations.begin();
+	std::vector<location_t>::iterator it2;
+
+	for (; it != locations.end() - 1; it++){
+		it2 = it + 1;
+		for (; it2 != locations.end(); it2++){
+			if ((*it2)._name == (*it)._name)
+				return false;
+		}
+	}
+	return true;
+}
+
+bool	ConfigParser::fullServers(void){
+	size_t	j = 0;
+	for (size_t i = 0; i < _numberOfServers; i++){
+		Server					serv;
+		std::vector<location_t>	locations;
+
+		while (++j < _countLines && _tokens[j].back() != "}"){
+			if (_tokens[j].back() == "{"){
+				location_t loc;
+				if (!getLocation(&j, loc))
+					return false;
+				locations.push_back(loc);
+			}
+			else if (!pushDirective(serv, j))
+					return false;
+		}
+		j++;
+		if (!checkURIS(locations))
+			return false;
+		serv.set_locations(locations);
+		_serversList.push_back(serv);
+	}
+
+	return true;
+}
+
+bool	ConfigParser::checkMainDirectives(void){
+	std::vector<Server>::iterator	it = _serversList.begin();
+	for (; it != _serversList.end(); it++){
+		if ((*it).get_ip().empty() || (*it).get_root().empty()){
+			std::cout << (*it).get_root() + " 123"<< std::endl;
+			return false;
+		}
 	}
 	return true;
 }
 
 bool	ConfigParser::parseConfig(const std::string &fileName){
-	size_t	pos = 0;
-	std::string		tmp;
-	
-	if (!readConfig(fileName) || !checkBrackets())
+	if (!readConfig(fileName) || !checkBrackets()
+		|| !fullTokens() || !checkBlocks())
 		return false;
-	// if ()
-	if (fullTokens() == false)
+	std::cout << "OK 1" << std::endl;
+
+	if (!fullServers() || !checkMainDirectives())
 		return false;
-	std::cout << "OK " << std::endl;
-	// std::vector<std::string>::iterator it = _lines.begin();
-	// for (; it < _lines.end(); it++){
-	// 	std::cout << *it << std::endl;
-	// }
-	
+	std::cout << "OK 2" << std::endl;
+
+	_serversList.front().sortLocations();
 	return true;
 }
 
 int		main(){
 	ConfigParser parser;
 	parser.parseConfig("webserv.conf");
+	std::vector<Server> _serversList(parser.getServers());
 	return 0;
 }
