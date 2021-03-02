@@ -16,6 +16,9 @@ private:
 
 	// headers
 	std::map<std::string,std::string>	_headers;
+	// query string
+	std::map<std::string,std::string>	_queryString;
+
 	// body
 	std::string					_body;
 
@@ -41,7 +44,9 @@ public:
 	bool	setHeader(std::string);
 	bool	checkHeaderValue(std::string);
 	bool	checkRepeatHeader(std::pair<std::string, std::string>);
-	void	trimString(std::string &line);
+	void	trimString(std::string &);
+	bool	parseQueryString();
+
 
 	// setters
 	void	setMethod(std::string);

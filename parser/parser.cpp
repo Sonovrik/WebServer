@@ -1,4 +1,3 @@
-// DONE
 // valid name + valid value
 // check is there the same name+field in Request
 // Accept: application/json
@@ -14,6 +13,31 @@
 // Content-Length >= 0
 // Content-Length + Transfer-Encoding -> false
 
+// "ACCEPT-CHARSET"
+// "ACCEPT-LANGUAGE"
+// "ALLOW" - allowed methods
+// "AUTHORIZATION" Authorization: <type> <credentials>.  "Authorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l"  - (base64 encoded) / "Authorization: Basic username:password"
+// "CONTENT-LANGUAGE"
+// "CONTENT-LENGTH"
+// "CONTENT-LOCATION" an alternate location for the returned data
+// "CONTENT-TYPE"
+// "DATE"
+// "HOST" - the host and port number of the server to which the request is being sent. Host: <host>:<port> (host=domain name of the server, post=TCP port number on which the server is listening.)
+// "LAST-MODIFIED"
+// "LOCATION" response header indicates the URL to redirect a page to. It only provides a meaning when served with a 3xx (redirection) or 201 (created) status response.
+// "REFERER" содержит URL исходной страницы, с которой был осуществлен переход на текущую страницу Referer: <url>
+// "RETRY-AFTER"
+// "SERVER" the software used by the origin server that handled the request — that is, the server that generated the response. Server: <product>. Server: Apache/2.4.1 (Unix). <product> The name of the software or product that handled the request. Usually in a format similar to User-Agent
+// "TRANSFER-ENCODING"
+// "USER-AGENT" the browser sending the request
+// "WWW-AUTHENTICATE"
+// "ACCEPT"
+
+
+
+// URI
+// ?check valid symbols
+// #fragment
 
 #include "Request.hpp"
 
@@ -26,6 +50,35 @@ const std::string Request::_headersNames[] = { "ACCEPT-CHARSET", "ACCEPT-LANGUAG
 	"LOCATION", "REFERER", "RETRY-AFTER", "SERVER", "TRANSFER-ENCODING", "USER-AGENT", "WWW-AUTHENTICATE",
 	"ACCEPT" };
 const int Request::_numHeaders = 19;
+
+bool	Request::parseQueryString() {
+	size_t pos;
+	std::string query;
+	std::pair<std::string, std::string> node;
+
+	if ((pos = this->_path.find("?")) == std::string::npos)
+		return true;
+	query = this->_path.substr(pos + 1, this->_path.length());
+	while ((pos = query.find('=')) != std::string::npos) {
+		node.first = query.substr(0, pos);
+		query.erase(0, pos + 1);
+
+		if (query.find('&') != std::string::npos || query.find(';') != std::string::npos) {
+			pos = query.find('&');
+			if (query.find(';') < pos)
+				pos = query.find(';');
+			node.second = query.substr(0, pos);
+			query.erase(0, pos + 1);
+		}
+		else {
+			node.second = query.substr(0, query.length());
+			query.erase(0, query.length());
+		}
+		// std::cout << node.first << ":" << node.second << std::endl;
+		this->_queryString.insert(node);
+	}
+	return true;
+}
 
 bool	Request::parseStartLine(std::string str) {
 	std::string	token[3];
@@ -56,6 +109,8 @@ bool	Request::parseStartLine(std::string str) {
 	if (token[2] != "HTTP/1.1\r\n")
 		return false;
 	this->_version = token[2].substr(0, token[2].length() - 2);
+	if (!parseQueryString())
+		return false;
 	return true;
 }
 
@@ -132,7 +187,7 @@ bool		Request::setHeader(std::string line) {
 		this->_headers.find(node.first)->second = node.second;
 	else
 		this->_headers.insert(node);
-	std::cout << this->_headers.find(node.first)->first << ":" << this->_headers.find(node.first)->second << std::endl;
+	// std::cout << this->_headers.find(node.first)->first << ":" << this->_headers.find(node.first)->second << std::endl;
 	return true;
 }
 
@@ -210,8 +265,8 @@ int main() {
 	// std::string tmp3 = "\r\n";
 	// req = parseRequest(tmp3);
 
-	// std::string tmp6 = "POST /cgi-bin/process.cgi HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
-	// req = parseRequest(tmp6);
+	std::string tmp6 = "POST /cgi-bin/process.cgi?name=value;name1=value1&name2=value2;name3=value3 HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
+	req = parseRequest(tmp6);
 
 	// std::string tmp6 = "POST HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
 	// req = parseRequest(tmp6);
