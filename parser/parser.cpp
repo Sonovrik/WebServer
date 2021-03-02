@@ -21,10 +21,10 @@ const std::string Request::_methodsNames[] = {"GET", "HEAD",
 			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
 const int Request::_numMethods = 8;
 
-const std::string Request::_headersNames[] = { "Accept-Charsets", "Accept-Language", "Allow", "Authorization",
-	"Content-Language", "Content-Length", "Content-Location", "Content-Type", "Date", "Host", "Last-Modified",
-	"Location", "Referer", "Retry-After", "Server", "Transfer-Encoding", "User-Agent", "WWW-Authenticate",
-	"Accept" };
+const std::string Request::_headersNames[] = { "ACCEPT-CHARSET", "ACCEPT-LANGUAGE", "ALLOW", "AUTHORIZATION",
+	"CONTENT-LANGUAGE", "CONTENT-LENGTH", "CONTENT-LOCATION", "CONTENT-TYPE", "DATE", "HOST", "LAST-MODIFIED",
+	"LOCATION", "REFERER", "RETRY-AFTER", "SERVER", "TRANSFER-ENCODING", "USER-AGENT", "WWW-AUTHENTICATE",
+	"ACCEPT" };
 const int Request::_numHeaders = 19;
 
 bool	Request::parseStartLine(std::string str) {
@@ -35,11 +35,14 @@ bool	Request::parseStartLine(std::string str) {
 	for (int i = 0; i < 2; i++) {
 		if ((pos = str.find(' ')) == std::string::npos)
 			return false;
+		if (pos == 0)
+			return false;
 		token[i] = str.substr(0, pos);
 		str.erase(0, pos + 1);
 	}
 	token[2] = str.substr(0, str.length());
-
+	if (token[2].empty())
+		return false;
 	// find methods
 	for (int i = 0; i < _numMethods; i++) {
 		if (_methodsNames[i] == token[0])
@@ -73,7 +76,7 @@ bool		Request::checkHeaderValue(std::string value) {
 	if (!value.length())
 		return false;
 	for (int i = 0; i < value.length(); i++) {
-		if (!(value[i] >= 0 && value[i] <= 127))
+		if (!isascii(value[i]))
 			return false;
 	}
 	return true;
@@ -81,12 +84,12 @@ bool		Request::checkHeaderValue(std::string value) {
 
 bool		Request::checkRepeatHeader(std::pair<std::string, std::string> node) {
 	if (this->_headers.find(node.first) != this->_headers.end()) {
-		if (node.first == "Host")
+		if (node.first == "HOST")
 			return false;
 		if (this->_headers.find(node.first)->second == node.second)
 			return false;
-		if (this->_headers.find(node.first)->first == "Transfer-Encoding"
-			&& node.first == "Content-Length")
+		if (this->_headers.find(node.first)->first == "TRANSFER-ENCODING"
+			&& node.first == "CONTENT-LENGTH")
 			return false;
 	}
 	return true;
@@ -95,17 +98,19 @@ bool		Request::checkRepeatHeader(std::pair<std::string, std::string> node) {
 bool		Request::setHeader(std::string line) {
 	size_t		pos = 0;
 	
-	trimString(line);
 	if ((pos = line.find(':')) == std::string::npos)
 		return false;
 
 	std::pair<std::string, std::string> node;
 	node.first = line.substr(0, pos);
+	for (int i = 0; i < node.first.length(); i++) {
+		node.first[i] = std::toupper(node.first[i]);
+	}
 
-	int valid = 0;
+	bool valid = false;
 	for (int i = 0; i < _numHeaders; i++) {
 		if (node.first == _headersNames[i]) {
-			valid = 1;
+			valid = true;
 			break ;
 		}
 	}
@@ -120,7 +125,7 @@ bool		Request::setHeader(std::string line) {
 	if (!checkRepeatHeader(node))
 		return false;
 	// content-length >= 0
-	if (node.first == "Content-Length" && atoi(node.second.c_str()) < 0)
+	if (node.first == "CONTENT-LENGTH" && atoi(node.second.c_str()) < 0)
 		return false;
 	// exchange header if it repeats
 	if (this->_headers.find(node.first) != this->_headers.end())
@@ -142,7 +147,7 @@ bool		Request::parseHeaders(std::string req) {
 			return false;
 		req.erase(0, pos + delimenter.size());
 	}
-	if (this->_headers.find("Host") == this->_headers.end())
+	if (this->_headers.find("HOST") == this->_headers.end())
 		return false;
 	if ((pos = req.find("\r\n")) == std::string::npos)
 		return false;
@@ -163,7 +168,10 @@ Request		parseRequest(std::string req) {
 	size_t		pos = 0;
 	Request		request;
 
-	pos = req.find("\r\n");
+	if ((pos = req.find("\r\n")) == std::string::npos) {
+		request.setStatusCode(400);
+		return request;
+	}
 	std::string	tmp(req.substr(0, pos + 2));
 	if (request.parseStartLine(tmp) == false) {
 		request.setStatusCode(400);
@@ -177,8 +185,6 @@ Request		parseRequest(std::string req) {
 		return request;
 	}
 	if (request.getMethod() == "POST") {
-		// parse a body or ?wait a body
-		// if no body -> false
 		if (request.parseBody(req) == false) {
 			request.setStatusCode(400);
 			return request;
@@ -192,14 +198,22 @@ int main() {
 	// std::string tmp1 = "POST /cgi-bin/process.cgi HTTP/1.1\n\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n\nHost: www.example.com\n\nContent-Type: application/x-www-form-urlencoded\n\n";
 	// req = parseRequest(tmp1);
 	
-	// std::string tmp2 = "POST / HTTP/1.1\r\n";
+	// std::string tmp2 = "POST / HTTP/1.1\r\nHost: 127.0.0.1:5991\r\n\r\n";
 	// req = parseRequest(tmp2);
 
-	// std::string tmp3 = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\n    Accept: */*   \r\n\r\n";
+	// std::string tmp3 = "GET  HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*   \r\n\r\n";
 	// req = parseRequest(tmp3);
 
+	// std::string tmp3 = "GET   HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*   \r\n\r\n";
+	// req = parseRequest(tmp3);
 
-	// std::string tmp6 = "POST /cgi-bin/process.cgi HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n";
+	// std::string tmp3 = "\r\n";
+	// req = parseRequest(tmp3);
+
+	// std::string tmp6 = "POST /cgi-bin/process.cgi HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
+	// req = parseRequest(tmp6);
+
+	// std::string tmp6 = "POST HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
 	// req = parseRequest(tmp6);
 
 	// std::string tmp4 = "POST / HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 13\r\n\r\nsay=Hi&to=Mom";
@@ -228,6 +242,10 @@ int main() {
 	// double Host
 	// std::string tmp3 = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nHost:1233\r\nUser-Agent: curl/7.47.0\r\n    Accept: */*   \r\n\r\n";
 	// req = parseRequest(tmp3);
+
+	// std::cout << "!" << req.getMethod() << "!" << std::endl;
+	// std::cout << "!" << req.getVersion() << "!" << std::endl;
+	// std::cout << "!" << req.getPath() << "!" << std::endl;
 
 	std::cout << req.getStatusCode() << std::endl;
 
