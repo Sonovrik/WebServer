@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/kmoaning/Desktop/WebServer/CGI/CGI.hpp
+map
+-
+iostream
+-
+vector
+-
+unistd.h
+-
+fcntl.h
+-
+string
+-
+
+/Users/kmoaning/Desktop/WebServer/CGI/mainCGI.cpp
+CGI.hpp
+/Users/kmoaning/Desktop/WebServer/CGI/CGI.hpp
+

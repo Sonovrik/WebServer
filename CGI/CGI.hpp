@@ -36,7 +36,7 @@ public:
 	void init(); //]Request &req); //, Server &ser);
 	void creatENV();
 	void exec();
-
+	//на выходе после выполнения скрипта формируется боди и возможно часть хедеров для RESPONSE
 };
 
 

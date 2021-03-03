@@ -15,7 +15,7 @@
 //	PATH_INFO - передает программе путь, часть спецификации URL, в том виде, в котором она указана в клиенте.
 //	Реально это означает, что передается путь (адрес скрипта) в виде, указанном в HTML-документе.
 //	PATH_TRANSLATED - то же самое, что и PATH_INFO, но только после подстановки сервером определенных в его конфигурации вставок.
-//	QUERY_STRING - переменная определяет содержание запроса к скрипту. Это строка запроса при методе GET.
+//	QUERY_STRING - переменная определяет содержание запроса к скрипту. Это строка запроса при методе !!!GET !!!
 //	REMOTE_ADDR - IP-адрес запрашивающей машины.
 //	REMOTE_IDENT - данная переменная порождается сервером, если он поддерживает идентификацию пользователя
 //	по протоколу RFC-931. Рекомендовано использование этой переменной для первоначального использования скрипта.
@@ -52,7 +52,20 @@ CGI::CGI(): env (NULL), envCount (17), body ("") {
 }
 
 void CGI::init() {//Request &req) { //, Server &ser) {
-	// http://localhost/1.cgi/path/to/interpretier?a=b (execute by cgi_tester)
+//	http://localhost/1.cgi/path/to/interpretier?a=b (execute by cgi_tester)
+//	сортировка по методам и в зависимости от этого установка значение переменных
+
+//	std::string method = req.getMethod();
+//	if(method == "GET" || method == "HEAD")
+//		; Взять данные из переменной окружения QUERY_STRING
+//	else if(method == "POST")
+//		;Проанализировать переменную QUERY_STRING
+//         Получить длинну данных из CONTENT_LENGTH
+//         Если (CONTENT_LENGTH>0) то
+//             Считать CONTENT_LENGTH байт из sdtin как данные.
+//	else
+//		; //error
+
 	this->envMap["REQUEST_URI"] = "localhost/1.cgi"; //?? req.getPath() headers["LOCATION"];
 	this->envMap["AUTH_TYPE"] = "Basic"; //?? req.getHeaders().find [] ?? default Basic, DEN ID/pass
 	this->envMap["CONTENT_LENGTH"] = "100"; //?? headers["CONTENT-LENGTH"]; если нет то??
@@ -69,7 +82,7 @@ void CGI::init() {//Request &req) { //, Server &ser) {
 	this->envMap["SERVER_NAME"] = "1.cgi"; //  наш хост в хедерах у маши : HOST = <server-name> ":" <server-port>
 	this->envMap["SERVER_PORT"] = "8080"; //?? DEn наш порт в хедерах у маши : HOST = <server-name> ":" <server-port>
 	this->envMap["SERVER_PROTOCOL"] = "HTTP/1.1"; // ?? чья версия?? req.getVersion()
-	this->envMap["SERVER_SOFTWARE"] = "BUSYA"; // ?? версия нашего сервера
+	this->envMap["SERVER_SOFTWARE"] = "TOXIGEN"; // ?? версия нашего сервера
 //	this->body = "body"; // ?? req.getBody();
 	this->argv = new char *[3];
 	this->argv[0] = strdup("/usr/bin/php");
@@ -96,7 +109,7 @@ void CGI::creatENV() {
 
 }
 
-// содуржимое скрипта поступает на fd[0](STDIN подменяется fd[0])
+// содержимое скрипта поступает на fd[0](STDIN подменяется fd[0])
 // результат на STDOUT(подменненный на fdF)
 // в fd[1] - тело запроса
 
