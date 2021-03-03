@@ -5,6 +5,7 @@ Request::Request():
 	_method(""),
 	_path(""),
 	_version(""),
+	_pathInfo(""),
 	_body(""),
 	_statusCode(200){}
 
@@ -27,6 +28,7 @@ Request &Request::operator=(Request const &other) {
 }
 
 // setters
+
 void	Request::setMethod(std::string method) {
 	this->_method = method;
 }
@@ -77,3 +79,14 @@ std::map<std::string,std::string> const &Request::getHeaders(void) const {
 	return this->_headers;
 }
 
+
+std::map<std::string,std::string> const &Request::getQueryString(void) const {
+	return this->_queryString;
+}
+std::string const	&Request::getPathInfo(void) const {
+	return this->_pathInfo;
+}
+
+std::string const	&Request::getFileExtension(void) const {
+	return this->_fileExtension;
+}
