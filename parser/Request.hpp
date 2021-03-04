@@ -13,22 +13,20 @@ private:
 	std::string		_method;
 	std::string		_path;
 	std::string		_version;
-
 	// headers
 	std::map<std::string,std::string>	_headers;
 	// query string
 	std::map<std::string,std::string>	_queryString;
-
+	// path info
+	std::string					_pathInfo;
+	// file extension
+	std::string					_fileExtension;
 	// body
 	std::string					_body;
-
 	// errors
 	int							_statusCode;
-
 	// constants
-	static std::string const	_methodsNames[]; 
-	static std::string const	_headersNames[];
-	static int const			_numHeaders;
+	static std::string const	_methodsNames[];
 	static int const			_numMethods;
 
 public:
@@ -42,11 +40,11 @@ public:
 	bool	parseBody(std::string);
 	bool	parseHeaders(std::string);
 	bool	setHeader(std::string);
+	bool	checkHeaderName(std::string);
 	bool	checkHeaderValue(std::string);
 	bool	checkRepeatHeader(std::pair<std::string, std::string>);
 	void	trimString(std::string &);
 	bool	parseQueryString();
-
 
 	// setters
 	void	setMethod(std::string);
@@ -63,6 +61,9 @@ public:
 	std::string	const	&getBody(void) const;
 	int const		 	&getStatusCode(void) const;
 	std::map<std::string,std::string> const &getHeaders(void) const;
+	std::map<std::string,std::string> const &getQueryString(void) const;
+	std::string const	&getPathInfo(void) const;
+	std::string const	&getFileExtension(void) const;
 };
 
 #endif
