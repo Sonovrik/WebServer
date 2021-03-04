@@ -70,14 +70,13 @@ int main(){
 		}
 		//else its some IO operation on some other socket (write, except)
 
-
 		for (int i = 0; i < MAX_CLIENTS; i++){
 			int		sd = serv.get_client_sd(i);
 			int		ret;
-			char	buffer[10];
+			char	buffer[1024];
 			if (FD_ISSET(sd, &readfds)){
 				// Check if it closing or incoming message
-				if ((ret = read(sd, buffer,1024)) == 0){
+				if ((ret = read(sd, buffer, 1024)) == 0){
 					std::cout << "Host disconnected, sd " << sd << std::endl;
 					close(sd);
 					serv.set_client_socket(i, 0);
@@ -85,6 +84,9 @@ int main(){
 				// just read message and do some   
 				else{
 					buffer[ret] = '\0';
+					if (buffer[ret - 2] == '\r')
+					std::cout << "asd123" << std::endl;
+					
 					std::cout << buffer << std::endl;
 
 				}

@@ -33,7 +33,7 @@ private:
 	bool			checkBrackets(void);
 	bool			checkBlocks(void);
 	bool			checkMainDirectives(void);
-	bool			checkURIS(std::vector<location_t>	locations);
+	bool			checkURIS(std::vector<location_t>	&locations) const;
 
 	bool			fullTokens(void);
 	bool			fullServers(void);
@@ -49,8 +49,8 @@ public:
 	~ConfigParser();
 
 	bool					parseConfig(const std::string &fileName);
-	std::vector<Server>		getServers(void);
-	int						get_NumberOfServers(void);
+	std::vector<Server>		getServers(void) const;
+	int						get_NumberOfServers(void) const;
 };
 
 template<class T>

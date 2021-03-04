@@ -9,17 +9,18 @@ const std::array<std::string, 8> ConfigParser::_localDirectives = {"index", "roo
 												"max_body_size", "autoindex", "cgi_extensions",
 												"cgi_path", "upload_storage"};
 
-std::vector<Server>		ConfigParser::getServers(void){
+std::vector<Server>		ConfigParser::getServers(void) const{
 	return _serversList;
 }
 
-int						ConfigParser::get_NumberOfServers(void){
+int						ConfigParser::get_NumberOfServers(void) const{
 	return _numberOfServers;
 }
 
 ConfigParser::ConfigParser():
 	_tokens(NULL),
-	_numberOfServers(0){}
+	_numberOfServers(0),
+	_countLines(0){}
 
 
 ConfigParser::~ConfigParser(){
@@ -67,7 +68,7 @@ bool			ConfigParser::checkBrackets(void){
 		len = tmp.size();
 		for (size_t i = 0; i < len; i++){
 			if (!isascii(tmp[i]) || tmp[i] == '\'' || tmp[i] == '\"'
-				|| tmp[i] == '\\' || tmp[i] == ';')
+				|| tmp[i] == '\\' || tmp[i] == ';' || tmp[i] == '#')
 				return false;
 			else if (tmp[i] == '{'){
 				if (!isInArray(_blocks.begin(), _blocks.end(), tmp) || i != len - 1)
@@ -99,7 +100,7 @@ std::vector<std::string>	ConfigParser::getTokens(std::string str){
 			}
 		}
 		else
-			tmp += str[i];
+			tmp.push_back(str[i]);
 		switch (str[i]){
 			case '{':
 				tokens.push_back("{");
@@ -169,7 +170,7 @@ bool	ConfigParser::getLocation(size_t *index, location_t &location){
 		for (std::vector<std::string>::iterator it = _tokens[i].begin() + 1; it != _tokens[i].end(); it++){
 			p.second += *it;
 			if (it + 1 != _tokens[i].end())
-				p.second += " ";
+				p.second.push_back(' ');
 		}
 		if (location._directives.find(p.first) != location._directives.end()
 			|| !isInArray(_localDirectives.begin(), _localDirectives.end(), p.first))
@@ -224,7 +225,7 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 	return true;
 }
 
-bool	ConfigParser::checkURIS(std::vector<location_t>	locations){
+bool	ConfigParser::checkURIS(std::vector<location_t>	&locations) const{
 	std::vector<location_t>::iterator it = locations.begin();
 	std::vector<location_t>::iterator it2;
 
@@ -237,6 +238,7 @@ bool	ConfigParser::checkURIS(std::vector<location_t>	locations){
 	}
 	return true;
 }
+
 
 bool	ConfigParser::fullServers(void){
 	size_t	j = 0;
@@ -258,6 +260,7 @@ bool	ConfigParser::fullServers(void){
 		if (!checkURIS(locations))
 			return false;
 		serv.set_locations(locations);
+		serv.fullBasicDirectives();
 		_serversList.push_back(serv);
 	}
 
@@ -267,10 +270,8 @@ bool	ConfigParser::fullServers(void){
 bool	ConfigParser::checkMainDirectives(void){
 	std::vector<Server>::iterator	it = _serversList.begin();
 	for (; it != _serversList.end(); it++){
-		if ((*it).get_ip().empty() || (*it).get_root().empty()){
-			std::cout << (*it).get_root() + " 123"<< std::endl;
+		if ((*it).get_ip().empty() || (*it).get_root().empty())
 			return false;
-		}
 	}
 	return true;
 }
