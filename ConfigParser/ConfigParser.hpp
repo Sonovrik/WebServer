@@ -53,15 +53,7 @@ public:
 	int						get_NumberOfServers(void) const;
 };
 
-template<class T>
-bool			isInArray(T first, T last, const std::string &line){
-	size_t pos = 0;
-	for (; first != last; first++){
-		if ((pos = line.find(*first)) != std::string::npos)
-				return true;
-	}
-	return false;
-}
+
 
 
 #endif
