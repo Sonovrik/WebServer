@@ -51,7 +51,7 @@ CGI::CGI(): env (NULL), envCount (17), body ("") {
 	}
 }
 
-void CGI::init(Request &req) { //, Server &ser) {
+void CGI::init(Request &req, Server &ser) {
 //	http://localhost/1.cgi/path/to/interpretier?a=b (execute by cgi_tester)
 //	сортировка по методам и в зависимости от этого установка значение переменных
 
