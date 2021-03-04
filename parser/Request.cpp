@@ -23,6 +23,9 @@ Request &Request::operator=(Request const &other) {
 		this->_headers = other._headers;
 		this->_body = other._body;
 		this->_statusCode = other._statusCode;
+		this->_pathInfo = other._pathInfo;
+		this->_fileExtension = other._fileExtension;
+		this->_queryString = other._queryString;
 	}
 	return *this;
 }

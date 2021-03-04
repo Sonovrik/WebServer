@@ -23,7 +23,6 @@ private:
 	std::string					_fileExtension;
 	// body
 	std::string					_body;
-
 	// errors
 	int							_statusCode;
 	// constants

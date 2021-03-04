@@ -77,10 +77,7 @@ bool	Request::parseQueryString() {
 		}
 		// std::cout << node.first << ":" << node.second << std::endl;
 		this->_queryString.insert(node);
-		// std::cout << this->_queryString.find(node.first)->first << ":" << this->_queryString.find(node.second)->second << std::endl;
-
 	}
-	// std::cout << "{" << this->_pathInfo << "}" << std::endl;
 	return true;
 }
 
@@ -258,8 +255,8 @@ Request		parseRequest(std::string req) {
 	return request;
 }
 
-int main() {
-	Request req;
+// int main() {
+// 	Request req;
 	// std::string tmp1 = "POST /cgi-bin/process.cgi HTTP/1.1\n\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n\nHost: www.example.com\n\nContent-Type: application/x-www-form-urlencoded\n\n";
 	// req = parseRequest(tmp1);
 	
@@ -292,8 +289,8 @@ int main() {
 	// std::string tmp3 = "\r\n";
 	// req = parseRequest(tmp3);
 
-	std::string tmp6 = "POST /cgi-bin/process.cgi?name=value;name1=value1&name2=value2;name3=value3/path_info/ HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
-	req = parseRequest(tmp6);
+	// std::string tmp6 = "POST /cgi-bin/process.cgi?name=value;name1=value1&name2=value2;name3=value3/path_info/ HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
+	// req = parseRequest(tmp6);
 
 	// std::string tmp7 = "POST /cgi-bin/process.cgi?name=value;name1=value1&name2=value2;=value3;name4= HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
 	// req = parseRequest(tmp7);
@@ -333,10 +330,7 @@ int main() {
 	// std::cout << "!" << req.getPath() << "!" << std::endl;
 	// std::cout << "!" << req.getPathInfo() << "!" << std::endl;
 
-	// std::map<std::string,std::string>	head = req.getQueryString();
-	// std::cout << head.find("name")->second << std::endl;
+// 	std::cout << req.getStatusCode() << std::endl;
 
-	std::cout << req.getStatusCode() << std::endl;
-
-	return 0;
-}
+// 	return 0;
+// }
