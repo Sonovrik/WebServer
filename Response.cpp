@@ -51,22 +51,22 @@ void	Response::set_body(std::string body){
 
 
 // getters
-std::string const	&Response::get_version(void) const{
+std::string const	&Response::get_version() const{
 	return _version;
 }
 
-std::string	const	&Response::get_statusCode(void) const{
+std::string	const	&Response::get_statusCode() const{
 	return _statusCode;
 }
 
-std::string	const	&Response::get_statusMessage(void) const{
+std::string	const	&Response::get_statusMessage() const{
 	return _statusMessage;
 }
 
-std::map<std::string,std::string>	const	&Response::get_headers(void) const{
+std::map<std::string,std::string>	const	&Response::get_headers() const{
 	return _headers;
 }
 
-std::string	const	&Response::get_body(void) const{
+std::string	const	&Response::get_body() const{
 	return _body;
 }

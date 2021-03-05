@@ -37,27 +37,59 @@
 //
 // PATH_TRANSLATED https://ru.wikipedia.org/wiki/Заглавная_страница, а PATH_INFO - то что придет от клиента на сервер, как перевести??
 //
-
+//PUT localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1
+///put_test/html/1.php : argv[1]
 
 
 #include "CGI.hpp"
 
-CGI::CGI(): env (NULL), envCount (17), body ("") {
+CGI::CGI(Request &req, Server &ser): env (NULL), envCount (17), RequestBody(""), ResponseBody("") {
 	std::string envKey[] = {"AUTH_TYPE", "CONTENT_LENGTH", "CONTENT_TYPE", "GATEWAY_INTERFACE", "PATH_INFO",
 	"PATH_TRANSLATED","QUERY_STRING", "REMOTE_ADDR", "REMOTE_IDENT", "REMOTE_USER", "REQUEST_METHOD", "REQUEST_URI",
 	"SCRIPT_NAME", "SERVER_NAME", "SERVER_PORT", "SERVER_PROTOCOL", "SERVER_SOFTWARE"};
 	for (int i = 0; i < envCount ; ++i) {
 		this->envMap[envKey[i]];
 	}
+	std::map<std::string, std::string> tmp = req.getHeaders();
+	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
+		std::string a = it->first;
+		if(a.find("-") != std::string::npos)
+			a.replace(a.find("-"), 1, "_");
+		std::transform(a.begin(), a.end(), a.begin(), toupper);
+		envMap["HTTP_" + a] = it->second;
+//		std::cout << envMap.find("HTTP_" + a)->first << envMap.find("HTTP_" + a)->second << std::endl;
+	}
+
 }
+
+CGI::~CGI() {
+	if(env){
+		for (int i = 0; i < envCount; ++i) {
+			delete env[i];
+		}
+		delete env;
+	}
+	if(argv){
+		delete argv[0]; delete argv[1]; delete argv;
+	}
+}
+
+CGI::CGI(const CGI &copy) {
+}
+
+CGI &CGI::operator=(const CGI &copy) {
+	return *this;
+}
+
 
 void CGI::init(Request &req, Server &ser) {
 //	http://localhost/1.cgi/path/to/interpretier?a=b (execute by cgi_tester)
+//	this->envMap["CONTENT_LENGTH"] =  	const_cast<std::map<std::string,std::string>&>(req.getHeaders())["CONTENT-LENGTH"];
 //	сортировка по методам и в зависимости от этого установка значение переменных
 
 //	std::string method = req.getMethod();
 //	if(method == "GET" || method == "HEAD")
-//		; Взять данные из переменной окружения QUERY_STRING
+//		; //Взять данные из переменной окружения QUERY_STRING
 //	else if(method == "POST")
 //		;Проанализировать переменную QUERY_STRING
 //         Получить длинну данных из CONTENT_LENGTH
@@ -66,36 +98,51 @@ void CGI::init(Request &req, Server &ser) {
 //	else
 //		; //error
 
-	this->envMap["REQUEST_URI"] = "localhost/1.cgi"; //?? req.getPath() headers["LOCATION"];
-	this->envMap["AUTH_TYPE"] = "Basic"; //?? req.getHeaders().find [] ?? default Basic, DEN ID/pass
-	this->envMap["CONTENT_LENGTH"] = "100"; //?? headers["CONTENT-LENGTH"]; если нет то??
-	this->envMap["CONTENT_TYPE"] = "plain/text"; //?? headers["CONTENT-TYPE"];
+
+	this->envMap["REQUEST_URI"] = req.getPath();             //"localhost/1.cgi";
+	this->envMap["QUERY_STRING"] = "";                       //req.getQueryString() - это мапа?;     // "a=b"; //
+	this->envMap["SCRIPT_NAME"] = "CGI.cpp";                 //?? req.getPath() ??
+	this->envMap["PATH_INFO"] = "cgi_tester"; //req.getPathInfo(); //по дефолту "cgi_tester" or path/to/interpretier
+
+	std::cout << "Path " << this->envMap["REQUEST_URI"] << std::endl;
+	std::cout << "Path " << req.getPathInfo() << std::endl;
+
+	int r = req.getHeaders().find("AUTHORIZATION")->second.find(" ");
+	this->envMap["AUTH_TYPE"] = req.getHeaders().find("AUTHORIZATION")->second.substr(0, r);                     //?? default Basic,
+//	std::string tmpFoIdent = req.getHeaders().find("AUTHORIZATION")->second.substr(r + 1);
+//	{
+//		дешифратор! из "wergetrhjtuktulruyk" => "aladdin:opensesame";
+//		this->envMap["REMOTE_IDENT"] = "passwd";                 //  "opensesame"
+//		this->envMap["REMOTE_USER"] = "user";                    //  "aladdin"
+//	}
+
+	this->envMap["SERVER_SOFTWARE"] = "TOXIGEN";             // ?? версия нашего сервера
+	this->envMap["SERVER_PROTOCOL"] = "HTTP/1.1";            //
 	this->envMap["GATEWAY_INTERFACE"] = "CGI/1.1";
-	this->envMap["PATH_INFO"] = "cgi_tester"; // ?? // or path/to/interpretier
-	this->envMap["PATH_TRANSLATED"] = ""; // ?? getcwd() + cgi_tester or /full/path/to/interpretier
-	this->envMap["QUERY_STRING"] = "a=b"; //
-	this->envMap["REMOTE_ADDR"] = "127.0.0.1"; // IP-adr клиента из запроса Den
-	this->envMap["REMOTE_IDENT"] = "passwd"; // если есть аутентификация
-	this->envMap["REMOTE_USER"] = "user"; // используется для идентификации пользователя
-	this->envMap["REQUEST_METHOD"] = "GET"; //?? req.getMethod() ??
-	this->envMap["SCRIPT_NAME"] = "CGI.cpp"; //?? req.getPath() ??
-	this->envMap["SERVER_NAME"] = "1.cgi"; //  наш хост в хедерах у маши : HOST = <server-name> ":" <server-port>
-	this->envMap["SERVER_PORT"] = "8080"; //?? DEn наш порт в хедерах у маши : HOST = <server-name> ":" <server-port>
-	this->envMap["SERVER_PROTOCOL"] = "HTTP/1.1"; // ?? чья версия?? req.getVersion()
-	this->envMap["SERVER_SOFTWARE"] = "TOXIGEN"; // ?? версия нашего сервера
-//	this->body = "body"; // ?? req.getBody();
+	this->envMap["REQUEST_METHOD"] = req.getMethod();        //"GET";
+	if (req.getHeaders().find("CONTENT-LENGTH") != req.getHeaders().end())
+		this->envMap["CONTENT_LENGTH"] = req.getHeaders().find("CONTENT-LENGTH")->second; // ?? если нет то??
+	if (req.getHeaders().find("CONTENT-TYPE") != req.getHeaders().end())
+		this->envMap["CONTENT_TYPE"] = req.getHeaders().find("CONTENT-TYPE")->second;   //"plain/text";  ""
+
+	char dir[1024];
+	getcwd(dir, 1024);
+	this->envMap["PATH_TRANSLATED"] = std::string(dir) + this->envMap["PATH_INFO"];// ?? getcwd() + "cgi_tester" or /full/path/to/interpretier
+
+	this->envMap["REMOTE_ADDR"] = "127.0.0.1";               // IP-adr клиента из запроса Den
+	this->envMap["SERVER_NAME"] = "1.cgi";                   //  DEn наш порт в хедерах: HOST = <server-name> ":" <server-port>
+	this->envMap["SERVER_PORT"] = "8081";                    //?? DEn наш порт в хедерах: HOST = <server-name> ":" <server-port>
+	//
+	this->RequestBody = req.getBody();
 	this->argv = new char *[3];
-	this->argv[0] = strdup("/usr/bin/php");
-	this->argv[1] = strdup("../1.php");
+	this->argv[0] = strdup(envMap.find("PATH_INFO")->second.c_str()); // "cgi_tester" ""
+	std::cout << std::endl << this->argv[0] << std::endl;
+
+	this->argv[1] = strdup("1.php");
 	this->argv[2] = NULL;
 
 }
 
-char *myStrdup(std::string line){
-	const char *res = new char;
-	res = line.c_str();
-	return ((char *)res);
-}
 
 void CGI::creatENV() {
 	std::string tmp;
@@ -103,7 +150,6 @@ void CGI::creatENV() {
 	std::map <std::string, std::string>:: iterator it = envMap.begin();
 	for (int i = 0; it != envMap.end(); it++, i++) {
 		tmp = it->first + "=\"" + it->second + "\"";
-//		env[i] = myStrdup(tmp);
 		env[i] = strdup(tmp.c_str());
 	}
 
@@ -120,47 +166,45 @@ void CGI::exec() {
 	//файлу, который не является скриптом; этот файл будет выполнен как интерпретатор [arg] filename.
 	pid_t pid;
 	int ex;
-	pipe(fd);
+	int fdF = open("./Response", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
 	int status;
+	if (pipe(fd) != 0) {
+		std::cerr << "cannot pipe" << std::endl;
+		throw std::runtime_error("cannot pipe");
+	}
 	pid = fork();
-	if(pid < 0)
-		; // error
+	if(pid < 0) {
+		throw std::runtime_error("cannot pid");
+	}
 	else if(pid == 0) // ребенок
 	{
 		close(fd[1]);
-		int fdF = open("./aaa", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
-		dup2(fd[0], STDIN);
-		dup2(fdF, STDOUT);
+		if (dup2(fd[0], STDIN) < 0)
+			std::cerr << "Cannot dup, 1" << std::endl;
+		if (dup2(fdF, STDOUT) < 0)
+			std::cerr << "Cannot dup, 2" << std::endl;
+		std::cerr << "Doing..." << std::endl;
 		ex = execve("/usr/bin/php", argv , NULL);
-		close(fdF);
-		close(fd[0]);
-		exit(ex);
 	}
 	else // родитель
 	{
 //		write(fd[1], "dfdfdg", 6);
 //		close(fd[1]);
+		std::cerr << "Waiting..." << std::endl;
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status)) {
 			status = WEXITSTATUS(status);
 		}
+		std::cerr << "Awaited..." << std::endl;
 		std::cout << "status: " << status << std::endl;
-		//		close(fd[0]);
+		if(status != 0)
+			;//gener.error response
+//		close(fd[0]);
+		close(fdF);
+		close(fd[0]);
 	}
 }
 
-CGI::~CGI() {
-	if(env != NULL)
-		delete env;
-}
-
-CGI::CGI(const CGI &copy) {
-
-}
-
-CGI &CGI::operator=(const CGI &copy) {
-	return *this;
-}
 
 
 

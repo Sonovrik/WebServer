@@ -6,7 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/Users/kmoaning/Desktop/WebServer/CGI/CGI.hpp
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
+CGI.hpp
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
+
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
 map
 -
 iostream
@@ -19,8 +23,50 @@ fcntl.h
 -
 string
 -
+../parser/Request.hpp
+/Users/kmoaning/Desktop/ToGit/parser/Request.hpp
+../Server.hpp
+/Users/kmoaning/Desktop/ToGit/Server.hpp
+../ConfigParser/ConfigParser.hpp
+/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
 
-/Users/kmoaning/Desktop/WebServer/CGI/mainCGI.cpp
-CGI.hpp
-/Users/kmoaning/Desktop/WebServer/CGI/CGI.hpp
+/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
+iostream
+-
+string
+-
+map
+-
+vector
+-
+fstream
+-
+array
+-
+../Server.hpp
+/Users/kmoaning/Desktop/ToGit/Server.hpp
+
+/Users/kmoaning/Desktop/ToGit/Server.hpp
+map
+-
+iostream
+-
+sys/socket.h
+-
+netinet/in.h
+-
+arpa/inet.h
+-
+vector
+-
+
+/Users/kmoaning/Desktop/ToGit/parser/Request.hpp
+iostream
+-
+string
+-
+map
+-
+vector
+-
 

@@ -8,38 +8,38 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/Users/kmoaning/Desktop/WebServer/cmake-build-debug"/>
+				<Option working_dir="/Users/kmoaning/Desktop/ToGit/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/Users/kmoaning/Desktop/WebServer/cmake-build-debug"/>
+				<Option working_dir="/Users/kmoaning/Desktop/ToGit/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/Users/kmoaning/Desktop/WebServer/cmake-build-debug"/>
+				<Option working_dir="/Users/kmoaning/Desktop/ToGit/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="WebServer">
-				<Option output="/Users/kmoaning/Desktop/WebServer/cmake-build-debug/WebServer" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/kmoaning/Desktop/WebServer/cmake-build-debug"/>
+				<Option output="/Users/kmoaning/Desktop/ToGit/cmake-build-debug/WebServer" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/kmoaning/Desktop/ToGit/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -52,15 +52,15 @@
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 WebServer"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 WebServer"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="WebServer/fast">
-				<Option output="/Users/kmoaning/Desktop/WebServer/cmake-build-debug/WebServer" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/kmoaning/Desktop/WebServer/cmake-build-debug"/>
+				<Option output="/Users/kmoaning/Desktop/ToGit/cmake-build-debug/WebServer" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/kmoaning/Desktop/ToGit/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -73,32 +73,47 @@
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 WebServer/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/WebServer/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 WebServer/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/kmoaning/Desktop/ToGit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/kmoaning/Desktop/WebServer/CGI/CGI.cpp">
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp">
 			<Option target="WebServer"/>
 		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/WebServer/CGI/CGI.hpp">
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp">
 			<Option target="WebServer"/>
 		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/WebServer/CGI/mainCGI.cpp">
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp">
 			<Option target="WebServer"/>
 		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/WebServer/parser/Request.cpp">
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.cpp">
 			<Option target="WebServer"/>
 		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/WebServer/parser/Request.hpp">
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp">
 			<Option target="WebServer"/>
 		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/WebServer/parser/parser.cpp">
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Server.hpp">
 			<Option target="WebServer"/>
 		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/WebServer/CMakeLists.txt">
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/parser/Request.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/parser/Request.hpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/parser/parser.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/server.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/server.hpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

@@ -4,10 +4,12 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/kmoaning/Desktop/WebServer/CGI/CGI.cpp" "/Users/kmoaning/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o"
-  "/Users/kmoaning/Desktop/WebServer/CGI/mainCGI.cpp" "/Users/kmoaning/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o"
-  "/Users/kmoaning/Desktop/WebServer/parser/Request.cpp" "/Users/kmoaning/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/parser/Request.cpp.o"
-  "/Users/kmoaning/Desktop/WebServer/parser/parser.cpp" "/Users/kmoaning/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/parser/parser.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/parser/Request.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/parser/Request.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/parser/parser.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/parser/parser.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/server.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/server.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

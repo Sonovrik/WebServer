@@ -30,11 +30,11 @@ public:
 	void	set_body(std::string);
 
 	// getters
-	std::string const	&get_version(void) const;
-	std::string	const	&get_statusCode(void) const;
-	std::string	const	&get_statusMessage(void) const;
-	std::map<std::string,std::string>	const	&get_headers(void) const;
-	std::string	const	&get_body(void) const;
+	std::string const	&get_version() const;
+	std::string	const	&get_statusCode() const;
+	std::string	const	&get_statusMessage() const;
+	std::map<std::string,std::string>	const	&get_headers() const;
+	std::string	const	&get_body() const;
 };
 
 

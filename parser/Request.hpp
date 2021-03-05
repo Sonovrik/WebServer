@@ -66,4 +66,6 @@ public:
 	std::string const	&getFileExtension(void) const;
 };
 
+Request		parseRequest(std::string req);
+
 #endif

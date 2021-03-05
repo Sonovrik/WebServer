@@ -68,10 +68,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/kmoaning/Desktop/WebServer
+CMAKE_SOURCE_DIR = /Users/kmoaning/Desktop/ToGit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/kmoaning/Desktop/WebServer/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/kmoaning/Desktop/ToGit/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -100,9 +100,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/kmoaning/Desktop/WebServer/cmake-build-debug/CMakeFiles /Users/kmoaning/Desktop/WebServer/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles /Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/kmoaning/Desktop/WebServer/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -197,6 +197,33 @@ CGI/mainCGI.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.s
 .PHONY : CGI/mainCGI.cpp.s
 
+ConfigParser/ConfigParser.o: ConfigParser/ConfigParser.cpp.o
+
+.PHONY : ConfigParser/ConfigParser.o
+
+# target to build an object file
+ConfigParser/ConfigParser.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o
+.PHONY : ConfigParser/ConfigParser.cpp.o
+
+ConfigParser/ConfigParser.i: ConfigParser/ConfigParser.cpp.i
+
+.PHONY : ConfigParser/ConfigParser.i
+
+# target to preprocess a source file
+ConfigParser/ConfigParser.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.i
+.PHONY : ConfigParser/ConfigParser.cpp.i
+
+ConfigParser/ConfigParser.s: ConfigParser/ConfigParser.cpp.s
+
+.PHONY : ConfigParser/ConfigParser.s
+
+# target to generate assembly for a file
+ConfigParser/ConfigParser.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.s
+.PHONY : ConfigParser/ConfigParser.cpp.s
+
 parser/Request.o: parser/Request.cpp.o
 
 .PHONY : parser/Request.o
@@ -251,6 +278,33 @@ parser/parser.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/parser/parser.cpp.s
 .PHONY : parser/parser.cpp.s
 
+server.o: server.cpp.o
+
+.PHONY : server.o
+
+# target to build an object file
+server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/server.cpp.o
+.PHONY : server.cpp.o
+
+server.i: server.cpp.i
+
+.PHONY : server.i
+
+# target to preprocess a source file
+server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/server.cpp.i
+.PHONY : server.cpp.i
+
+server.s: server.cpp.s
+
+.PHONY : server.s
+
+# target to generate assembly for a file
+server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/server.cpp.s
+.PHONY : server.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -266,12 +320,18 @@ help:
 	@echo "... CGI/mainCGI.o"
 	@echo "... CGI/mainCGI.i"
 	@echo "... CGI/mainCGI.s"
+	@echo "... ConfigParser/ConfigParser.o"
+	@echo "... ConfigParser/ConfigParser.i"
+	@echo "... ConfigParser/ConfigParser.s"
 	@echo "... parser/Request.o"
 	@echo "... parser/Request.i"
 	@echo "... parser/Request.s"
 	@echo "... parser/parser.o"
 	@echo "... parser/parser.i"
 	@echo "... parser/parser.s"
+	@echo "... server.o"
+	@echo "... server.i"
+	@echo "... server.s"
 .PHONY : help
 
 

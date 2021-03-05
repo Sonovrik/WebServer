@@ -290,9 +290,9 @@ bool	ConfigParser::parseConfig(const std::string &fileName){
 	return true;
 }
 
-int		main(){
-	ConfigParser parser;
-	parser.parseConfig("webserv.conf");
-	std::vector<Server> _serversList(parser.getServers());
-	return 0;
-}
+//int		main(){
+//	ConfigParser parser;
+//	parser.parseConfig("webserv.conf");
+//	std::vector<Server> _serversList(parser.getServers());
+//	return 0;
+//}

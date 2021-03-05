@@ -2,15 +2,12 @@
 // Created by Kory Moaning on 3/2/21.
 //
 
-
-//int		main(){
-//	ConfigParser parser;
-//	parser.parseConfig("webserv.conf");
-//	std::vector<Server> _serversList(parser.getServers());
-//	return 0;
-//}
-
 #include "CGI.hpp"
+
+void parsBeforeCGI(Request &req, Server &ser){
+
+}
+
 
 int main(){
 
@@ -18,8 +15,9 @@ int main(){
 	parser.parseConfig("../ConfigParser/webserv.conf");
 	std::vector<Server> _serversList(parser.getServers());
 	Request req;
-	std::string tmp3 = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
-	req = parse_request(tmp3);
+	std::string tmp3 = "GET 1.php?a=b HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
+//	std::string tmp3 = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
+	req = parseRequest(tmp3);
 
 	// Для передачи запроса в CGI необходимо чекнуть расширение в
 	// PATH (для тестера ".bla" либо это наше дефолтное расшерение из конфига ) &&  один из методов GET/POST/HEAD
@@ -29,7 +27,9 @@ int main(){
 	//
 	//если прилетает несколько запросов - не лезть в одну и ту же область памяти (в одни файлы)
 
-	CGI qqq;
+	parsBeforeCGI(req, _serversList.front());
+
+	CGI qqq(req, _serversList.front());
 	qqq.init(req, _serversList.front());
 	qqq.creatENV();
 	qqq.exec();

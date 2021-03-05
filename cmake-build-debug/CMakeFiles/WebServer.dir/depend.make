@@ -3,13 +3,26 @@
 
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../CGI/CGI.cpp
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../CGI/CGI.hpp
+CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../parser/Request.hpp
 
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/CGI.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/mainCGI.cpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../parser/Request.hpp
+
+CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../ConfigParser/ConfigParser.cpp
+CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../Server.hpp
 
 CMakeFiles/WebServer.dir/parser/Request.cpp.o: ../parser/Request.cpp
 CMakeFiles/WebServer.dir/parser/Request.cpp.o: ../parser/Request.hpp
 
 CMakeFiles/WebServer.dir/parser/parser.cpp.o: ../parser/Request.hpp
 CMakeFiles/WebServer.dir/parser/parser.cpp.o: ../parser/parser.cpp
+
+CMakeFiles/WebServer.dir/server.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/server.cpp.o: ../server.cpp
 
