@@ -1,4 +1,6 @@
 #include "Server.hpp"
+#include "./Request/Request.hpp"
+#include "./Client/Client.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include "./ConfigParser/ConfigParser.hpp"
@@ -83,8 +85,13 @@ int main(){
 						close(sd);
 						it->delete_client(i + 1);
 					}
-					else{
-						// parserRequest
+					else {
+						// // parserRequest
+						// client.addToRequest();
+						// 
+						Request req = parseRequest(buf);
+						std::cout << "!" << req.getStatusCode() << "!" << std::endl;
+						// std::cout << "S" << req.getMethod() << "S" << std::endl;
 						// Clinet add information
 						// \r\n\r\n
 						std::cout << buf << std::endl;
@@ -92,7 +99,7 @@ int main(){
 				}
 				if (FD_ISSET(sd, &writefds)){
 					continue;
-					// if (wirte == yes){
+					// if (write == yes){
 					// 	send();
 					// }
 					// writefds.fds_bits;

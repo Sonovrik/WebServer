@@ -1,30 +1,5 @@
 #include <istream>
 
-std::string	error(int code) {
-	switch(code) {
-		case 400 : return error_400();
-		case 403 : return error_403();
-		case 405 : return error_405();
-		case 406 : return error_406();
-		case 408 : return error_408();
-		case 409 : return error_409();
-		case 410 : return error_410();
-		case 411 : return error_411();
-		case 413 : return error_413();
-		case 414 : return error_414();
-		case 415 : return error_415();
-		case 417 : return error_417();
-		case 426 : return error_426();
-		case 500 : return error_500();
-		case 501 : return error_501();
-		case 502 : return error_502();
-		case 503 : return error_503();
-		case 504 : return error_504();
-		case 505 : return error_505();
-	}
-}
-
-
 // Bad Request
 std::string error_400() {
 	return "<html>\n<title>Error 400</title>\n<body>\n<h1>400</h1>\n<h2>Bad Request</h2>\n</body>\n</html>";
@@ -121,4 +96,28 @@ std::string error_504() {
 //HTTP Version Not Supported
 std::string error_505() {
 	return "<html>\n<title>Error 505</title>\n<body>\n<h1>505</h1>\n<h2>HTTP Version Not Supported</h2>\n</body>\n</html>";
+}
+
+std::string	error(int code) {
+	switch(code) {
+		case 400 : return error_400();
+		case 403 : return error_403();
+		case 405 : return error_405();
+		case 406 : return error_406();
+		case 408 : return error_408();
+		case 409 : return error_409();
+		case 410 : return error_410();
+		case 411 : return error_411();
+		case 413 : return error_413();
+		case 414 : return error_414();
+		case 415 : return error_415();
+		case 417 : return error_417();
+		case 426 : return error_426();
+		case 500 : return error_500();
+		case 501 : return error_501();
+		case 502 : return error_502();
+		case 503 : return error_503();
+		case 504 : return error_504();
+		case 505 : return error_505();
+	}
 }
