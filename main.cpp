@@ -1,92 +1,103 @@
 #include "Server.hpp"
-#include <arpa/inet.h>
-#include <sys/select.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include "./ConfigParser/ConfigParser.hpp"
+
+int		findMaxSD(std::vector<Server> &servers){
+	std::vector<Server>::iterator it = servers.begin();
+	int maxSd = 0;
+	for (; it != servers.end(); it++){
+		if (it->get_maxSd() > maxSd)
+			maxSd = it->get_maxSd();
+	}
+	return maxSd;
+}
 
 int main(){
+	ConfigParser parser;
+	if (!parser.parseConfig("webserv.conf")){
+		std::cerr << "Some parser error!!!" << std::endl;
+		return -1;
+	}
+	std::vector<Server>::iterator it;
+	std::vector<Server> serversList(parser.getServers());
 
-	std::string promt = "Welcome! \r\n";
+	it = serversList.begin();
+	for (; it != serversList.end(); it++){
+		//create a master socket
+		it->create_master_socket(AF_INET, SOCK_STREAM, 0);
 
-	Server serv;
+		//type of socket created
+		it->set_address_socket(it->get_ip().c_str(), atoi(it->get_port().c_str()), AF_INET);
 
-	//create a master socket
-	serv.create_master_socket(AF_INET, SOCK_STREAM, 0);
+		//bind the socket to localhost port
+		it->bind_master_socket();
 
-	//type of socket created
-	serv.set_address_socket("127.0.0.1", PORT, AF_INET);
-
-	//bind the socket to localhost port
-	serv.bind_master_socket();
-
-	//try to specify maximum of 128 pending connections for the master socket
-	listen_socket(serv.get_master_socket(), SOMAXCONN);
-	
+		//try to specify maximum of 128 pending connections for the master socket
+		listen_socket(it->get_master_socket(), SOMAXCONN);
+		
+		// add envs
+		it->fullConfigEnvironment();
+	}
 	fd_set	readfds;
-	int		max_sd;
-
-	while (true){
-		//clear the socket set
-		FD_ZERO(&readfds);
+	fd_set	writefds;
+	int		max_sd = 0;
 	
-		// add master socket to set;
-		FD_SET(serv.get_master_socket(), &readfds);
-		max_sd = serv.get_master_socket();
+	bool loop = true;
+	while (loop){
+		FD_ZERO(&readfds);
+		FD_ZERO(&writefds);
 
-		// add child sockets to set
-		for (int i = 0; i < MAX_CLIENTS; i++){
-			// get socket descriptor
-			int sd = serv.get_client_sd(i); 
+		for (it = serversList.begin(); it != serversList.end(); it++){
+			FD_SET(it->get_master_socket(), &readfds);
+			it->FD_reset(&readfds);
+			it->FD_reset(&writefds);
+		}
+		max_sd = findMaxSD(serversList);
+
 		
-			//if valid socket descriptor then add to read list
-			if (sd > 0)
-				FD_SET(sd, &readfds);
-			
-			//highest file descriptor number, need it for the select function
-			if(sd > max_sd)
-				max_sd = sd;
+		int	ret = select(max_sd + 1, &readfds, &writefds, NULL, NULL); // 10 sec
+		if (ret == 0){
+			std::cout << "Time out" << std::endl;
+			continue;
+		}
+		else if (ret < 0){
+			// throw something;
+			std::cerr << "Select error" << std::endl;
+			return -1;
 		}
 		
-		//wait for an activity on one of the sockets, timeout is NULL, so wait indefinitely
-		int ret = select(max_sd + 1, &readfds, NULL, NULL, NULL); // • Select should check read and write at the same time.
-		if (ret < 0)
-			std::cerr << "Select error" << std::endl; // continue ???
-		
-		//If something happened on the master socket, then its an incoming connection
-		if (FD_ISSET(serv.get_master_socket(), &readfds)){
-			int new_socket = serv.accept_master_socket();
+		it = serversList.begin();
+		for (; it != serversList.end(); it++){
+			if (FD_ISSET(it->get_master_socket(), &readfds)){
+				int new_connection = it->accept_master_socket();
+				fcntl(new_connection, F_SETFL, O_NONBLOCK);
+				it->add_sd(new_connection);
+			}
 
-			if (new_socket < 0) //???
-				continue;
-			
-			std::cout << "New connection, socket fd is " << new_socket << std::endl;
-
-			// send a message to client
-			if (send(new_socket, "Hola", 4, 0) < 0)
-				std::cerr << "Send failed" << std::endl;
-			
-			//add new socket to array of sockets
-			if (serv.set_new_socket(new_socket) < 0)
-				std::cerr << "Adding error" << std::endl; // ???
-		}
-		//else its some IO operation on some other socket (write, except)
-
-
-		for (int i = 0; i < MAX_CLIENTS; i++){
-			int		sd = serv.get_client_sd(i);
-			int		ret;
-			char	buffer[10];
-			if (FD_ISSET(sd, &readfds)){
-				// Check if it closing or incoming message
-				if ((ret = read(sd, buffer,1024)) == 0){
-					std::cout << "Host disconnected, sd " << sd << std::endl;
-					close(sd);
-					serv.set_client_socket(i, 0);
+			for (size_t i = 0; i < it->get_clientCount(); i++){
+				int		sd = it->get_clientsd(i + 1);
+				std::string buf(1024, '\0');
+				if (FD_ISSET(sd, &readfds)){
+					if ((ret = read(sd, (void *)buf.c_str(), 1024)) == 0){
+						close(sd);
+						it->delete_client(i + 1);
+					}
+					else{
+						// parserRequest
+						// Clinet add information
+						// \r\n\r\n
+						std::cout << buf << std::endl;
+					}
 				}
-				// just read message and do some   
-				else{
-					buffer[ret] = '\0';
-					std::cout << buffer << std::endl;
-
+				if (FD_ISSET(sd, &writefds)){
+					continue;
+					// if (wirte == yes){
+					// 	send();
+					// }
+					// writefds.fds_bits;
+					send(sd, "Asd\r\n\r\n", 7, 0);
+					// delete sd writefds;
 				}
 			}
 		}
