@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include <unistd.h>
+#include <fcntl.h>
 #include "./ConfigParser/ConfigParser.hpp"
 
 int		findMaxSD(std::vector<Server> &servers){
@@ -24,21 +25,20 @@ int main(){
 	it = serversList.begin();
 	for (; it != serversList.end(); it++){
 		//create a master socket
-		(*it).create_master_socket(AF_INET, SOCK_STREAM, 0);
+		it->create_master_socket(AF_INET, SOCK_STREAM, 0);
 
 		//type of socket created
-		(*it).set_address_socket((*it).get_ip().c_str(), atoi((*it).get_port().c_str()), AF_INET);
+		it->set_address_socket(it->get_ip().c_str(), atoi(it->get_port().c_str()), AF_INET);
 
 		//bind the socket to localhost port
-		(*it).bind_master_socket();
+		it->bind_master_socket();
 
 		//try to specify maximum of 128 pending connections for the master socket
-		listen_socket((*it).get_master_socket(), SOMAXCONN);
+		listen_socket(it->get_master_socket(), SOMAXCONN);
 		
 		// add envs
-		(*it).fullConfigEnvironment();
+		it->fullConfigEnvironment();
 	}
-	
 	fd_set	readfds;
 	fd_set	writefds;
 	int		max_sd = 0;
@@ -50,12 +50,11 @@ int main(){
 
 		for (it = serversList.begin(); it != serversList.end(); it++){
 			FD_SET(it->get_master_socket(), &readfds);
-			// FD_SET(it->get_master_socket(), &writefds);
 			it->FD_reset(&readfds);
 			it->FD_reset(&writefds);
 		}
 		max_sd = findMaxSD(serversList);
-	
+
 		
 		int	ret = select(max_sd + 1, &readfds, &writefds, NULL, NULL); // 10 sec
 		if (ret == 0){
@@ -72,33 +71,36 @@ int main(){
 		for (; it != serversList.end(); it++){
 			if (FD_ISSET(it->get_master_socket(), &readfds)){
 				int new_connection = it->accept_master_socket();
+				fcntl(new_connection, F_SETFL, O_NONBLOCK);
 				it->add_sd(new_connection);
 			}
-		}
-	
-	}
-	
-		// for (int i = 0; i < MAX_CLIENTS; i++){
-		// 	int		sd = serv.get_client_sd(i);
-		// 	int		ret;
-		// 	char	buffer[1024];
-		// 	if (FD_ISSET(sd, &readfds)){
-		// 		// Check if it closing or incoming message
-		// 		if ((ret = read(sd, buffer, 1024)) == 0){
-		// 			std::cout << "Host disconnected, sd " << sd << std::endl;
-		// 			close(sd);
-		// 			serv.set_client_socket(i, 0);
-		// 		}
-		// 		// just read message and do some   
-		// 		else{
-		// 			buffer[ret] = '\0';
-		// 			if (buffer[ret - 2] == '\r')
-		// 			std::cout << "asd123" << std::endl;
-					
-		// 			std::cout << buffer << std::endl;
 
-		// 		}
-		// 	}
-		// }
+			for (size_t i = 0; i < it->get_clientCount(); i++){
+				int		sd = it->get_clientsd(i + 1);
+				std::string buf(1024, '\0');
+				if (FD_ISSET(sd, &readfds)){
+					if ((ret = read(sd, (void *)buf.c_str(), 1024)) == 0){
+						close(sd);
+						it->delete_client(i + 1);
+					}
+					else{
+						// parserRequest
+						// Clinet add information
+						// \r\n\r\n
+						std::cout << buf << std::endl;
+					}
+				}
+				if (FD_ISSET(sd, &writefds)){
+					continue;
+					// if (wirte == yes){
+					// 	send();
+					// }
+					// writefds.fds_bits;
+					send(sd, "Asd\r\n\r\n", 7, 0);
+					// delete sd writefds;
+				}
+			}
+		}
+	}
 	return 0;
 }

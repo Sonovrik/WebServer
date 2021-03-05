@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-
 #include <map>
 #include <iostream>
 #include <sys/socket.h>
@@ -10,23 +9,7 @@
 #include <vector>
 #include <algorithm>
 #include <array>
-
-#define PORT 8000
-#define MAX_CLIENTS 30 // ???
-#define MAX_HEADERS 17
-
-	// socket funcs
-void	allow_mul_cons_socket(int socket);
-int		create_socket(int domain, int type, int protocol);
-void	bind_socket(int socket, sockaddr_in *addr, socklen_t addrlen);
-void	listen_socket(int master_socket, int max_connections);
-
-typedef struct		s_location{
-	std::string		_name;
-	std::map<std::string, std::string>	_directives;
-}					location_t;
-
-bool location_tCompare(const location_t &x, const location_t &y);
+#include "utils.hpp"
 
 class Server{
 
@@ -80,7 +63,6 @@ public:
 	void	set_master_socket(const int socket);
 	void	set_addrlen(const socklen_t& len);
 	void	set_sockaddress(const sockaddr_in& addr);
-	int		set_new_socket(const int socket);
 	void	FD_reset(fd_set *);
 	void	add_sd(int sd);
 
@@ -92,11 +74,15 @@ public:
 	std::string			get_maxBodySize(void) const;
 	std::string			get_errorPage(void) const;
 	std::vector<location_t>	get_locations(void) const;
+	size_t				get_clientCount(void) const;
+	int					get_clientsd(size_t index) const;
 
 	int			get_maxSd(void) const;
 	int			get_master_socket(void) const;
 	socklen_t	get_addrlen(void) const;
 	sockaddr_in const	&get_sockaddress(void) const;
+
+	size_t		delete_client(size_t index);
 };
 
 

@@ -5,38 +5,6 @@ const std::array<std::string, 17> Server::_env_names = {"AUTH_TYPE", "CONTENT_LE
 		"REMOTE_ADDR", "REMOTE_IDENT", "REMOTE_USER", "REQUEST_METHOD", "REQUEST_URI",
 		"SCRIPT_NAME", "SERVER_NAME", "SERVER_PORT", "SERVER_PROTOCOL", "SERVER_SOFTWARE"};
 
-// AUTH_TYPE - Basic
-// CONTENT_LENGTH - ??? masha
-// CONTENT_TYPE - text/html mashsa
-// GATEWAY_INTERFACE - CGI/1.1 const
-// PATH_INFO - /sports.html Например, если задан путь c:/cgi-bin/example1.exe/sports.html mashsa
-// PATH_TRANSLATED - masha c:\sports.html Например, если переменная PATH_TRANSLATED имеет значение /sports.html, а корневым дирикторием сервера служит c:\,
-// QUERY_STRING - masha name=margaret+alarcon Например, для URL http://www.jamsa.com/cgi-bin/grandma.exe?name=margaret+alarcon
-// REMOTE_ADDR - 204.212.52.209 ( ip browser )
-// REMOTE_IDENT - pschmauder.www.jamsa.com  Напрмер, если имя удаленного пользователя pschmauder и он назодится на удаленном узлеjamsa.com
-// REMOTE_USER - pschmauder Например, предположим, что именем удаленного пользователя является pschmauder 
-// REQUEST_METHOD - mashsa GET
-// REQUEST_URI - masha URI
-// SCRIPT_NAME - masha cgi-bin/example1.exe Например, если имеется URL http://www.jamsa.com/cgi-bin/someprog.exe
-// SERVER_NAME - 204.212.52.209 (ip host)
-// SERVER_PORT - 8000
-// SERVER_PROTOCOL - HTTP/1.1 const
-// SERVER_SOFTWARE - const FolkWeb/1.01 Формат имени Web-сервера и номер версии должен передаваться CGI следующим образом: имя/версия.
-
-bool location_tCompare(const location_t &x, const location_t &y){
-	size_t	a = std::count(x._name.begin(), x._name.end(), '/');
-	size_t	b = std::count(y._name.begin(), y._name.end(), '/');
-	if (a > b)
-		return true;
-	if (a < b)
-		return false;
-	if (a == b){
-		if (x._name > y._name)
-			return true;
-	}
-	return false;
-}
-
 Server::Server():
 	_master_socket(0),
 	_addrlen(0),
@@ -168,10 +136,12 @@ void	Server::bind_master_socket(void){
 
 int		Server::accept_master_socket(void){
 	int new_socket;
-	if ((new_socket = accept(_master_socket, (struct sockaddr *)&_addr, (socklen_t*)&_addrlen)) < 0){
+	sockaddr_in addr;
+	if ((new_socket = accept(_master_socket, (struct sockaddr *)&addr, (socklen_t*)&_addrlen)) < 0){
 			std::cerr << "Accept failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+	this->_env.insert(make_pair("REMOTE_ADDR", ipToString(addr.sin_addr.s_addr)));
 	return (new_socket);
 }
 
@@ -204,18 +174,6 @@ void	Server::set_errorPage(const std::string& page){
 void	Server::set_locations(std::vector<location_t>& locations){
 	this->_locations = locations;
 }
-
-int		Server::set_new_socket(const int socket){
-	for (int i = 0; i < MAX_CLIENTS; i++){
-		if (this->_clients_sockets[i] == 0){
-			this->_clients_sockets[i] = socket;
-			std::cout << "Adding to list of sockets as " << i << std::endl;
-			return 0;
-		}
-	}
-	return -1;
-}
-
 
 void	Server::set_master_socket(const int socket){
 	this->_master_socket = socket;
@@ -268,34 +226,24 @@ sockaddr_in const	&Server::get_sockaddress(void) const{
 	return _addr;
 }
 
+size_t				Server::get_clientCount(void) const{
+	return this->_clients_sockets.size();
+}
+
+int					Server::get_clientsd(size_t index) const{
+	if (index > this->_clients_sockets.size())
+		return -1;
+	else
+		return this->_clients_sockets[index - 1];
+}
+
+size_t		Server::delete_client(size_t index){
+	if (index >= this->_clients_sockets.size())
+		return -1;
+	this->_clients_sockets.erase(this->_clients_sockets.begin() + index -1);
+	return this->_clients_sockets.size();
+}
+
+
 // socket methods
-void	allow_mul_cons_socket(int socket){
-	int fd = 1;
-	if( setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &fd, sizeof(int)) < 0 ){
-		std::cerr << "Error: setsockopt" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-}
 
-int		create_socket(int domain, int type, int protocol){
-	int new_socket;
-	if((new_socket = socket(domain, type, protocol)) == 0){
-		std::cerr << "Socket create failed" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	return new_socket;
-}
-
-void	bind_socket(int socket, sockaddr_in *addr, socklen_t addrlen){
-	if (bind(socket, (struct sockaddr *)addr, addrlen)<0){
-		std::cerr << "Bind failed" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-}
-
-void	listen_socket(int master_socket, int max_connections){
-	if (listen(master_socket, max_connections) < 0){
-		std::cerr << "Listen failed" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-}
