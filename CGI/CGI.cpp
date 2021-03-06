@@ -34,9 +34,6 @@
 //	SERVER_SOFTWARE - определяет имя и версию сервера.
 //	REMOTE_HOST - нет в сабже// - доменный адрес машины, с которой осуществляется запрос.
 //
-//
-// PATH_TRANSLATED https://ru.wikipedia.org/wiki/Заглавная_страница, а PATH_INFO - то что придет от клиента на сервер, как перевести??
-//
 //PUT localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1
 ///put_test/html/1.php : argv[1]
 
@@ -102,10 +99,7 @@ void CGI::init(Request &req, Server &ser) {
 	this->envMap["REQUEST_URI"] = req.getPath();             //"localhost/1.cgi";
 	this->envMap["QUERY_STRING"] = "";                       //req.getQueryString() - это мапа?;     // "a=b"; //
 	this->envMap["SCRIPT_NAME"] = "CGI.cpp";                 //?? req.getPath() ??
-	this->envMap["PATH_INFO"] = "cgi_tester"; //req.getPathInfo(); //по дефолту "cgi_tester" or path/to/interpretier
-
-	std::cout << "Path " << this->envMap["REQUEST_URI"] << std::endl;
-	std::cout << "Path " << req.getPathInfo() << std::endl;
+	this->envMap["PATH_INFO"] = "CGI/cgi_tester"; //req.getPathInfo(); //по дефолту "cgi_tester" or path/to/interpretier
 
 	int r = req.getHeaders().find("AUTHORIZATION")->second.find(" ");
 	this->envMap["AUTH_TYPE"] = req.getHeaders().find("AUTHORIZATION")->second.substr(0, r);                     //?? default Basic,
@@ -135,10 +129,10 @@ void CGI::init(Request &req, Server &ser) {
 	//
 	this->RequestBody = req.getBody();
 	this->argv = new char *[3];
-	this->argv[0] = strdup(envMap.find("PATH_INFO")->second.c_str()); // "cgi_tester" ""
-	std::cout << std::endl << this->argv[0] << std::endl;
+	this->argv[0] = strdup("CGI/cgi_tester"); //strdup(envMap.find("PATH_INFO")->second.c_str()); // "cgi_tester" ""
+//	std::cout << std::endl << this->argv[0] << std::endl;
 
-	this->argv[1] = strdup("1.php");
+	this->argv[1] = strdup("CGI//1.php");
 	this->argv[2] = NULL;
 
 }
@@ -166,7 +160,7 @@ void CGI::exec() {
 	//файлу, который не является скриптом; этот файл будет выполнен как интерпретатор [arg] filename.
 	pid_t pid;
 	int ex;
-	int fdF = open("./Response", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
+	int fdF = open("./myFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
 	int status;
 	if (pipe(fd) != 0) {
 		std::cerr << "cannot pipe" << std::endl;

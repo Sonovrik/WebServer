@@ -4,8 +4,14 @@
 
 #include "CGI.hpp"
 
-void parsBeforeCGI(Request &req, Server &ser){
+//PUT http://localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1
+///put_test/html/1.php : argv[1]
 
+void parsBeforeCGI(Request &req, Server &ser){
+	std::string uri = req.getPath();
+	if(uri.find("") != std::string::npos)
+
+	std::cout << "my string : " << uri << std::endl << "path : " << req.getPath() << std::endl;
 }
 
 
@@ -15,7 +21,8 @@ int main(){
 	parser.parseConfig("../ConfigParser/webserv.conf");
 	std::vector<Server> _serversList(parser.getServers());
 	Request req;
-	std::string tmp3 = "GET 1.php?a=b HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
+	std::string tmp3 = "PUT http://localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
+//	std::string tmp3 = "GET 1.php?a=b HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 //	std::string tmp3 = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 	req = parseRequest(tmp3);
 

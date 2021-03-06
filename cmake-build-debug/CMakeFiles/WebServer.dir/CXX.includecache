@@ -30,6 +30,10 @@ string
 ../ConfigParser/ConfigParser.hpp
 /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
 
+/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp
+CGI.hpp
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
+
 /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
 iostream
 -
