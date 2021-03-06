@@ -100,22 +100,19 @@ int			Server::get_maxSd(void) const{
 	return _maxSd;
 }
 
-void		Server::add_sd(int sd){
-	this->_clients_sockets.push_back(sd);
-}
-
 
 void		Server::FD_reset(fd_set *to_set){
-	std::vector<int>::const_iterator it = this->_clients_sockets.begin();
+	std::vector<Client>::const_iterator it = this->_clients.begin();
 	_maxSd = this->_master_socket;
-	for (; it != this->_clients_sockets.end(); ++it){
-		if (*it > 0)
-			FD_SET(*it, to_set);
-		if (*it > _maxSd)
-			_maxSd = *it;
+
+	for (; it != this->_clients.end(); it++){
+		int sd = it->getSd();
+		if (sd > 0)
+			FD_SET(sd, to_set);
+		if (_maxSd < sd)
+			_maxSd = sd;
 	}
 }
-
 
 void	Server::create_master_socket(int domain, int type, int protocol){
 	_master_socket = create_socket(domain, type, protocol);
@@ -226,24 +223,35 @@ sockaddr_in const	&Server::get_sockaddress(void) const{
 	return _addr;
 }
 
+
+
+size_t		Server::delete_client(size_t index){
+	if (index >= this->_clients.size())
+		return -1;
+	this->_clients.erase(this->_clients.begin() + index -1);
+	return this->_clients.size();
+}
+
+// for clients
+
+void		Server::add_client(int newSd){
+	this->_clients.push_back(Client(newSd));
+}
+
 size_t				Server::get_clientCount(void) const{
-	return this->_clients_sockets.size();
+	return this->_clients.size();
 }
 
 int					Server::get_clientsd(size_t index) const{
-	if (index > this->_clients_sockets.size())
+	if (index > this->_clients.size())
 		return -1;
 	else
-		return this->_clients_sockets[index - 1];
+		return this->_clients[index - 1].getSd();
 }
 
-size_t		Server::delete_client(size_t index){
-	if (index >= this->_clients_sockets.size())
-		return -1;
-	this->_clients_sockets.erase(this->_clients_sockets.begin() + index -1);
-	return this->_clients_sockets.size();
+Client		&Server::get_Client(int index){
+	if (index > this->_clients.size())
+		throw std::exception();
+	else
+		return this->_clients[index - 1];
 }
-
-
-// socket methods
-

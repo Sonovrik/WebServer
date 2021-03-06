@@ -1,5 +1,5 @@
 #include "Server.hpp"
-#include "./Request/Request.hpp"
+// #include "./Request/Request.hpp"
 #include "./Client/Client.hpp"
 #include <unistd.h>
 #include <fcntl.h>
@@ -74,10 +74,9 @@ int main(){
 			if (FD_ISSET(it->get_master_socket(), &readfds)){
 				int new_connection = it->accept_master_socket();
 				fcntl(new_connection, F_SETFL, O_NONBLOCK);
-				// create client
-				it->add_sd(new_connection);
+				// it->add_sd(new_connection);
+				it->add_client(new_connection); // add client
 			}
-
 			for (size_t i = 0; i < it->get_clientCount(); i++){
 				int		sd = it->get_clientsd(i + 1);
 				std::string buf(1024, '\0');
@@ -87,17 +86,43 @@ int main(){
 						it->delete_client(i + 1);
 					}
 					else {
-						// parserRequest
+						Client &tmp = it->get_Client(i + 1);
+						tmp.setFlag(parseRequest(buf, tmp.getRequest()));
+						// if (tmp.getFlag() == ERROR){
+						// 	Response resp(400); //fill all atributes
+						// 	tmp.setFlag(SEND);
+						// 	// create error response;
+						// }
+						// else if (tmp.getFlag() == WAIT){
+						// 	continue;
+						// }
+						// if (tmp.getFlag() == SEND){
+						// 	server.exec_reqv();
+						// 	tmp.getwhere() == CGI
+						// 		bulina;
+						// 	else
+								
+						// 	server.getStatus_code();
+						// 	Response();
+						// 	Response resp(200);
+						// }
+						// std::
+						// it->
+						// // parserRequest
+						// client.addToRequest();
 						// 
-						Request req;
-						parseRequest(buf, req);
-						std::cout << "!" << req.getStatusCode() << "!" << std::endl;
+						// Request req = parseRequest(buf);
+						// std::cout << "!" << req.getStatusCode() << "!" << std::endl;
+						// std::cout << "S" << req.getMethod() << "S" << std::endl;
 						// Clinet add information
 						// \r\n\r\n
 						std::cout << buf << std::endl;
 					}
 				}
 				if (FD_ISSET(sd, &writefds)){
+					// if (tmp.getFlag() == SEND){
+					// 	send(response.get_response());
+					// }
 					continue;
 					// if (write == yes){
 					// 	send();

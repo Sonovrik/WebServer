@@ -2,14 +2,15 @@
 #define CLIENT_HPP
 
 #include "../Request/Request.hpp"
+#include <iostream>
+#include <map>
+#include <vector>
 
-#define	OK		0
-#define CLOSED	1
-#define ERROR	2
 
 class Client {
 
 private:
+	int		where;
 	int		_sd;
 	int		_flag;
 	Request _request;
@@ -19,9 +20,13 @@ public:
 	Client(int sd);
 	~Client();
 
+	void	setSd(int sd);
+	void	setFlag(int flag);
+	void	setRequest(Request &reqv);
+
 	int		getSd(void) const;
 	int		getFlag(void) const;
-	Request	getRequest(void) const;
+	Request	&getRequest(void);
 
 };
 

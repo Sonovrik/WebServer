@@ -275,36 +275,38 @@ bool		Request::parseBody(std::string req) {
 	return true;
 }
 
-void		parseRequest(std::string req, Request &request) {
+
+// need add SEND WAIT
+int			parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
 
 	if (request.getMethod() == "") {
 		if ((pos = req.find("\r\n")) == std::string::npos) {
 			request.setStatusCode(400);
 			std::cout << "fail" << std::endl;
-			return ;
+			return ERROR;
 		}
 		std::string	tmp(req.substr(0, pos + 2));
 		if (request.parseStartLine(tmp) == false) {
 			request.setStatusCode(400);
 			std::cout << "start line problem" << std::endl;
-			return ;
+			return ERROR;
 		}
 		req.erase(0, pos + 2);
 	}
 	if (request.parseHeaders(req) == false) {
 		request.setStatusCode(400);
 		std::cout << "header problem" << std::endl;
-		return ;
+		return ERROR;
 	}
 	if (request.getMethod() == "POST") {
 		if (request.parseBody(req) == false) {
 			request.setStatusCode(400);
-			return ;
+			return ERROR;
 		}
 	}
 	std::cout << "success" << std::endl;
-	return ;
+	return WAIT;
 }
 
 // int main() {

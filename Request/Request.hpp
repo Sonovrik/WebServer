@@ -5,6 +5,10 @@
 #include <map>
 #include <vector>
 
+#define	WAIT	0
+#define SEND	1
+#define ERROR	-1
+
 class Request{
 
 private:
@@ -62,6 +66,6 @@ public:
 	std::string const	&getPathInfo(void) const;
 };
 
-void		parseRequest(std::string req, Request &request);
+int			parseRequest(std::string req, Request &request);
 
 #endif

@@ -11,18 +11,21 @@
 #include <array>
 #include "utils.hpp"
 
+#include "./Client/Client.hpp"
+
 class Server{
 
 private:
 	// socket part
 	int			_master_socket;
-	std::vector<int>	_clients_sockets;
 	socklen_t	_addrlen;
 	sockaddr_in	_addr;
 	int			_maxSd;
 	static std::array<std::string, 17> const _env_names; 
 	std::map<std::string, std::string>	_env;
 
+
+	std::vector<Client>		_clients;
 
 	// config part
 	std::string		_serverName;
@@ -38,6 +41,14 @@ public:
 	~Server();
 	Server(Server const &);
 	Server &operator=(Server const &);
+
+	// for Clients
+	void		add_client(int newSd);
+	size_t				get_clientCount(void) const;
+	int					get_clientsd(size_t index) const;
+
+	Client		&get_Client(int index);
+
 
 
 	void		fullConfigEnvironment(void); // full it
@@ -74,8 +85,6 @@ public:
 	std::string			get_maxBodySize(void) const;
 	std::string			get_errorPage(void) const;
 	std::vector<location_t>	get_locations(void) const;
-	size_t				get_clientCount(void) const;
-	int					get_clientsd(size_t index) const;
 
 	int			get_maxSd(void) const;
 	int			get_master_socket(void) const;
