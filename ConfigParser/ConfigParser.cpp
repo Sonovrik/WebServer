@@ -193,8 +193,7 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 		a = 4;
 	else if (_tokens[index].front() == "error_page" && serv.get_errorPage().empty())
 		a = 5;
-	if (a == 0 || (a != 5 && _tokens[index].size() != 2)
-		|| (a == 5 && _tokens[index].size() != 3))
+	if (a == 0 ||  _tokens[index].size() != 2)
 		return false;
 
 	int		val = 0;
@@ -219,7 +218,15 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			serv.set_port(_tokens[index].back().substr(pos + 1, _tokens[index].back().size()));
 			break;
 		case 5:
-			serv.set_errorPage(*(_tokens[index].begin() + 1) + " " + *(_tokens[index].begin() + 2));
+			serv.set_errorPage(_tokens[index].back());
+			std::string page = serv.get_errorPage();
+			if (page.rfind('.') == std::string::npos || 
+				(std::string)&(page.c_str()[page.rfind('.')]) != ".html")
+				return false;
+			std::ifstream in(serv.get_errorPage());
+			if (in.is_open() == false)
+				return false;
+			in.close();
 			break;
 	}
 	return true;
