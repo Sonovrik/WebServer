@@ -5,22 +5,21 @@
 #include <map>
 #include <vector>
 
+#define	WAIT	0
+#define SEND	1
+#define ERROR	-1
 
 class Request{
 
 private:
 	// start line
-	std::string		_method;
-	std::string		_path;
-	std::string		_version;
-	// headers
-	std::map<std::string,std::string>	_headers;
-	// query string
-	std::map<std::string,std::string>	_queryString;
-	// path info
+	std::string					_method;
+	std::string					_path;
+	std::string					_version;
+	std::string					_queryString;
 	std::string					_pathInfo;
-	// file extension
-	std::string					_fileExtension;
+
+	std::map<std::string,std::string>	_headers;
 	// body
 	std::string					_body;
 	// errors
@@ -38,7 +37,7 @@ public:
 	// parse request
 	bool	parseStartLine(std::string);
 	bool	parseBody(std::string);
-	bool	parseHeaders(std::string);
+	bool	parseHeaders(std::string &);
 	bool	setHeader(std::string);
 	bool	checkHeaderName(std::string);
 	bool	checkHeaderValue(std::string);
@@ -53,19 +52,24 @@ public:
 	void	setBody(std::string);
 	void	setHeaders(std::map<std::string,std::string>);
 	void	setStatusCode(int);
+	void	setPathInfo(std::string);
 
 	// getters
 	std::string const	&getMethod(void) const;
 	std::string	const	&getPath(void) const;
 	std::string	const	&getVersion(void) const;
+	std::string const	&getServerName(void) const;
 	std::string	const	&getBody(void) const;
 	int const		 	&getStatusCode(void) const;
 	std::map<std::string,std::string> const &getHeaders(void) const;
-	std::map<std::string,std::string> const &getQueryString(void) const;
+	std::string const 	&getQueryString(void) const;
 	std::string const	&getPathInfo(void) const;
-	std::string const	&getFileExtension(void) const;
 };
 
+<<<<<<< HEAD:parser/Request.hpp
 Request		parseRequest(std::string req);
+=======
+int			parseRequest(std::string req, Request &request);
+>>>>>>> f8e1e8c205ee47c95859c31194755c2984753557:Request/Request.hpp
 
 #endif

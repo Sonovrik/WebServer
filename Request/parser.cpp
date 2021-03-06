@@ -14,6 +14,7 @@
 // Content-Length + Transfer-Encoding -> false
 // check header name (> 1 symbols 33-126)
 // no header value -> valid
+// cut http://
 
 // "ACCEPT-CHARSET"
 // "ACCEPT-LANGUAGE"
@@ -41,12 +42,6 @@ const std::string Request::_methodsNames[] = {"GET", "HEAD",
 			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
 const int Request::_numMethods = 8;
 
-// const std::string Request::_headersNames[] = { "ACCEPT-CHARSET", "ACCEPT-LANGUAGE", "ALLOW", "AUTHORIZATION",
-// 	"CONTENT-LANGUAGE", "CONTENT-LENGTH", "CONTENT-LOCATION", "CONTENT-TYPE", "DATE", "HOST", "LAST-MODIFIED",
-// 	"LOCATION", "REFERER", "RETRY-AFTER", "SERVER", "TRANSFER-ENCODING", "USER-AGENT", "WWW-AUTHENTICATE",
-// 	"ACCEPT" };
-// const int Request::_numHeaders = 19;
-
 bool	Request::parseQueryString() {
 	size_t		pos;
 	std::string	query;
@@ -54,30 +49,8 @@ bool	Request::parseQueryString() {
 
 	if ((pos = this->_path.find("?")) == std::string::npos)
 		return true;
-	query = this->_path.substr(pos + 1, this->_path.length());
-	if ((pos = query.find('/')) != std::string::npos) {
-		if (pos + 1 != query.length())
-			this->_pathInfo = query.substr(pos + 1, query.length() - pos);
-		query = query.substr(0, pos);
-	}
-	while ((pos = query.find('=')) != std::string::npos) {
-		node.first = query.substr(0, pos);
-		query.erase(0, pos + 1);
-
-		if (query.find('&') != std::string::npos || query.find(';') != std::string::npos) {
-			pos = query.find('&');
-			if (query.find(';') < pos)
-				pos = query.find(';');
-			node.second = query.substr(0, pos);
-			query.erase(0, pos + 1);
-		}
-		else {
-			node.second = query.substr(0, query.length());
-			query.erase(0, query.length());
-		}
-		// std::cout << node.first << ":" << node.second << std::endl;
-		this->_queryString.insert(node);
-	}
+	this->_queryString = this->_path.substr(pos + 1, this->_path.length());
+	std::cout << this->_queryString << std::endl;
 	return true;
 }
 
@@ -110,15 +83,12 @@ bool	Request::parseStartLine(std::string str) {
 	if (token[2] != "HTTP/1.1\r\n")
 		return false;
 	this->_version = token[2].substr(0, token[2].length() - 2);
+	// parse query string
 	if (!parseQueryString())
 		return false;
-	// parse file extension
-	if ((pos = this->_path.find('.')) != std::string::npos) {
-		this->_fileExtension = this->_path.substr(pos + 1, this->_path.length() - pos);
-		if ((pos = this->_fileExtension.find('?')) != std::string::npos)
-			this->_fileExtension = this->_fileExtension.substr(0, pos);
-	}
-	// std::cout << "|" << this->_fileExtension << "|" << std::endl;
+	// cut http://
+	if ((pos = this->_path.find("http://")) != std::string::npos)
+		this->_path = this->_path.substr(7, this->_path.length() - 7);
 	return true;
 }
 
@@ -255,12 +225,15 @@ Request		parseRequest(std::string req) {
 	return request;
 }
 
-// int main() {
-// 	Request req;
+int main() {
+	Request req;
 	// std::string tmp1 = "POST /cgi-bin/process.cgi HTTP/1.1\n\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n\nHost: www.example.com\n\nContent-Type: application/x-www-form-urlencoded\n\n";
 	// req = parseRequest(tmp1);
 	
 	// std::string tmp2 = "POST / HTTP/1.1\r\nHost: 127.0.0.1:5991\r\n\r\n";
+	// req = parseRequest(tmp2);
+
+	// std::string tmp2 = "GET http://localhost:8080/path?name=value&name=777 HTTP/1.1\r\nHost: 127.0.0.1:5991\r\n\r\n";
 	// req = parseRequest(tmp2);
 
 	// std::string tmp3 = "GET / HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*  \r\nNewHeader:123\r\n\r\n";
@@ -289,7 +262,7 @@ Request		parseRequest(std::string req) {
 	// std::string tmp3 = "\r\n";
 	// req = parseRequest(tmp3);
 
-	// std::string tmp6 = "POST /cgi-bin/process.cgi?name=value;name1=value1&name2=value2;name3=value3/path_info/ HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
+	// std::string tmp6 = "POST /cgi-bin/process.cgi?name=value;name1=value1&name2=value2;name3=value3 HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
 	// req = parseRequest(tmp6);
 
 	// std::string tmp7 = "POST /cgi-bin/process.cgi?name=value;name1=value1&name2=value2;=value3;name4= HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.example.com\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nsay=Hi&to=Mom";
@@ -328,9 +301,9 @@ Request		parseRequest(std::string req) {
 	// std::cout << "!" << req.getMethod() << "!" << std::endl;
 	// std::cout << "!" << req.getVersion() << "!" << std::endl;
 	// std::cout << "!" << req.getPath() << "!" << std::endl;
-	// std::cout << "!" << req.getPathInfo() << "!" << std::endl;
+	// std::cout << "!" << req.getQueryString() << "!" << std::endl;
 
-// 	std::cout << req.getStatusCode() << std::endl;
+	std::cout << req.getStatusCode() << std::endl;
 
-// 	return 0;
-// }
+	return 0;
+}

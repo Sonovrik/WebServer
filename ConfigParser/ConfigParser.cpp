@@ -187,7 +187,7 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 		a = 1;
 	else if (_tokens[index].front() == "root" && serv.get_root().empty())
 		a = 2;
-	else if (_tokens[index].front() == "max_body_size" && serv.get_maxBodySize() == 0)
+	else if (_tokens[index].front() == "max_body_size" && serv.get_maxBodySize().empty())
 		a= 3;
 	else if (_tokens[index].front() == "listen" && serv.get_ip().empty())
 		a = 4;
@@ -210,13 +210,13 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			val = atoi(_tokens[index].back().c_str());
 			if (val < 8000 || val > 100000)
 				return false;
-			serv.set_maxBodySize(val);
+			serv.set_maxBodySize(_tokens[index].back());
 			break;
 		case 4:
 			if ((pos = _tokens[index].back().find(':')) == std::string::npos)
 				return false;
 			serv.set_ip(_tokens[index].back().substr(0, pos));
-			serv.set_port(atoi(_tokens[index].back().substr(pos + 1, _tokens[index].back().size()).c_str()));
+			serv.set_port(_tokens[index].back().substr(pos + 1, _tokens[index].back().size()));
 			break;
 		case 5:
 			serv.set_errorPage(*(_tokens[index].begin() + 1) + " " + *(_tokens[index].begin() + 2));
@@ -232,7 +232,7 @@ bool	ConfigParser::checkURIS(std::vector<location_t>	&locations) const{
 	for (; it != locations.end() - 1; it++){
 		it2 = it + 1;
 		for (; it2 != locations.end(); it2++){
-			if ((*it2)._name == (*it)._name)
+			if (it2->_name == it->_name)
 				return false;
 		}
 	}
@@ -270,7 +270,7 @@ bool	ConfigParser::fullServers(void){
 bool	ConfigParser::checkMainDirectives(void){
 	std::vector<Server>::iterator	it = _serversList.begin();
 	for (; it != _serversList.end(); it++){
-		if ((*it).get_ip().empty() || (*it).get_root().empty())
+		if (it->get_ip().empty() || it->get_root().empty())
 			return false;
 	}
 	return true;
@@ -290,9 +290,10 @@ bool	ConfigParser::parseConfig(const std::string &fileName){
 	return true;
 }
 
-//int		main(){
-//	ConfigParser parser;
-//	parser.parseConfig("webserv.conf");
-//	std::vector<Server> _serversList(parser.getServers());
-//	return 0;
-//}
+
+// int		main(){
+// 	ConfigParser parser;
+// 	parser.parseConfig("webserv.conf");
+// 	std::vector<Server> _serversList(parser.getServers());
+// 	return 0;
+// }
