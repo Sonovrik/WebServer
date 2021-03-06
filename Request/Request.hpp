@@ -9,11 +9,12 @@ class Request{
 
 private:
 	// start line
-	std::string		_method;
-	std::string		_path;
-	std::string		_version;
+	std::string					_method;
+	std::string					_path;
+	std::string					_version;
 	std::string					_queryString;
-	std::string		_pathInfo;
+	std::string					_pathInfo;
+
 	std::map<std::string,std::string>	_headers;
 	// body
 	std::string					_body;
@@ -32,7 +33,7 @@ public:
 	// parse request
 	bool	parseStartLine(std::string);
 	bool	parseBody(std::string);
-	bool	parseHeaders(std::string);
+	bool	parseHeaders(std::string &);
 	bool	setHeader(std::string);
 	bool	checkHeaderName(std::string);
 	bool	checkHeaderValue(std::string);
@@ -61,6 +62,6 @@ public:
 	std::string const	&getPathInfo(void) const;
 };
 
-Request		parseRequest(std::string req);
+void		parseRequest(std::string req, Request &request);
 
 #endif

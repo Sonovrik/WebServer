@@ -3,6 +3,10 @@
 
 #include "../Request/Request.hpp"
 
+#define	OK		0
+#define CLOSED	1
+#define ERROR	2
+
 class Client {
 
 private:

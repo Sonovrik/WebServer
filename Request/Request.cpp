@@ -1,5 +1,15 @@
 #include "Request.hpp"
 
+// no \r\n after one header
+// printf "GET / HTTP/1.1\r\nHost:123" | nc 127.0.0.1 8081
+
+
+// body by parts
+
+const std::string Request::_methodsNames[] = {"GET", "HEAD",
+			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
+const int Request::_numMethods = 8;
+
 Request::Request():
 	_method(""),
 	_path(""),
@@ -97,11 +107,6 @@ std::string const	&Request::getPathInfo(void) const {
 	return this->_pathInfo;
 }
 
-
-const std::string Request::_methodsNames[] = {"GET", "HEAD",
-			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
-const int Request::_numMethods = 8;
-
 bool	Request::parseQueryString() {
 	size_t		pos;
 	std::string	query;
@@ -127,9 +132,11 @@ bool	Request::parseStartLine(std::string str) {
 		token[i] = str.substr(0, pos);
 		str.erase(0, pos + 1);
 	}
+
 	token[2] = str.substr(0, str.length());
 	if (token[2].empty())
 		return false;
+
 	// find methods
 	for (int i = 0; i < _numMethods; i++) {
 		if (_methodsNames[i] == token[0])
@@ -138,10 +145,10 @@ bool	Request::parseStartLine(std::string str) {
 	if (this->_method.empty())
 		return false;
 	this->_path = token[1];
-
 	// please add envs in this string
-	if (token[2] != "HTTP/1.1\r\n")
+	if (token[2] != "HTTP/1.1\r\n") {
 		return false;
+	}
 	this->_version = token[2].substr(0, token[2].length() - 2);
 	// parse query string
 	if (!parseQueryString())
@@ -210,16 +217,16 @@ bool		Request::setHeader(std::string line) {
 		return false;
 	line.erase(0, pos + 1);
 	trimString(line);
-
 	node.second = line;
 	if (!checkHeaderValue(node.second))
 		return false;
 	if (!checkRepeatHeader(node))
 		return false;
+
 	// content-length >= 0
 	if (node.first == "CONTENT-LENGTH" && atoi(node.second.c_str()) < 0)
 		return false;
-	// exchange header if it repeats
+	// exchange header if it repe
 	if (this->_headers.find(node.first) != this->_headers.end())
 		this->_headers.find(node.first)->second = node.second;
 	else
@@ -228,7 +235,7 @@ bool		Request::setHeader(std::string line) {
 	return true;
 }
 
-bool		Request::parseHeaders(std::string req) {
+bool		Request::parseHeaders(std::string &req) {
 	std::string	tmp;
 	size_t		pos = 0;
 	std::string	delimenter = "\r\n";
@@ -241,90 +248,70 @@ bool		Request::parseHeaders(std::string req) {
 	}
 
 	// if end and no host
-	// if ((pos = req.find("\r\n")) != std::string::npos)
-	// 	if (this->_headers.find("HOST") == this->_headers.end())
-	// 		return false;
-
-	// if (this->_headers.find("HOST") == this->_headers.end())
-	// 	return false;
-	// if ((pos = req.find("\r\n")) == std::string::npos)
-	// 	return false;
+	if ((pos = req.find("\r\n")) != std::string::npos) {
+		if (this->_headers.find("HOST") == this->_headers.end())
+			return false;
+	}
+	if ((pos = req.find("\r\n")) == 0)
+		req.erase(0, 2);
 	return true;
 }
 
 bool		Request::parseBody(std::string req) {
-	size_t pos = req.find("\r\n\r\n");
-
-	if (pos + 4 != req.length())
-		_body = req.substr(pos + 4, req.length());
+	// std::cout << "{" << req << "}" << std::endl;
+	
+	// wait for body
+	if (req.empty())
+		return true;
+	
+	size_t pos = req.find("\r\n");
+	// parse body
+	if (pos != std::string::npos)
+		_body = req.substr(0, req.length() - 2);
 	// else
 		// std::cout << "waiting body" << std::endl;
+		// return false
+	std::cout << "|" << this->_body << "|" << std::endl;
 	return true;
 }
 
-// Request		parseRequest(std::string req) {
-// 	size_t		pos = 0;
-// 	Request		request;
-
-// 	if ((pos = req.find("\r\n")) == std::string::npos) {
-// 		request.setStatusCode(400);
-// 		return request;
-// 	}
-// 	std::string	tmp(req.substr(0, pos + 2));
-// 	if (request.parseStartLine(tmp) == false) {
-// 		request.setStatusCode(400);
-// 		return request;
-// 	}
-
-// 	req.erase(0, pos + 2);
-
-// 	if (request.parseHeaders(req) == false) {
-// 		request.setStatusCode(400);
-// 		return request;
-// 	}
-// 	if (request.getMethod() == "POST") {
-// 		if (request.parseBody(req) == false) {
-// 			request.setStatusCode(400);
-// 			return request;
-// 		}
-// 	}
-// 	return request;
-// }
-
-Request		parseRequest(std::string req) {
+void		parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
-	Request		request;
 
-	if ((pos = req.find("\r\n")) == std::string::npos) {
-		request.setStatusCode(400);
-		return request;
+	if (request.getMethod() == "") {
+		if ((pos = req.find("\r\n")) == std::string::npos) {
+			request.setStatusCode(400);
+			std::cout << "fail" << std::endl;
+			return ;
+		}
+		std::string	tmp(req.substr(0, pos + 2));
+		if (request.parseStartLine(tmp) == false) {
+			request.setStatusCode(400);
+			std::cout << "start line problem" << std::endl;
+			return ;
+		}
+		req.erase(0, pos + 2);
 	}
-	std::string	tmp(req.substr(0, pos + 2));
-	if (request.parseStartLine(tmp) == false) {
-		request.setStatusCode(400);
-		return request;
-	}
-
-	req.erase(0, pos + 2);
-
 	if (request.parseHeaders(req) == false) {
 		request.setStatusCode(400);
-		return request;
+		std::cout << "header problem" << std::endl;
+		return ;
 	}
 	if (request.getMethod() == "POST") {
 		if (request.parseBody(req) == false) {
 			request.setStatusCode(400);
-			return request;
+			return ;
 		}
 	}
-	return request;
+	std::cout << "success" << std::endl;
+	return ;
 }
 
 // int main() {
 // 	Request req;
 	
-// 	std::string tmp2 = "GET / HTTP/1.1\r\nHost: 127.0.0.1:5991\r\n\r\n";
-// 	req = parseRequest(tmp2);
+// 	std::string tmp2 = "GET / HTTP/1.1\r\n";
+// 	parseRequest(tmp2, req);
 
 // 	std::cout << req.getBody() << std::endl;
 // 	std::cout << req.getStatusCode() << std::endl;
