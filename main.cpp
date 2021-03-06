@@ -88,15 +88,18 @@ int main(){
 					else {
 						Client &tmp = it->get_Client(i + 1);
 						tmp.setFlag(parseRequest(buf, tmp.getRequest()));
-						// if (tmp.getFlag() == ERROR){
+						if (tmp.getFlag() == ERROR){
 						// 	Response resp(400); //fill all atributes
 						// 	tmp.setFlag(SEND);
 						// 	// create error response;
-						// }
-						// else if (tmp.getFlag() == WAIT){
+							std::cout << "To close:" << std::boolalpha << tmp.getRequest().getToClose() << std::endl;
+							std::cout << "error" << std::endl;
+						}
+						else if (tmp.getFlag() == WAIT){
 						// 	continue;
-						// }
-						// if (tmp.getFlag() == SEND){
+							std::cout << "wait" << std::endl;
+						}
+						if (tmp.getFlag() == SEND){
 						// 	server.exec_reqv();
 						// 	tmp.getwhere() == CGI
 						// 		bulina;
@@ -105,17 +108,8 @@ int main(){
 						// 	server.getStatus_code();
 						// 	Response();
 						// 	Response resp(200);
-						// }
-						// std::
-						// it->
-						// // parserRequest
-						// client.addToRequest();
-						// 
-						// Request req = parseRequest(buf);
-						// std::cout << "!" << req.getStatusCode() << "!" << std::endl;
-						// std::cout << "S" << req.getMethod() << "S" << std::endl;
-						// Clinet add information
-						// \r\n\r\n
+							std::cout << "send" << std::endl;
+						}
 						std::cout << buf << std::endl;
 					}
 				}

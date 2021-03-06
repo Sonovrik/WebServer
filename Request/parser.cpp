@@ -31,9 +31,9 @@
 // "REFERER" содержит URL исходной страницы, с которой был осуществлен переход на текущую страницу Referer: <url>
 // "RETRY-AFTER"
 // "SERVER" the software used by the origin server that handled the request — that is, the server that generated the response. Server: <product>. Server: Apache/2.4.1 (Unix). <product> The name of the software or product that handled the request. Usually in a format similar to User-Agent
-// "TRANSFER-ENCODING"
+// "TRANSFER-ENCODING" - <длина блока в HEX><CRLF><содержание блока><CRLF> last: 0<CRLF><CRLF>
 // "USER-AGENT" the browser sending the request
-// "WWW-AUTHENTICATE"
+// "WWW-AUTHENTICATE" - response header defines the authentication method that should be used to gain access to a resource; WWW-Authenticate: Basic realm="Access to the staging site", charset="UTF-8"
 // "ACCEPT"
 
 #include "Request.hpp"

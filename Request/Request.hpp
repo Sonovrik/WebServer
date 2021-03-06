@@ -27,6 +27,10 @@ private:
 	// constants
 	static std::string const	_methodsNames[];
 	static int const			_numMethods;
+	bool						_toClose;
+	int							_return;
+	int							_chunk;
+	bool						_waitBody;
 
 public:
 	Request();
@@ -53,6 +57,8 @@ public:
 	void	setHeaders(std::map<std::string,std::string>);
 	void	setStatusCode(int);
 	void	setPathInfo(std::string);
+	void	setReturn(int);
+	void	setToClose(int toClose);
 
 	// getters
 	std::string const	&getMethod(void) const;
@@ -64,6 +70,8 @@ public:
 	std::map<std::string,std::string> const &getHeaders(void) const;
 	std::string const 	&getQueryString(void) const;
 	std::string const	&getPathInfo(void) const;
+	int					getReturn(void) const;
+	bool				getToClose(void) const;
 };
 
 int			parseRequest(std::string req, Request &request);

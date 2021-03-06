@@ -10,7 +10,7 @@
 class Client {
 
 private:
-	int		where;
+	int		_where;
 	int		_sd;
 	int		_flag;
 	Request _request;

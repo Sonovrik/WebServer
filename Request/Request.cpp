@@ -3,8 +3,18 @@
 // no \r\n after one header
 // printf "GET / HTTP/1.1\r\nHost:123" | nc 127.0.0.1 8081
 
-
 // body by parts
+
+// toClose connection
+// ???? If a Transfer-Encoding header field
+//        is present in a request and the chunked transfer coding is not
+//        the final encoding, the message body length cannot be determined
+//        reliably; the server MUST respond with the 400 (Bad Request)
+//        status code and then close the connection.
+
+// chunked
+// len < string -> cut
+// len > string -> wait and add
 
 const std::string Request::_methodsNames[] = {"GET", "HEAD",
 			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
@@ -16,7 +26,11 @@ Request::Request():
 	_version(""),
 	_body(""),
 	_pathInfo("cgi_tester"),
-	_statusCode(200){}
+	_statusCode(200),
+	_return(WAIT),
+	_toClose(false),
+	_chunk(-1),
+	_waitBody(false) {}
 
 Request::~Request(){}
 
@@ -28,11 +42,15 @@ Request &Request::operator=(Request const &other) {
 	if (this != &other){
 		this->_method = other._method;
 		this->_path = other._path;
+		this->_pathInfo = other._pathInfo;
 		this->_version = other._version;
 		this->_headers = other._headers;
 		this->_body = other._body;
 		this->_statusCode = other._statusCode;
 		this->_queryString = other._queryString;
+		this->_toClose = other._toClose;
+		this->_return = other._return;
+		this->_chunk = other._chunk;
 	}
 	return *this;
 }
@@ -65,6 +83,13 @@ void	Request::setStatusCode(int statusCode) {
 
 void	Request::setPathInfo(std::string pathInfo) {
 	this->_pathInfo = pathInfo;
+}
+void	Request::setReturn(int ret) {
+	this->_return = ret;
+}
+
+void	Request::setToClose(int toClose) {
+	this->_toClose = toClose;
 }
 
 // getters
@@ -106,6 +131,15 @@ std::string const &Request::getQueryString(void) const {
 std::string const	&Request::getPathInfo(void) const {
 	return this->_pathInfo;
 }
+
+int					Request::getReturn(void) const {
+	return this->_return;
+}
+
+bool				Request::getToClose(void) const {
+	return this->_toClose;
+}
+
 
 bool	Request::parseQueryString() {
 	size_t		pos;
@@ -195,10 +229,23 @@ bool		Request::checkRepeatHeader(std::pair<std::string, std::string> node) {
 			return false;
 		if (this->_headers.find(node.first)->second == node.second)
 			return false;
-		if (this->_headers.find(node.first)->first == "TRANSFER-ENCODING"
-			&& node.first == "CONTENT-LENGTH")
-			return false;
 	}
+	if ((this->_headers.find("TRANSFER-ENCODING") != this->_headers.end()
+		&& node.first == "CONTENT-LENGTH") || (this->_headers.find("CONTENT-LENGTH") != this->_headers.end()
+		&& node.first == "TRANSFER-ENCODING"))
+		return false;
+	if (node.first == "CONTENT-LENGTH") {
+		// content-length >= 0
+		if (atoi(node.second.c_str()) < 0) {
+			this->_toClose = true;
+			return false;
+		}
+		if (this->_headers.find(node.first)->first == "CONTENT-LENGTH" && this->_headers.find(node.first)->second != node.second) {
+			this->_toClose = true;
+			return false;
+		}
+	}
+			
 	return true;
 }
 
@@ -223,10 +270,7 @@ bool		Request::setHeader(std::string line) {
 	if (!checkRepeatHeader(node))
 		return false;
 
-	// content-length >= 0
-	if (node.first == "CONTENT-LENGTH" && atoi(node.second.c_str()) < 0)
-		return false;
-	// exchange header if it repe
+	// exchange header if it repeats
 	if (this->_headers.find(node.first) != this->_headers.end())
 		this->_headers.find(node.first)->second = node.second;
 	else
@@ -240,6 +284,8 @@ bool		Request::parseHeaders(std::string &req) {
 	size_t		pos = 0;
 	std::string	delimenter = "\r\n";
 
+	if (this->_waitBody)
+		return true;
 	while ((pos = req.find(delimenter)) != std::string::npos && pos != req.length() && pos != 0) {
 		tmp = req.substr(0, pos);
 		if (!(setHeader(tmp)))
@@ -252,29 +298,43 @@ bool		Request::parseHeaders(std::string &req) {
 		if (this->_headers.find("HOST") == this->_headers.end())
 			return false;
 	}
-	if ((pos = req.find("\r\n")) == 0)
+	if ((pos = req.find("\r\n")) == 0) {
 		req.erase(0, 2);
+		if (this->_method != "POST")
+			this->_return = SEND;
+		else
+			this->_waitBody = true;
+	}
 	return true;
 }
 
 bool		Request::parseBody(std::string req) {
-	// std::cout << "{" << req << "}" << std::endl;
-	
 	// wait for body
 	if (req.empty())
 		return true;
-	
-	size_t pos = req.find("\r\n");
+	size_t pos;
+	// chunked
+	if (this->_headers.find("TRANSFER-ENCODING")->second == "chunked") {
+		while ((pos = req.find("\r\n")) != std::string::npos && this->_chunk != 0) {
+			// chunk value
+			if (this->_chunk == -1) {
+				this->_chunk = atoi(req.substr(0, pos).c_str());
+				std::cout << this->_chunk << std::endl;
+				req.erase(0, pos + 2);
+			}
+			// if ((pos = req.find("\r\n")) )
+			// parse body
+		}
+		return true;
+	}
+
 	// parse body
-	if (pos != std::string::npos)
+	if ((pos = req.find("\r\n")) != std::string::npos) {
 		_body = req.substr(0, req.length() - 2);
-	// else
-		// std::cout << "waiting body" << std::endl;
-		// return false
-	std::cout << "|" << this->_body << "|" << std::endl;
+		this->_return = SEND;
+	}
 	return true;
 }
-
 
 // need add SEND WAIT
 int			parseRequest(std::string req, Request &request) {
@@ -283,14 +343,17 @@ int			parseRequest(std::string req, Request &request) {
 	if (request.getMethod() == "") {
 		if ((pos = req.find("\r\n")) == std::string::npos) {
 			request.setStatusCode(400);
+			request.setReturn(ERROR);
 			std::cout << "fail" << std::endl;
-			return ERROR;
+			return request.getReturn();
+
 		}
 		std::string	tmp(req.substr(0, pos + 2));
 		if (request.parseStartLine(tmp) == false) {
 			request.setStatusCode(400);
+			request.setReturn(ERROR);
 			std::cout << "start line problem" << std::endl;
-			return ERROR;
+			return request.getReturn();
 		}
 		req.erase(0, pos + 2);
 	}
@@ -302,11 +365,12 @@ int			parseRequest(std::string req, Request &request) {
 	if (request.getMethod() == "POST") {
 		if (request.parseBody(req) == false) {
 			request.setStatusCode(400);
-			return ERROR;
+			request.setReturn(ERROR);
+			return request.getReturn();
 		}
 	}
-	std::cout << "success" << std::endl;
-	return WAIT;
+	// std::cout << "success" << std::endl;
+	return request.getReturn();
 }
 
 // int main() {
