@@ -197,6 +197,33 @@ CGI/mainCGI.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.s
 .PHONY : CGI/mainCGI.cpp.s
 
+Client/Client.o: Client/Client.cpp.o
+
+.PHONY : Client/Client.o
+
+# target to build an object file
+Client/Client.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Client/Client.cpp.o
+.PHONY : Client/Client.cpp.o
+
+Client/Client.i: Client/Client.cpp.i
+
+.PHONY : Client/Client.i
+
+# target to preprocess a source file
+Client/Client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Client/Client.cpp.i
+.PHONY : Client/Client.cpp.i
+
+Client/Client.s: Client/Client.cpp.s
+
+.PHONY : Client/Client.s
+
+# target to generate assembly for a file
+Client/Client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Client/Client.cpp.s
+.PHONY : Client/Client.cpp.s
+
 ConfigParser/ConfigParser.o: ConfigParser/ConfigParser.cpp.o
 
 .PHONY : ConfigParser/ConfigParser.o
@@ -224,59 +251,32 @@ ConfigParser/ConfigParser.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.s
 .PHONY : ConfigParser/ConfigParser.cpp.s
 
-parser/Request.o: parser/Request.cpp.o
+Request/Request.o: Request/Request.cpp.o
 
-.PHONY : parser/Request.o
-
-# target to build an object file
-parser/Request.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/parser/Request.cpp.o
-.PHONY : parser/Request.cpp.o
-
-parser/Request.i: parser/Request.cpp.i
-
-.PHONY : parser/Request.i
-
-# target to preprocess a source file
-parser/Request.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/parser/Request.cpp.i
-.PHONY : parser/Request.cpp.i
-
-parser/Request.s: parser/Request.cpp.s
-
-.PHONY : parser/Request.s
-
-# target to generate assembly for a file
-parser/Request.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/parser/Request.cpp.s
-.PHONY : parser/Request.cpp.s
-
-parser/parser.o: parser/parser.cpp.o
-
-.PHONY : parser/parser.o
+.PHONY : Request/Request.o
 
 # target to build an object file
-parser/parser.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/parser/parser.cpp.o
-.PHONY : parser/parser.cpp.o
+Request/Request.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Request/Request.cpp.o
+.PHONY : Request/Request.cpp.o
 
-parser/parser.i: parser/parser.cpp.i
+Request/Request.i: Request/Request.cpp.i
 
-.PHONY : parser/parser.i
+.PHONY : Request/Request.i
 
 # target to preprocess a source file
-parser/parser.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/parser/parser.cpp.i
-.PHONY : parser/parser.cpp.i
+Request/Request.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Request/Request.cpp.i
+.PHONY : Request/Request.cpp.i
 
-parser/parser.s: parser/parser.cpp.s
+Request/Request.s: Request/Request.cpp.s
 
-.PHONY : parser/parser.s
+.PHONY : Request/Request.s
 
 # target to generate assembly for a file
-parser/parser.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/parser/parser.cpp.s
-.PHONY : parser/parser.cpp.s
+Request/Request.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Request/Request.cpp.s
+.PHONY : Request/Request.cpp.s
 
 server.o: server.cpp.o
 
@@ -305,6 +305,33 @@ server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/server.cpp.s
 .PHONY : server.cpp.s
 
+utils.o: utils.cpp.o
+
+.PHONY : utils.o
+
+# target to build an object file
+utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/utils.cpp.o
+.PHONY : utils.cpp.o
+
+utils.i: utils.cpp.i
+
+.PHONY : utils.i
+
+# target to preprocess a source file
+utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/utils.cpp.i
+.PHONY : utils.cpp.i
+
+utils.s: utils.cpp.s
+
+.PHONY : utils.s
+
+# target to generate assembly for a file
+utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/utils.cpp.s
+.PHONY : utils.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -320,18 +347,21 @@ help:
 	@echo "... CGI/mainCGI.o"
 	@echo "... CGI/mainCGI.i"
 	@echo "... CGI/mainCGI.s"
+	@echo "... Client/Client.o"
+	@echo "... Client/Client.i"
+	@echo "... Client/Client.s"
 	@echo "... ConfigParser/ConfigParser.o"
 	@echo "... ConfigParser/ConfigParser.i"
 	@echo "... ConfigParser/ConfigParser.s"
-	@echo "... parser/Request.o"
-	@echo "... parser/Request.i"
-	@echo "... parser/Request.s"
-	@echo "... parser/parser.o"
-	@echo "... parser/parser.i"
-	@echo "... parser/parser.s"
+	@echo "... Request/Request.o"
+	@echo "... Request/Request.i"
+	@echo "... Request/Request.s"
 	@echo "... server.o"
 	@echo "... server.i"
 	@echo "... server.s"
+	@echo "... utils.o"
+	@echo "... utils.i"
+	@echo "... utils.s"
 .PHONY : help
 
 

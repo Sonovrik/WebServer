@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
-CGI.hpp
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
-
 /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
 map
 -
@@ -23,8 +19,8 @@ fcntl.h
 -
 string
 -
-../parser/Request.hpp
-/Users/kmoaning/Desktop/ToGit/parser/Request.hpp
+../Request/Request.hpp
+/Users/kmoaning/Desktop/ToGit/Request/Request.hpp
 ../Server.hpp
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 ../ConfigParser/ConfigParser.hpp
@@ -33,6 +29,18 @@ string
 /Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp
 CGI.hpp
 /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
+../utils.hpp
+/Users/kmoaning/Desktop/ToGit/utils.hpp
+
+/Users/kmoaning/Desktop/ToGit/Client/Client.hpp
+../Request/Request.hpp
+/Users/kmoaning/Desktop/ToGit/Request/Request.hpp
+iostream
+-
+map
+-
+vector
+-
 
 /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
 iostream
@@ -50,6 +58,16 @@ array
 ../Server.hpp
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 
+/Users/kmoaning/Desktop/ToGit/Request/Request.hpp
+iostream
+-
+string
+-
+map
+-
+vector
+-
+
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 map
 -
@@ -63,11 +81,23 @@ arpa/inet.h
 -
 vector
 -
+algorithm
+-
+array
+-
+utils.hpp
+/Users/kmoaning/Desktop/ToGit/utils.hpp
+sys/time.h
+-
+./Client/Client.hpp
+/Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 
-/Users/kmoaning/Desktop/ToGit/parser/Request.hpp
+/Users/kmoaning/Desktop/ToGit/utils.hpp
 iostream
 -
-string
+arpa/inet.h
+-
+sys/socket.h
 -
 map
 -

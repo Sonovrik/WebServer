@@ -129,31 +129,44 @@ CMakeFiles/WebServer.dir/server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/WebServer.dir/server.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kmoaning/Desktop/ToGit/server.cpp -o CMakeFiles/WebServer.dir/server.cpp.s
 
-CMakeFiles/WebServer.dir/parser/parser.cpp.o: CMakeFiles/WebServer.dir/flags.make
-CMakeFiles/WebServer.dir/parser/parser.cpp.o: ../parser/parser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/WebServer.dir/parser/parser.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/WebServer.dir/parser/parser.cpp.o -c /Users/kmoaning/Desktop/ToGit/parser/parser.cpp
+CMakeFiles/WebServer.dir/Request/Request.cpp.o: CMakeFiles/WebServer.dir/flags.make
+CMakeFiles/WebServer.dir/Request/Request.cpp.o: ../Request/Request.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/WebServer.dir/Request/Request.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/WebServer.dir/Request/Request.cpp.o -c /Users/kmoaning/Desktop/ToGit/Request/Request.cpp
 
-CMakeFiles/WebServer.dir/parser/parser.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/WebServer.dir/parser/parser.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/kmoaning/Desktop/ToGit/parser/parser.cpp > CMakeFiles/WebServer.dir/parser/parser.cpp.i
+CMakeFiles/WebServer.dir/Request/Request.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/WebServer.dir/Request/Request.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/kmoaning/Desktop/ToGit/Request/Request.cpp > CMakeFiles/WebServer.dir/Request/Request.cpp.i
 
-CMakeFiles/WebServer.dir/parser/parser.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/WebServer.dir/parser/parser.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kmoaning/Desktop/ToGit/parser/parser.cpp -o CMakeFiles/WebServer.dir/parser/parser.cpp.s
+CMakeFiles/WebServer.dir/Request/Request.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/WebServer.dir/Request/Request.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kmoaning/Desktop/ToGit/Request/Request.cpp -o CMakeFiles/WebServer.dir/Request/Request.cpp.s
 
-CMakeFiles/WebServer.dir/parser/Request.cpp.o: CMakeFiles/WebServer.dir/flags.make
-CMakeFiles/WebServer.dir/parser/Request.cpp.o: ../parser/Request.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/WebServer.dir/parser/Request.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/WebServer.dir/parser/Request.cpp.o -c /Users/kmoaning/Desktop/ToGit/parser/Request.cpp
+CMakeFiles/WebServer.dir/Client/Client.cpp.o: CMakeFiles/WebServer.dir/flags.make
+CMakeFiles/WebServer.dir/Client/Client.cpp.o: ../Client/Client.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/WebServer.dir/Client/Client.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/WebServer.dir/Client/Client.cpp.o -c /Users/kmoaning/Desktop/ToGit/Client/Client.cpp
 
-CMakeFiles/WebServer.dir/parser/Request.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/WebServer.dir/parser/Request.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/kmoaning/Desktop/ToGit/parser/Request.cpp > CMakeFiles/WebServer.dir/parser/Request.cpp.i
+CMakeFiles/WebServer.dir/Client/Client.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/WebServer.dir/Client/Client.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/kmoaning/Desktop/ToGit/Client/Client.cpp > CMakeFiles/WebServer.dir/Client/Client.cpp.i
 
-CMakeFiles/WebServer.dir/parser/Request.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/WebServer.dir/parser/Request.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kmoaning/Desktop/ToGit/parser/Request.cpp -o CMakeFiles/WebServer.dir/parser/Request.cpp.s
+CMakeFiles/WebServer.dir/Client/Client.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/WebServer.dir/Client/Client.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kmoaning/Desktop/ToGit/Client/Client.cpp -o CMakeFiles/WebServer.dir/Client/Client.cpp.s
+
+CMakeFiles/WebServer.dir/utils.cpp.o: CMakeFiles/WebServer.dir/flags.make
+CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/WebServer.dir/utils.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/WebServer.dir/utils.cpp.o -c /Users/kmoaning/Desktop/ToGit/utils.cpp
+
+CMakeFiles/WebServer.dir/utils.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/WebServer.dir/utils.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/kmoaning/Desktop/ToGit/utils.cpp > CMakeFiles/WebServer.dir/utils.cpp.i
+
+CMakeFiles/WebServer.dir/utils.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/WebServer.dir/utils.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kmoaning/Desktop/ToGit/utils.cpp -o CMakeFiles/WebServer.dir/utils.cpp.s
 
 # Object files for target WebServer
 WebServer_OBJECTS = \
@@ -161,8 +174,9 @@ WebServer_OBJECTS = \
 "CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o" \
 "CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o" \
 "CMakeFiles/WebServer.dir/server.cpp.o" \
-"CMakeFiles/WebServer.dir/parser/parser.cpp.o" \
-"CMakeFiles/WebServer.dir/parser/Request.cpp.o"
+"CMakeFiles/WebServer.dir/Request/Request.cpp.o" \
+"CMakeFiles/WebServer.dir/Client/Client.cpp.o" \
+"CMakeFiles/WebServer.dir/utils.cpp.o"
 
 # External object files for target WebServer
 WebServer_EXTERNAL_OBJECTS =
@@ -171,11 +185,12 @@ WebServer: CMakeFiles/WebServer.dir/CGI/CGI.cpp.o
 WebServer: CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o
 WebServer: CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o
 WebServer: CMakeFiles/WebServer.dir/server.cpp.o
-WebServer: CMakeFiles/WebServer.dir/parser/parser.cpp.o
-WebServer: CMakeFiles/WebServer.dir/parser/Request.cpp.o
+WebServer: CMakeFiles/WebServer.dir/Request/Request.cpp.o
+WebServer: CMakeFiles/WebServer.dir/Client/Client.cpp.o
+WebServer: CMakeFiles/WebServer.dir/utils.cpp.o
 WebServer: CMakeFiles/WebServer.dir/build.make
 WebServer: CMakeFiles/WebServer.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable WebServer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable WebServer"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/WebServer.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -4,25 +4,39 @@
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o
  /Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
  /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
+ /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
  /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
+ /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
  /Users/kmoaning/Desktop/ToGit/Server.hpp
- /Users/kmoaning/Desktop/ToGit/parser/Request.hpp
+ /Users/kmoaning/Desktop/ToGit/utils.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o
  /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
  /Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp
+ /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
  /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
+ /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
  /Users/kmoaning/Desktop/ToGit/Server.hpp
- /Users/kmoaning/Desktop/ToGit/parser/Request.hpp
+ /Users/kmoaning/Desktop/ToGit/utils.hpp
+CMakeFiles/WebServer.dir/Client/Client.cpp.o
+ /Users/kmoaning/Desktop/ToGit/Client/Client.cpp
+ /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
+ /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
 CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o
+ /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
  /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.cpp
  /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
+ /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
  /Users/kmoaning/Desktop/ToGit/Server.hpp
-CMakeFiles/WebServer.dir/parser/Request.cpp.o
- /Users/kmoaning/Desktop/ToGit/parser/Request.cpp
- /Users/kmoaning/Desktop/ToGit/parser/Request.hpp
-CMakeFiles/WebServer.dir/parser/parser.cpp.o
- /Users/kmoaning/Desktop/ToGit/parser/Request.hpp
- /Users/kmoaning/Desktop/ToGit/parser/parser.cpp
+ /Users/kmoaning/Desktop/ToGit/utils.hpp
+CMakeFiles/WebServer.dir/Request/Request.cpp.o
+ /Users/kmoaning/Desktop/ToGit/Request/Request.cpp
+ /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
 CMakeFiles/WebServer.dir/server.cpp.o
+ /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
+ /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
  /Users/kmoaning/Desktop/ToGit/Server.hpp
  /Users/kmoaning/Desktop/ToGit/server.cpp
+ /Users/kmoaning/Desktop/ToGit/utils.hpp
+CMakeFiles/WebServer.dir/utils.cpp.o
+ /Users/kmoaning/Desktop/ToGit/utils.cpp
+ /Users/kmoaning/Desktop/ToGit/utils.hpp

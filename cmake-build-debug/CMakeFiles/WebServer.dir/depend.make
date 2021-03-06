@@ -3,26 +3,40 @@
 
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../CGI/CGI.cpp
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../CGI/CGI.hpp
+CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../Request/Request.hpp
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../Server.hpp
-CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../parser/Request.hpp
+CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../utils.hpp
 
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/CGI.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/mainCGI.cpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Request/Request.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Server.hpp
-CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../parser/Request.hpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../utils.hpp
 
+CMakeFiles/WebServer.dir/Client/Client.cpp.o: ../Client/Client.cpp
+CMakeFiles/WebServer.dir/Client/Client.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/Client/Client.cpp.o: ../Request/Request.hpp
+
+CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../ConfigParser/ConfigParser.cpp
 CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../Request/Request.hpp
 CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../utils.hpp
 
-CMakeFiles/WebServer.dir/parser/Request.cpp.o: ../parser/Request.cpp
-CMakeFiles/WebServer.dir/parser/Request.cpp.o: ../parser/Request.hpp
+CMakeFiles/WebServer.dir/Request/Request.cpp.o: ../Request/Request.cpp
+CMakeFiles/WebServer.dir/Request/Request.cpp.o: ../Request/Request.hpp
 
-CMakeFiles/WebServer.dir/parser/parser.cpp.o: ../parser/Request.hpp
-CMakeFiles/WebServer.dir/parser/parser.cpp.o: ../parser/parser.cpp
-
+CMakeFiles/WebServer.dir/server.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/server.cpp.o: ../Request/Request.hpp
 CMakeFiles/WebServer.dir/server.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/server.cpp.o: ../server.cpp
+CMakeFiles/WebServer.dir/server.cpp.o: ../utils.hpp
+
+CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.cpp
+CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.hpp
 

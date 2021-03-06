@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string>
-#include "../parser/Request.hpp"
+#include "../Request/Request.hpp"
 #include "../Server.hpp"
 #include "../ConfigParser/ConfigParser.hpp"
 

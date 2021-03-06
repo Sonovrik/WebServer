@@ -66,10 +66,6 @@ public:
 	std::string const	&getPathInfo(void) const;
 };
 
-<<<<<<< HEAD:parser/Request.hpp
-Request		parseRequest(std::string req);
-=======
 int			parseRequest(std::string req, Request &request);
->>>>>>> f8e1e8c205ee47c95859c31194755c2984753557:Request/Request.hpp
 
 #endif

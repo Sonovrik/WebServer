@@ -89,28 +89,37 @@
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp">
 			<Option target="WebServer"/>
 		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Client/Client.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Client/Client.hpp">
+			<Option target="WebServer"/>
+		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.cpp">
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp">
 			<Option target="WebServer"/>
 		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Request/Request.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Request/Request.hpp">
+			<Option target="WebServer"/>
+		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/Server.hpp">
-			<Option target="WebServer"/>
-		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/ToGit/parser/Request.cpp">
-			<Option target="WebServer"/>
-		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/ToGit/parser/Request.hpp">
-			<Option target="WebServer"/>
-		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/ToGit/parser/parser.cpp">
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/server.cpp">
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/server.hpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/utils.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/utils.hpp">
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/CMakeLists.txt">
