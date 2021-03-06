@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <array>
 #include "utils.hpp"
-
+#include <sys/time.h>
 #include "./Client/Client.hpp"
 
 class Server{
@@ -90,6 +90,8 @@ public:
 	int			get_master_socket(void) const;
 	socklen_t	get_addrlen(void) const;
 	sockaddr_in const	&get_sockaddress(void) const;
+
+	std::string	getEnvValue(std::string	key) const;
 
 	size_t		delete_client(size_t index);
 };

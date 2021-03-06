@@ -49,8 +49,8 @@ void		Server::fullBasicDirectives(void){
 		_root = ".";
 	if (_maxBodySize.empty())
 		_maxBodySize = "10000";
-	if (_errorPage.empty())
-		_errorPage = "404 404.html";
+	// if (_errorPage.empty())
+	// 	_errorPage = "404.html";
 
 	std::vector<location_t>::iterator it = _locations.begin();
 	for (; it < _locations.end(); it++){
@@ -223,6 +223,9 @@ sockaddr_in const	&Server::get_sockaddress(void) const{
 	return _addr;
 }
 
+std::vector<location_t>	Server::get_locations(void) const{
+	return _locations;
+}
 
 
 size_t		Server::delete_client(size_t index){
@@ -254,4 +257,12 @@ Client		&Server::get_Client(int index){
 		throw std::exception();
 	else
 		return this->_clients[index - 1];
+}
+
+std::string	Server::getEnvValue(std::string	key) const{
+	std::map<std::string, std::string>::const_iterator it = this->_env.find(key);
+	if (it == this->_env.end())
+		throw std::exception();
+	else
+		return it->second;
 }
