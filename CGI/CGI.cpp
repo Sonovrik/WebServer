@@ -97,7 +97,7 @@ void CGI::init(Request &req, Server &ser) {
 
 
 	this->envMap["REQUEST_URI"] = req.getPath();             //"localhost/1.cgi";
-	this->envMap["QUERY_STRING"] = "";                       //req.getQueryString() - это мапа?;     // "a=b"; //
+	this->envMap["QUERY_STRING"] = "";                       //req.getQueryString();
 	this->envMap["SCRIPT_NAME"] = "CGI.cpp";                 //?? req.getPath() ??
 	this->envMap["PATH_INFO"] = "CGI/cgi_tester"; //req.getPathInfo(); //по дефолту "cgi_tester" or path/to/interpretier
 
@@ -110,31 +110,25 @@ void CGI::init(Request &req, Server &ser) {
 //		this->envMap["REMOTE_USER"] = "user";                    //  "aladdin"
 //	}
 
-	this->envMap["SERVER_SOFTWARE"] = "TOXIGEN";             // ?? версия нашего сервера
-	this->envMap["SERVER_PROTOCOL"] = "HTTP/1.1";            //
-	this->envMap["GATEWAY_INTERFACE"] = "CGI/1.1";
+	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
+	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
+	this->envMap["GATEWAY_INTERFACE"] = ser.getEnvValue("GATEWAY_INTERFACE");
 	this->envMap["REQUEST_METHOD"] = req.getMethod();        //"GET";
 	if (req.getHeaders().find("CONTENT-LENGTH") != req.getHeaders().end())
 		this->envMap["CONTENT_LENGTH"] = req.getHeaders().find("CONTENT-LENGTH")->second; // ?? если нет то??
 	if (req.getHeaders().find("CONTENT-TYPE") != req.getHeaders().end())
 		this->envMap["CONTENT_TYPE"] = req.getHeaders().find("CONTENT-TYPE")->second;   //"plain/text";  ""
-
 	char dir[1024];
 	getcwd(dir, 1024);
 	this->envMap["PATH_TRANSLATED"] = std::string(dir) + this->envMap["PATH_INFO"];// ?? getcwd() + "cgi_tester" or /full/path/to/interpretier
-
-	this->envMap["REMOTE_ADDR"] = "127.0.0.1";               // IP-adr клиента из запроса Den
-	this->envMap["SERVER_NAME"] = "1.cgi";                   //  DEn наш порт в хедерах: HOST = <server-name> ":" <server-port>
-	this->envMap["SERVER_PORT"] = "8081";                    //?? DEn наш порт в хедерах: HOST = <server-name> ":" <server-port>
-	//
+	this->envMap["REMOTE_ADDR"] = "127.0.0.1"; //ser.getEnvValue("REMOTE_ADDR");               // IP-adr клиента из запроса Den
+	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");                   // "1.cgi"
+	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");                    //?? "8081"
 	this->RequestBody = req.getBody();
 	this->argv = new char *[3];
 	this->argv[0] = strdup("CGI/cgi_tester"); //strdup(envMap.find("PATH_INFO")->second.c_str()); // "cgi_tester" ""
-//	std::cout << std::endl << this->argv[0] << std::endl;
-
 	this->argv[1] = strdup("CGI//1.php");
 	this->argv[2] = NULL;
-
 }
 
 

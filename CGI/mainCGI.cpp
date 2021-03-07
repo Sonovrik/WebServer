@@ -16,23 +16,67 @@
 //PUT http://localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1
 ///put_test/html/1.php : argv[1]
 
-void checkLocation(std::string &uri, Server &ser){
-
+std::string checkLocation(std::string &uri, Server &ser){
+	std::string res = "";
 	std::vector<location_t> tmp = ser.get_locations();
 	size_t count = tmp.size();
 	size_t len;
-	for (int i = 0; i < count; ++i) {
+	int i = 0;
+	while (i < count) {
 		len = tmp[i]._name.size();
-		if(uri.compare(0, len, tmp[i]._name) == 0)
-			;
-
-		std::cout << i << " : " << ser.get_locations()[i]._name << std::endl;
+		if(uri.compare(0, len, tmp[i]._name) == 0){
+			res = tmp[i]._directives.find("root")->second + tmp[i]._name;
+			uri.erase(0, tmp[i]._name.length());
+			break;
+		}
+		i++;
 	}
-
-
-	std::cout << "location!!!!" << std::endl;
+	if(i == count)
+		res = ser.get_root() + "/";
+	return res;
 }
 
+std::string checkPath(std::string &uri, std::string &location){
+	std::string res = location + uri;
+	size_t len = res.length();
+	size_t count = 0;
+	struct stat info;
+	for (int i = 0; i < len; ++i){
+		if (uri[i] == '/')
+			count++;
+	}
+	int pos = res.find('/');
+	if(pos == std::string::npos)
+		; //error??
+	std::string tmp = res.substr(0, pos + 1);
+	res.erase(0, pos + 1);
+	const char *path = tmp.c_str();
+	for (int i = 0; i <= count; ++i) {
+		if (stat(path, &info) == 0){
+			if ((pos = res.find('/')) == std::string::npos){
+				if(res.length())
+				pos = res.length() - 1;
+			}
+				tmp += res.substr(0, pos + 1);
+				res.erase(0, pos + 1);
+				path = tmp.c_str();
+				continue;
+		}
+		break;
+	}
+	size_t last = tmp.length() - 1;
+	if(tmp[last] == '/'){  // что если придет запрос  http://localhost:8080/put_test/
+		tmp.erase(tmp.length() - 1, 1);
+		path = tmp.c_str();
+		if(stat(path, &info) == 0){
+			std::cout << "path found " << tmp << std::endl;
+			return (tmp);
+		}
+	}
+	else
+		std::cout << "path found " << tmp << std::endl;
+	return (tmp);
+}
 
 void parsBeforeCGI(Request &req, Server &ser){
 	std::string uri = req.getPath();
@@ -44,6 +88,9 @@ void parsBeforeCGI(Request &req, Server &ser){
 	if(uri.compare(0, 7, "http://") == 0)
 		uri.erase(0, 7); //delete http://
 	int pos;
+	if((pos = uri.rfind('?')) != std::string::npos)
+		uri.erase(pos);
+	pos = 0;
 	if((pos = uri.find('/')) != std::string::npos){
 		if(pos != 1){  // как понять что это не 1.php/user/bin/php?q=r&a=d
 			host.assign(uri, 0, pos);
@@ -58,18 +105,16 @@ void parsBeforeCGI(Request &req, Server &ser){
 		}
 		else
 			;// не указан хост, возможно при GET /1.php
-		checkLocation(uri, ser);
 	}
 	else
-		pathToScript = uri;// не нашла / вообще, может ли быть GET 1.php
-
-
-
+		;// не нашел '/' вообще, может ли быть GET 1.php
+	location = checkLocation(uri, ser);
+	pathToScript = checkPath(uri, location);
 
 	std::cout << "uri : " << uri << std::endl << "path : " << req.getPath() << std::endl;
 	std::cout << "host : " << host << std::endl << "hostName : " << hostName << std::endl;
-	std::cout << "port : " << port << std::endl;
-	std::cout << "pathToScript : " << "ooops!!!!" << std::endl;
+	std::cout << "port : " << port << std::endl  << "location : " << location << std::endl;
+	std::cout << "pathToScript : " << pathToScript << std::endl;
 }
 
 
@@ -78,11 +123,18 @@ int main(){
 	ConfigParser parser;
 	parser.parseConfig("webserv.conf");
 	std::vector<Server> _serversList(parser.getServers());
+	for (std::vector<Server>::iterator it = _serversList.begin(); it < _serversList.end(); it++){
+		it->fullConfigEnvironment();
+	}
+
 	Request req;
 	std::string tmp3 = "PUT http://localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
+//	std::string tmp3 = "PUT http://localhost:8080/post_body/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 //	std::string tmp3 = "GET 1.php?a=b HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 //	std::string tmp3 = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 	parseRequest(tmp3, req);
+
+
 	parsBeforeCGI(req, _serversList.front());
 	CGI qqq(req, _serversList.front());
 	qqq.init(req, _serversList.front());
