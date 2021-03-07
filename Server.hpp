@@ -33,7 +33,7 @@ private:
 	std::string		_port;
 	std::string		_root;
 	std::string		_maxBodySize;
-	std::string		_errorPage;
+	std::map<int, std::string>		_errorPages;
 	std::vector<location_t>	_locations;
 
 public:
@@ -65,7 +65,7 @@ public:
 	void	set_serverName(const std::string&);
 	void	set_root(const std::string&);
 	void	set_maxBodySize(const std::string&);
-	void	set_errorPage(const std::string&);
+	void	add_errorPage(const std::pair<int, std::string> &page);
 	void	set_locations(std::vector<location_t>&);
 	void	set_port(const std::string&);
 	void	set_ip(const std::string&);
@@ -83,7 +83,7 @@ public:
 	std::string			get_port(void) const;
 	std::string			get_root(void) const;
 	std::string			get_maxBodySize(void) const;
-	std::string			get_errorPage(void) const;
+	std::string			get_errorPath(int code) const;
 	std::vector<location_t>	get_locations(void) const;
 
 	int			get_maxSd(void) const;

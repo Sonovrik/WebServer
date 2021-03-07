@@ -72,32 +72,30 @@ int main(){
 				for (size_t i = 0; i < it->get_clientCount(); i++){
 					int		sd = it->get_clientsd(i + 1);
 					std::string buf(1024, '\0');
-					Client &tmp = it->get_Client(i + 1);
+					Client &client = it->get_Client(i + 1);
 					if (FD_ISSET(sd, &readfds)){
 						if ((ret = read(sd, (void *)buf.c_str(), 1024)) == 0){
 							close(sd);
 							it->delete_client(i + 1);
 						}
 						else {
-							tmp.setFlag(parseRequest(buf, tmp.getRequest()));
-							if (tmp.getFlag() == WAIT)
+							client.setFlag(parseRequest(buf, client.getRequest()));
+							if (client.getFlag() == WAIT)
 								continue;
-							else if (tmp.getFlag() == ERROR){
-								Response resp(400, *it);
+							else if (client.getFlag() == ERROR){
 							}
-							else if (tmp.getFlag() == SEND){
-
+							else if (client.getFlag() == SEND){
 							}
-							std::cout << buf << std::endl;
 						}
 					}
-					if (tmp.getFlag() == SEND && FD_ISSET(sd, &writefds)){
+					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)){
 						continue;
+							// Response resp(400, *it);
+							// send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
 						// if (write == yes){
 						// 	send();
 						// }
 						// writefds.fds_bits;
-						send(sd, "Asd\r\n\r\n", 7, 0);
 						// delete sd writefds;
 					}
 				}

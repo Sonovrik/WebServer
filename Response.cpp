@@ -3,45 +3,127 @@
 Response::Response():
 	_version(""),
 	_statusCode(0),
+	_respSize(0),
 	_statusMessage(""),
 	_body(""){}
 
+void	Response::set_statusMessage(int code){
+	switch(code){
+		case 400:
+			this->_statusMessage = "Bad Request";
+			break;
+		case 401:
+			this->_statusMessage = "Payment Required";
+			break;
+		case 403:
+			this->_statusMessage = "Forbidden";
+			break;
+		case 404:
+			this->_statusMessage = "Not Found";
+			break;
+		case 405:
+			this->_statusMessage = "Method Not Allowed";
+			break;
+		case 406:
+			this->_statusMessage = "Not Acceptable";
+			break;
+		case 408:
+			this->_statusMessage = "Request Timeout";
+			break;
+		case 409:
+			this->_statusMessage = "Conflict";
+			break;
+		case 410:
+			this->_statusMessage = "Gone";
+			break;
+		case 411:
+			this->_statusMessage = "Length Required";
+			break;
+		case 413:
+			this->_statusMessage = "Payload Too Large";
+			break;
+		case 414:
+			this->_statusMessage = "URI Too Long";
+			break;
+		case 415:
+			this->_statusMessage = "Unsupported Media Type";
+			break;
+		case 417:
+			this->_statusMessage = "Expectation Failed";
+			break;
+		case 426:
+			this->_statusMessage = "Upgrade Required";
+			break;
+		default:
+			break;
+	}
+}
 
-void	Response::setBadRequest(Server const &serv){
+
+
+Response::~Response(){}
+
+void	Response::setError(Server const &serv){
 	this->_version = serv.getEnvValue("SERVER_PROTOCOL");
-	this->_statusMessage = "Bad Request";
 
-	_headers.insert(std::make_pair("Connection", serv.getEnvValue("CONNECTION")));
+	// _headers.insert(std::make_pair("Connection", client.get("CONNECTION")));
+	_headers.insert(std::make_pair("Connection", "alive"));
+
 	_headers.insert(std::make_pair("Content-Language", "en"));
 	_headers.insert(std::make_pair("Content-Type", "text/html"));
-	if (serv.get_errorPage().empty()){
-		this->_body = "<html>\n\n    <head>\n        <title>404 Not Found</title>\n    </head>"
-			"\n    <body>\n        <p align=\"center\" style=\"font-size:50px\">\n"
-			"            404 Not Found\n        </p>\n    </body>\n</html>";
+	if (serv.get_errorPath(this->_statusCode).empty()){
+		this->_body = get_errorPage(this->_statusCode);
 	}
 	else{
-		std::ifstream	in(serv.get_errorPage());
+		std::ifstream	in(serv.get_errorPath(this->_statusCode));
 		std::string		tmp("");
 		while (getline(in, tmp)){
 			this->_body.append(tmp);
 		}
 	}
 	_headers.insert(std::make_pair("Content-Length", std::to_string(_body.size())));
-	// _headers.insert(std::make_pair(""));
+	set_date();
 }
 
 Response::Response(int code, Server const &serv):
 	_version(""),
 	_statusCode(code),
+	_respSize(0),
 	_statusMessage(""),
 	_body(""){
-		if (this->_statusCode == 400){
-			setBadRequest(serv);
+		if (code / 100 == 4){
+			set_statusMessage(code);
+			setError(serv);
 		}
+		else{
+
+		}
+}
+
+size_t			Response::get_respSize(void) const{
+	return _respSize;
+}
+
+
+std::string		Response::getResponse(void){
+
+	std::string		ret("");
+	ret.append(this->_version);
+	ret.append(" " + std::to_string(this->_statusCode));
+	ret.append(" " + this->_statusMessage);
+	ret.append("\r\n");
+	std::map<std::string, std::string>::const_iterator it = _headers.begin();
+	for (; it != _headers.end(); it++){
+		ret.append(it->first + ": " + it->second + "\r\n");
 	}
-
-
-Response::~Response(){}
+	ret.append("\r\n");
+	if (!_body.empty()){
+		ret.append(this->_body);
+		ret.append("\r\n");
+	}
+	this->_respSize = ret.size();
+	return ret;
+}
 
 
 Response::Response(Response const &other){
@@ -51,7 +133,6 @@ Response::Response(Response const &other){
 		this->_statusMessage = other._statusMessage;
 	}
 }
-
 
 Response	&Response::operator=(Response const &other){
 	if (this != &other){
@@ -82,6 +163,22 @@ void	Response::set_headers(std::map<std::string,std::string> headers){
 
 void	Response::set_body(std::string body){
 	this->_body = body;
+}
+
+void	Response::set_date(){
+	time_t		rawtime;
+	struct tm	*timeinfo;
+	char		buffer[30];
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	strftime (buffer,30,"%a, %d %b %G %T %Z",timeinfo);
+	this->_headers.insert(std::make_pair("Date", buffer));
+
+	// I don't understand when I need to update that time 
+	// and where I should store information about updates
+	this->_headers.insert(std::make_pair("Last-Modified", buffer)); 
 }
 
 
