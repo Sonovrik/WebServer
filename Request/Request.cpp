@@ -1,20 +1,24 @@
 #include "Request.hpp"
 
-// no \r\n after one header
-// printf "GET / HTTP/1.1\r\nHost:123" | nc 127.0.0.1 8081
-
-// body by parts
-
-// toClose connection
-// ???? If a Transfer-Encoding header field
-//        is present in a request and the chunked transfer coding is not
-//        the final encoding, the message body length cannot be determined
-//        reliably; the server MUST respond with the 400 (Bad Request)
-//        status code and then close the connection.
-
-// chunked
-// len < string -> cut
-// len > string -> wait and add
+// "ACCEPT-CHARSET"
+// "ACCEPT-LANGUAGE"
+// "ALLOW" - allowed methods
+// "AUTHORIZATION" Authorization: <type> <credentials>.  "Authorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l"  - (base64 encoded) / "Authorization: Basic username:password"
+// "CONTENT-LANGUAGE"
+// "CONTENT-LENGTH"
+// "CONTENT-LOCATION" an alternate location for the returned data
+// "CONTENT-TYPE"
+// "DATE"
+// "HOST" - the host and port number of the server to which the request is being sent. Host: <host>:<port> (host=domain name of the server, post=TCP port number on which the server is listening.)
+// "LAST-MODIFIED"
+// "LOCATION" response header indicates the URL to redirect a page to. It only provides a meaning when served with a 3xx (redirection) or 201 (created) status response.
+// "REFERER" содержит URL исходной страницы, с которой был осуществлен переход на текущую страницу Referer: <url>
+// "RETRY-AFTER"
+// "SERVER" the software used by the origin server that handled the request — that is, the server that generated the response. Server: <product>. Server: Apache/2.4.1 (Unix). <product> The name of the software or product that handled the request. Usually in a format similar to User-Agent
+// "TRANSFER-ENCODING" - <длина блока в HEX><CRLF><содержание блока><CRLF> last: 0<CRLF><CRLF>
+// "USER-AGENT" the browser sending the request
+// "WWW-AUTHENTICATE" - response header defines the authentication method that should be used to gain access to a resource; WWW-Authenticate: Basic realm="Access to the staging site", charset="UTF-8"
+// "ACCEPT"
 
 const std::string Request::_methodsNames[] = {"GET", "HEAD",
 			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
@@ -25,11 +29,11 @@ Request::Request():
 	_path(""),
 	_version(""),
 	_body(""),
+	_queryString(""),
 	_pathInfo("cgi_tester"),
-	_statusCode(200),
 	_return(WAIT),
 	_toClose(false),
-	_chunk(-1),
+	_chunk(0),
 	_waitBody(false) {}
 
 Request::~Request(){}
@@ -46,11 +50,11 @@ Request &Request::operator=(Request const &other) {
 		this->_version = other._version;
 		this->_headers = other._headers;
 		this->_body = other._body;
-		this->_statusCode = other._statusCode;
 		this->_queryString = other._queryString;
 		this->_toClose = other._toClose;
 		this->_return = other._return;
 		this->_chunk = other._chunk;
+		this->_waitBody = other._waitBody;
 	}
 	return *this;
 }
@@ -75,10 +79,6 @@ void	Request::setBody(std::string body) {
 
 void	Request::setHeaders(std::map<std::string,std::string> map) {
 	this->_headers = map;
-}
-
-void	Request::setStatusCode(int statusCode) {
-	this->_statusCode = statusCode;
 }
 
 void	Request::setPathInfo(std::string pathInfo) {
@@ -115,10 +115,6 @@ std::string const	&Request::getBody(void) const {
 	return this->_body;
 }
 
-int const 			&Request::getStatusCode(void) const {
-	return this->_statusCode;
-}
-
 std::map<std::string,std::string> const &Request::getHeaders(void) const {
 	return this->_headers;
 }
@@ -140,6 +136,24 @@ bool				Request::getToClose(void) const {
 	return this->_toClose;
 }
 
+bool				Request::getWaitBody(void) const {
+	return this->_waitBody;
+}
+
+
+void	Request::reset() {
+	_method = "";
+	_path = "";
+	_version = "";
+	_queryString = "";
+	_pathInfo = "cgi_tester";
+	_headers.clear();
+	_body = "";
+	_toClose = false;
+	_return = WAIT;
+	_chunk = 0;
+	_waitBody = false;
+}
 
 bool	Request::parseQueryString() {
 	size_t		pos;
@@ -223,7 +237,7 @@ bool		Request::checkHeaderValue(std::string value) {
 	return true;
 }
 
-bool		Request::checkRepeatHeader(std::pair<std::string, std::string> node) {
+bool		Request::checkHeader(std::pair<std::string, std::string> node) {
 	if (this->_headers.find(node.first) != this->_headers.end()) {
 		if (node.first == "HOST")
 			return false;
@@ -245,7 +259,11 @@ bool		Request::checkRepeatHeader(std::pair<std::string, std::string> node) {
 			return false;
 		}
 	}
-			
+	if (node.first == "CONNECTION" && node.second.find("close") != std::string::npos) {
+		this->_toClose = true;
+		std::cout << "close" << std::endl;
+	}
+
 	return true;
 }
 
@@ -267,7 +285,7 @@ bool		Request::setHeader(std::string line) {
 	node.second = line;
 	if (!checkHeaderValue(node.second))
 		return false;
-	if (!checkRepeatHeader(node))
+	if (!checkHeader(node))
 		return false;
 
 	// exchange header if it repeats
@@ -314,35 +332,56 @@ bool		Request::parseBody(std::string req) {
 		return true;
 	size_t pos;
 	// chunked
-	if (this->_headers.find("TRANSFER-ENCODING")->second == "chunked") {
-		while ((pos = req.find("\r\n")) != std::string::npos && this->_chunk != 0) {
-			// chunk value
-			if (this->_chunk == -1) {
-				this->_chunk = atoi(req.substr(0, pos).c_str());
-				std::cout << this->_chunk << std::endl;
-				req.erase(0, pos + 2);
+	if (this->_headers.find("TRANSFER-ENCODING")->second.find("chunked") != std::string::npos) {
+		while ((pos = req.find("\r\n")) != std::string::npos) {
+			// parse chunk value
+			if (this->_chunk == 0) {
+				try {
+					this->_chunk = stoul(req.substr(0, pos), NULL, 16);
+					req.erase(0, pos + 2);
+				}
+				catch (std::exception &e) {
+					return false;
+				}
 			}
-			// if ((pos = req.find("\r\n")) )
-			// parse body
+			// end
+			if (this->_chunk == 0) {
+				this->_return = SEND;
+				this->_waitBody = false;
+				return true;
+			}
+			if (this->_chunk > 0) {
+				// parse body
+				if ((pos = req.find("\r\n")) != std::string::npos) {
+					if (req.substr(0, pos).length() >= this->_chunk) {
+						this->_body = this->_body + req.substr(0, this->_chunk);
+						req.erase(0, pos + 2);
+						this->_chunk = 0;
+					}
+					if (req.substr(0, pos).length() < this->_chunk) {
+						this->_body = this->_body + req.substr(0, pos);
+						this->_chunk -= pos;
+						req.erase(0, pos + 2);
+					}
+				}
+			}
 		}
 		return true;
 	}
-
 	// parse body
 	if ((pos = req.find("\r\n")) != std::string::npos) {
 		_body = req.substr(0, req.length() - 2);
-		this->_return = SEND;
+		this->_return = SEND; 
 	}
 	return true;
 }
 
-// need add SEND WAIT
+// return SEND WAIT ERROR
 int			parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
 
 	if (request.getMethod() == "") {
 		if ((pos = req.find("\r\n")) == std::string::npos) {
-			request.setStatusCode(400);
 			request.setReturn(ERROR);
 			std::cout << "fail" << std::endl;
 			return request.getReturn();
@@ -350,24 +389,22 @@ int			parseRequest(std::string req, Request &request) {
 		}
 		std::string	tmp(req.substr(0, pos + 2));
 		if (request.parseStartLine(tmp) == false) {
-			request.setStatusCode(400);
 			request.setReturn(ERROR);
 			std::cout << "start line problem" << std::endl;
 			return request.getReturn();
 		}
 		req.erase(0, pos + 2);
 	}
-	if (request.parseHeaders(req) == false) {
-		request.setStatusCode(400);
+	if (request.getWaitBody() == false && request.parseHeaders(req) == false) {
 		std::cout << "header problem" << std::endl;
 		return ERROR;
 	}
 	if (request.getMethod() == "POST") {
 		if (request.parseBody(req) == false) {
-			request.setStatusCode(400);
 			request.setReturn(ERROR);
 			return request.getReturn();
 		}
+		// std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
 	}
 	// std::cout << "success" << std::endl;
 	return request.getReturn();
@@ -380,7 +417,6 @@ int			parseRequest(std::string req, Request &request) {
 // 	parseRequest(tmp2, req);
 
 // 	std::cout << req.getBody() << std::endl;
-// 	std::cout << req.getStatusCode() << std::endl;
 
 // 	return 0;
 // }
