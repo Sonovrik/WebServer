@@ -22,6 +22,12 @@
 
 
 // ?chunked \r\n
+
+// Quality value
+// q=0.2 (0 - 1)
+// default = 1. 0 - not acceptable, 0.001 least preferred
+//  A sender of qvalue MUST NOT generate more than three digits after the decimal point.  User configuration of these values ought to be limited in the same fashion.
+
 const std::string Request::_methodsNames[] = {"GET", "HEAD",
 			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
 const int Request::_numMethods = 8;
@@ -263,9 +269,7 @@ bool		Request::checkHeader(std::pair<std::string, std::string> node) {
 	}
 	if (node.first == "CONNECTION" && node.second.find("close") != std::string::npos) {
 		this->_toClose = true;
-		std::cout << "close" << std::endl;
 	}
-
 	return true;
 }
 
@@ -274,7 +278,6 @@ bool		Request::setHeader(std::string line) {
 	
 	if ((pos = line.find(':')) == std::string::npos)
 		return false;
-
 	std::pair<std::string, std::string> node;
 	node.first = line.substr(0, pos);
 	for (int i = 0; i < node.first.length(); i++) {
@@ -289,7 +292,6 @@ bool		Request::setHeader(std::string line) {
 		return false;
 	if (!checkHeader(node))
 		return false;
-
 	// exchange header if it repeats
 	if (this->_headers.find(node.first) != this->_headers.end())
 		this->_headers.find(node.first)->second = node.second;
@@ -312,7 +314,6 @@ bool		Request::parseHeaders(std::string &req) {
 			return false;
 		req.erase(0, pos + delimenter.size());
 	}
-
 	// if end and no host
 	if ((pos = req.find("\r\n")) != std::string::npos) {
 		if (this->_headers.find("HOST") == this->_headers.end())
@@ -373,7 +374,7 @@ bool		Request::parseBody(std::string req) {
 	// parse body
 	if ((pos = req.find("\r\n")) != std::string::npos) {
 		_body = req.substr(0, req.length() - 2);
-		this->_return = SEND; 
+		this->_return = SEND;
 	}
 	return true;
 }
@@ -387,7 +388,6 @@ int			parseRequest(std::string req, Request &request) {
 			request.setReturn(ERROR);
 			std::cout << "fail" << std::endl;
 			return request.getReturn();
-
 		}
 		std::string	tmp(req.substr(0, pos + 2));
 		if (request.parseStartLine(tmp) == false) {
@@ -408,7 +408,6 @@ int			parseRequest(std::string req, Request &request) {
 		}
 		// std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
 	}
-	// std::cout << "success" << std::endl;
 	return request.getReturn();
 }
 

@@ -3,9 +3,11 @@
 
 #include "../Request/Request.hpp"
 #include <iostream>
-#include <map>
-#include <vector>
+// #include <map>
+// #include <vector>
 
+#define	toCGI		0
+#define	toServer	1
 
 class Client {
 
@@ -25,12 +27,13 @@ public:
 	void	setFlag(int flag);
 	void	setRequest(Request &reqv);
 	void	setStatusCode(int code);
+	void	setWhere(int where);
 
 	int		getStatusCode(void) const;
 	int		getSd(void) const;
 	int		getFlag(void) const;
 	Request	&getRequest(void);
-
+	int		getWhere(void) const;
 };
 
 #endif

@@ -80,51 +80,32 @@ int main(){
 						}
 						else {
 							client.setFlag(parseRequest(buf, client.getRequest()));
-							if (client.getFlag() == WAIT)
+							if (client.getFlag() == WAIT) {
+								std::cout << "wait" << std::endl;
 								continue;
-							else if (client.getFlag() == ERROR){
 							}
-							else if (client.getFlag() == SEND){
+							else if (client.getFlag() == ERROR) {
+								// Response response(400, *it);
+								std::cout << "error" << std::endl;
+								client.getRequest().reset();
+							}
+							else if (client.getFlag() == SEND) {
+								// Response response(200, *it);
+								// client.getWhere() ?= server || cgi
+								std::cout << "send" << std::endl;
+								client.getRequest().reset();
 							}
 						}
 					}
-					else {
-						Client &tmp = it->get_Client(i + 1);
-						tmp.setFlag(parseRequest(buf, tmp.getRequest()));
-						if (tmp.getFlag() == ERROR){
-						// 	Response resp(400); //fill all atributes
-						// 	tmp.setFlag(SEND);
-						// 	// create error response;
-							std::cout << "To close:" << std::boolalpha << tmp.getRequest().getToClose() << std::endl;
-							std::cout << "error" << std::endl;
-						}
-						else if (tmp.getFlag() == WAIT){
-						// 	continue;
-							std::cout << "wait" << std::endl;
-						}
-						if (tmp.getFlag() == SEND){
-						// 	server.exec_reqv();
-						// 	tmp.getwhere() == CGI
-						// 		bulina;
-						// 	else
-								
-						// 	server.getStatus_code();
-						// 	Response();
-						// 	Response resp(200);
-							std::cout << "send" << std::endl;
-						}
-						std::cout << buf << std::endl;
-					// lmidori branch
-					// if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)){
-					// 	continue;
-					// 		// Response resp(400, *it);
-					// 		// send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
-					// 	// if (write == yes){
-					// 	// 	send();
-					// 	// }
-					// 	// writefds.fds_bits;
-					// 	// delete sd writefds;
-					// }
+					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) { // or ERROR
+						continue;
+							// Response resp(400, *it);
+							// send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
+						// if (write == yes){
+						// 	send();
+						// }
+						// writefds.fds_bits;
+						// delete sd writefds;
 					}
 				}
 			}
