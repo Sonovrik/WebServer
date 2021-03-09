@@ -2,6 +2,10 @@
 #include "Response.hpp"
 #include "Server.hpp"
 
+// Content-Type
+// Content-D
+
+
 // success -> 201 (Created)
 
 // 303 (See Other)

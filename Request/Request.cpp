@@ -20,6 +20,8 @@
 // "WWW-AUTHENTICATE" - response header defines the authentication method that should be used to gain access to a resource; WWW-Authenticate: Basic realm="Access to the staging site", charset="UTF-8"
 // "ACCEPT"
 
+
+// ?chunked \r\n
 const std::string Request::_methodsNames[] = {"GET", "HEAD",
 			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
 const int Request::_numMethods = 8;
