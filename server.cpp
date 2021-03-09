@@ -13,7 +13,6 @@ Server::Server():
 	_port(""),
 	_root(""),
 	_maxBodySize(""),
-	_errorPage(""),
 	_maxSd(0){}
 
 Server::~Server(){}
@@ -32,10 +31,6 @@ void		Server::sortLocations(void){
 void		Server::fullConfigEnvironment(void){
 	this->_env.insert(std::make_pair<std::string, std::string>("AUTH_TYPE", "Basic"));
 	this->_env.insert(std::make_pair<std::string, std::string>("GATEWAY_INTERFACE", "CGI/1.1"));
-	// this 3 i give after acept
-	// this->_env.insert(std::make_pair<std::string, std::string>("REMOTE_ADDR", ));
-	// this->_env.insert(std::make_pair<std::string, std::string>("REMOTE_IDENT", ));
-	// this->_env.insert(std::make_pair<std::string, std::string>("REMOTE_USER"));
 	this->_env.insert(std::make_pair<std::string, std::string>("SERVER_NAME", this->_serverName));
 	this->_env.insert(std::make_pair<std::string, std::string>("SERVER_PORT", this->_port));
 	this->_env.insert(std::make_pair<std::string, std::string>("SERVER_PROTOCOL", "HTTP/1.1"));
@@ -49,8 +44,6 @@ void		Server::fullBasicDirectives(void){
 		_root = ".";
 	if (_maxBodySize.empty())
 		_maxBodySize = "10000";
-	if (_errorPage.empty())
-		_errorPage = "404 404.html";
 
 	std::vector<location_t>::iterator it = _locations.begin();
 	for (; it < _locations.end(); it++){
@@ -86,7 +79,7 @@ Server	&Server::operator=(Server const &other){
 		this->_port = other._port;
 		this->_root = other._root;
 		this->_maxBodySize = other._maxBodySize;
-		this->_errorPage = other._errorPage;
+		this->_errorPages = other._errorPages;
 		this->_locations = other._locations;
 	}
 	return *this;
@@ -164,8 +157,8 @@ void	Server::set_maxBodySize(const std::string& len){
 	this->_maxBodySize = len;
 }
 
-void	Server::set_errorPage(const std::string& page){
-	this->_errorPage = page;
+void	Server::add_errorPage(const std::pair<int, std::string> &page){
+	this->_errorPages.insert(page);
 }
 
 void	Server::set_locations(std::vector<location_t>& locations){
@@ -207,8 +200,12 @@ std::string	Server::get_ip(void) const{
 	return _ip;
 }
 
-std::string	Server::get_errorPage(void) const{
-	return _errorPage;
+std::string	Server::get_errorPath(int code) const{
+	std::map<int, std::string>::const_iterator it = this->_errorPages.begin();
+	if ((it = this->_errorPages.find(code)) != this->_errorPages.end()){
+		return it->second;
+	}
+	return "";
 }
 
 int			Server::get_master_socket(void) const{
@@ -223,6 +220,9 @@ sockaddr_in const	&Server::get_sockaddress(void) const{
 	return _addr;
 }
 
+std::vector<location_t>	Server::get_locations(void) const{
+	return _locations;
+}
 
 
 size_t		Server::delete_client(size_t index){
@@ -254,4 +254,12 @@ Client		&Server::get_Client(int index){
 		throw std::exception();
 	else
 		return this->_clients[index - 1];
+}
+
+std::string	Server::getEnvValue(std::string	key) const{
+	std::map<std::string, std::string>::const_iterator it = this->_env.find(key);
+	if (it == this->_env.end())
+		throw std::exception();
+	else
+		return it->second;
 }

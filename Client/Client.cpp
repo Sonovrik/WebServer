@@ -10,6 +10,9 @@ Client::Client(int sd):
 
 Client::~Client() {}
 
+void	Client::setStatusCode(int code){
+	this->_statusCode = code;
+}
 
 void	Client::setSd(int sd){
 	this->_sd = sd;
@@ -33,4 +36,8 @@ int		Client::getFlag(void) const{
 
 Request	&Client::getRequest(void){
 	return this->_request;
+}
+
+int		Client::getStatusCode(void) const{
+	return this->_statusCode;
 }
