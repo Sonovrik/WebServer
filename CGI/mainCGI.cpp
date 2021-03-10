@@ -23,10 +23,17 @@ std::string checkLocation(std::string &uri, Server &ser){
 	size_t len;
 	int i = 0;
 	while (i < count) {
+		std::string root = tmp[i]._directives.find("root")->second;
 		len = tmp[i]._name.size();
 		if(uri.compare(0, len, tmp[i]._name) == 0){
-			res = tmp[i]._directives.find("root")->second + tmp[i]._name;
-			uri.erase(0, tmp[i]._name.length());
+			res = root + tmp[i]._name;
+			uri.erase(0, len);
+			break;
+		}
+		len += root.length();
+		if(uri.compare(0, len, (root + tmp[i]._name)) == 0) {
+			res = root + tmp[i]._name;
+			uri.erase(0, len);
 			break;
 		}
 		i++;
@@ -36,7 +43,7 @@ std::string checkLocation(std::string &uri, Server &ser){
 	return res;
 }
 
-std::string checkPath(std::string &uri, std::string &location){
+std::string checkPath(std::string &uri, std::string &location, Request &req){
 	std::string res = location + uri;
 	size_t len = res.length();
 	size_t count = 0;
@@ -65,20 +72,17 @@ std::string checkPath(std::string &uri, std::string &location){
 		break;
 	}
 	size_t last = tmp.length() - 1;
-	if(tmp[last] == '/'){  // что если придет запрос  http://localhost:8080/put_test/
+	if(tmp[last] == '/' && res.length() != 0){  // что если придет запрос  http://localhost:8080/put_test/1.php/
 		tmp.erase(tmp.length() - 1, 1);
 		path = tmp.c_str();
-		if(stat(path, &info) == 0){
-			std::cout << "path found " << tmp << std::endl;
-			return (tmp);
-		}
+		req.setPathInfo(res);
+		if (stat(path, &info) != 0)
+			throw "paht not found";
 	}
-	else
-		std::cout << "path found " << tmp << std::endl;
 	return (tmp);
 }
 
-void parsBeforeCGI(Request &req, Server &ser){
+int parsBeforeCGI(Request &req, Server &ser){
 	std::string uri = req.getPath();
 	std::string host;
 	std::string hostName;
@@ -86,35 +90,44 @@ void parsBeforeCGI(Request &req, Server &ser){
 	std::string port;
 	std::string location;
 	if(uri.compare(0, 7, "http://") == 0)
-		uri.erase(0, 7); //delete http://
+		uri.erase(0, 7); //delete http:// разобраться!!!!
 	int pos;
 	if((pos = uri.rfind('?')) != std::string::npos)
 		uri.erase(pos);
 	pos = 0;
-	if((pos = uri.find('/')) != std::string::npos){
-		if(pos != 1){  // как понять что это не 1.php/user/bin/php?q=r&a=d
+	if((pos = uri.find('/')) != std::string::npos) {
+		if(pos != 1) {  // как понять что это не 1.php/user/bin/php?q=r&a=d
 			host.assign(uri, 0, pos);
-			int i;
-			if((i = host.find(':')) != std::string::npos) {
-				hostName.assign(host, 0, i);
-				port = host.substr(i + 1);
+			if(host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port()))
+				; //не наш хост или нет хоста
+			else {
+				int i;
+				if((i = host.find(':')) != std::string::npos) {
+					hostName.assign(host, 0, i);
+					port = host.substr(i + 1);
+				}
+				else
+					hostName = host;
+				uri.erase(0, host.length());
 			}
-			else
-				hostName = host;
-			uri.erase(0, host.length());
 		}
-		else
-			;// не указан хост, возможно при GET /1.php
 	}
 	else
 		;// не нашел '/' вообще, может ли быть GET 1.php
-	location = checkLocation(uri, ser);
-	pathToScript = checkPath(uri, location);
-
+	try{
+		location = checkLocation(uri, ser);
+		pathToScript = checkPath(uri, location, req);
+		req.setPath(pathToScript); //  переделатьпо нормальному!!!
+	}
+	catch (char const *str){
+		std::cerr << "error : " << str << std::endl;
+		return -1;
+	}
 	std::cout << "uri : " << uri << std::endl << "path : " << req.getPath() << std::endl;
 	std::cout << "host : " << host << std::endl << "hostName : " << hostName << std::endl;
 	std::cout << "port : " << port << std::endl  << "location : " << location << std::endl;
-	std::cout << "pathToScript : " << pathToScript << std::endl;
+	std::cout << "pathToScript : " << req.getPath() << std::endl << "path Info : " << req.getPathInfo() << std::endl;
+	return 0;
 }
 
 
@@ -128,17 +141,16 @@ int main(){
 	}
 
 	Request req;
-	std::string tmp3 = "PUT http://localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
+	std::string tmp3 = "GET http://localhost:8081/html/YoupiBanane/1.bla/CGI/cgi_tester HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 //	std::string tmp3 = "PUT http://localhost:8080/post_body/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 //	std::string tmp3 = "GET 1.php?a=b HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 //	std::string tmp3 = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 	parseRequest(tmp3, req);
-
-
-	parsBeforeCGI(req, _serversList.front());
-	CGI qqq(req, _serversList.front());
-	qqq.init(req, _serversList.front());
-	qqq.creatENV();
-	qqq.exec();
+	if(parsBeforeCGI(req, _serversList.front()) == 0) {
+		CGI qqq(req, _serversList.front());
+		qqq.init(req, _serversList.front());
+		qqq.creatENV();
+		qqq.exec();
+	}
 	return 0;
 }

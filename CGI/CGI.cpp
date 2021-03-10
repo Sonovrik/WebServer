@@ -97,17 +97,17 @@ void CGI::init(Request &req, Server &ser) {
 
 
 	this->envMap["REQUEST_URI"] = req.getPath();             //"localhost/1.cgi";
-	this->envMap["QUERY_STRING"] = "";                       //req.getQueryString();
-	this->envMap["SCRIPT_NAME"] = "CGI.cpp";                 //?? req.getPath() ??
-	this->envMap["PATH_INFO"] = "CGI/cgi_tester"; //req.getPathInfo(); //по дефолту "cgi_tester" or path/to/interpretier
+	this->envMap["QUERY_STRING"] = req.getQueryString();     // "";
+	this->envMap["SCRIPT_NAME"] = req.getPath(); // "1.bla";   // ?? "1.cgi"
+	this->envMap["PATH_INFO"] = req.getPathInfo(); // "CGI/cgi_tester"; по дефолту "cgi_tester" or path/to/interpretier
 
 	int r = req.getHeaders().find("AUTHORIZATION")->second.find(" ");
 	this->envMap["AUTH_TYPE"] = req.getHeaders().find("AUTHORIZATION")->second.substr(0, r);                     //?? default Basic,
 //	std::string tmpFoIdent = req.getHeaders().find("AUTHORIZATION")->second.substr(r + 1);
 //	{
 //		дешифратор! из "wergetrhjtuktulruyk" => "aladdin:opensesame";
-//		this->envMap["REMOTE_IDENT"] = "passwd";                 //  "opensesame"
-//		this->envMap["REMOTE_USER"] = "user";                    //  "aladdin"
+		this->envMap["REMOTE_IDENT"] = ""; //"passwd";                 //  "opensesame"
+		this->envMap["REMOTE_USER"] = "";  //"user";                    //  "aladdin"
 //	}
 
 	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
@@ -122,12 +122,12 @@ void CGI::init(Request &req, Server &ser) {
 	getcwd(dir, 1024);
 	this->envMap["PATH_TRANSLATED"] = std::string(dir) + this->envMap["PATH_INFO"];// ?? getcwd() + "cgi_tester" or /full/path/to/interpretier
 	this->envMap["REMOTE_ADDR"] = "127.0.0.1"; //ser.getEnvValue("REMOTE_ADDR");               // IP-adr клиента из запроса Den
-	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");                   // "1.cgi"
-	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");                    //?? "8081"
+	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");                   //
+	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");                    //
 	this->RequestBody = req.getBody();
 	this->argv = new char *[3];
-	this->argv[0] = strdup("CGI/cgi_tester"); //strdup(envMap.find("PATH_INFO")->second.c_str()); // "cgi_tester" ""
-	this->argv[1] = strdup("CGI//1.php");
+	this->argv[0] = strdup(envMap.find("PATH_INFO")->second.c_str()); // strdup("CGI/cgi_tester");
+	this->argv[1] = strdup(envMap.find("REQUEST_URI")->second.c_str()); // strdup("CGI/1.php");
 	this->argv[2] = NULL;
 }
 
@@ -164,30 +164,25 @@ void CGI::exec() {
 	if(pid < 0) {
 		throw std::runtime_error("cannot pid");
 	}
-	else if(pid == 0) // ребенок
-	{
+	else if(pid == 0) { // ребенок
 		close(fd[1]);
 		if (dup2(fd[0], STDIN) < 0)
 			std::cerr << "Cannot dup, 1" << std::endl;
 		if (dup2(fdF, STDOUT) < 0)
 			std::cerr << "Cannot dup, 2" << std::endl;
-		std::cerr << "Doing..." << std::endl;
-		ex = execve("/usr/bin/php", argv , NULL);
+		ex = execve(envMap.find("REQUEST_URI")->second.c_str(), argv , env);
 	}
-	else // родитель
-	{
-//		write(fd[1], "dfdfdg", 6);
-//		close(fd[1]);
+	else { // родитель
+//		write(fdF, "dfdfdg", 6);
+		close(fd[1]);
 		std::cerr << "Waiting..." << std::endl;
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status)) {
 			status = WEXITSTATUS(status);
 		}
-		std::cerr << "Awaited..." << std::endl;
 		std::cout << "status: " << status << std::endl;
 		if(status != 0)
 			;//gener.error response
-//		close(fd[0]);
 		close(fdF);
 		close(fd[0]);
 	}
