@@ -148,6 +148,7 @@ bool				Request::getWaitBody(void) const {
 	return this->_waitBody;
 }
 
+// methods
 
 void	Request::reset() {
 	_method = "";
@@ -188,11 +189,9 @@ bool	Request::parseStartLine(std::string str) {
 		token[i] = str.substr(0, pos);
 		str.erase(0, pos + 1);
 	}
-
 	token[2] = str.substr(0, str.length());
 	if (token[2].empty())
 		return false;
-
 	// find methods
 	for (int i = 0; i < _numMethods; i++) {
 		if (_methodsNames[i] == token[0])
@@ -316,8 +315,10 @@ bool		Request::parseHeaders(std::string &req) {
 	}
 	// if end and no host
 	if ((pos = req.find("\r\n")) != std::string::npos) {
-		if (this->_headers.find("HOST") == this->_headers.end())
+		if (this->_headers.find("HOST") == this->_headers.end()) {
+			this->_toClose = true;
 			return false;
+		}
 	}
 	if ((pos = req.find("\r\n")) == 0) {
 		req.erase(0, 2);
@@ -353,8 +354,8 @@ bool		Request::parseBody(std::string req) {
 				this->_waitBody = false;
 				return true;
 			}
+			// parse chunk
 			if (this->_chunk > 0) {
-				// parse body
 				if ((pos = req.find("\r\n")) != std::string::npos) {
 					if (req.substr(0, pos).length() >= this->_chunk) {
 						this->_body = this->_body + req.substr(0, this->_chunk);

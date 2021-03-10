@@ -18,15 +18,14 @@ private:
 	std::string					_version;
 	std::string					_queryString;
 	std::string					_pathInfo;
-
-	std::map<std::string,std::string>	_headers;
 	// body
 	std::string					_body;
-
-	bool						_toClose;
-	int							_return;
+	// other
+	std::map<std::string,std::string>	_headers;
 	unsigned long				_chunk;
 	bool						_waitBody;
+	bool						_toClose;
+	int							_return;
 	// constants
 	static std::string const	_methodsNames[];
 	static int const			_numMethods;

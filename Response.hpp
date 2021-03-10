@@ -16,12 +16,12 @@ private:
 	std::string		_statusMessage;
 	std::map<std::string, std::string>	_headers;
 	std::string		_body;
-
+	bool			_toClose;
 	size_t			_respSize;
 
 public:
 	Response();
-	Response(int code, Server const &serv);
+	Response(int code, Server const &serv, Client &client);
 	~Response();
 	Response(Response const &);
 	Response &operator=(Response const &);
@@ -31,7 +31,9 @@ public:
 	// setters
 	void	set_version(std::string);
 	void	set_statusCode(int);
-	void	set_statusMessage(int code);
+	// void	set_statusMessage(int code);
+	std::string	setStatusMessage(int);
+
 	void	set_statusMessage(std::string);
 	void	set_headers(std::map<std::string,std::string>);
 	void	set_body(std::string);

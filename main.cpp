@@ -85,14 +85,16 @@ int main(){
 								continue;
 							}
 							else if (client.getFlag() == ERROR) {
-								// Response response(400, *it);
 								std::cout << "error" << std::endl;
+								Response response(400, *it, client);
+								std::cout << response.getResponse() << std::endl;
 								client.getRequest().reset();
 							}
 							else if (client.getFlag() == SEND) {
-								// Response response(200, *it);
 								// client.getWhere() ?= server || cgi
 								std::cout << "send" << std::endl;
+								Response response(client.getStatusCode(), *it, client);
+								std::cout << response.getResponse() << std::endl;
 								client.getRequest().reset();
 							}
 						}
