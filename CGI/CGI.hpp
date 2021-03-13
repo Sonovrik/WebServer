@@ -28,6 +28,7 @@ private:
 	std::string RequestBody;
 	std::string ResponseBody;
 	std::map<std::string, std::string> envMap;
+	std::string PathInfo;
 	int fd[2];
 	CGI(){};
 public:

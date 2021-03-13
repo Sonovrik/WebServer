@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
-CGI.hpp
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
-
 /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
 map
 -
@@ -31,6 +27,12 @@ string
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 ../ConfigParser/ConfigParser.hpp
 /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
+
+/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp
+CGI.hpp
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
+../utils.hpp
+/Users/kmoaning/Desktop/ToGit/utils.hpp
 
 /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 ../Request/Request.hpp

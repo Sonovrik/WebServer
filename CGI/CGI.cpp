@@ -11,7 +11,6 @@
 //	т. к. нет другого способа определить размер данных, которые надо прочитать со стандартного ввода.
 //	CONTENT_TYPE  определяет MIME-тип данных, передаваемых скрипту.
 //	Используя эту переменную можно одним скриптом обрабатывать различные форматы данных.
-//	GATEWAY_INTERFACE - определяет версию интерфейса.
 //	PATH_INFO - передает программе путь, часть спецификации URL, в том виде, в котором она указана в клиенте.
 //	Реально это означает, что передается путь (адрес скрипта) в виде, указанном в HTML-документе.
 //	PATH_TRANSLATED - то же самое, что и PATH_INFO, но только после подстановки сервером определенных в его конфигурации вставок.
@@ -26,21 +25,13 @@
 //	при GET запрос идет в переменную QUERY_STRING а при POST подается на STDIN скрипта и т.д
 //	REQUEST_URI
 //	SCRIPT_NAME - определяет адрес скрипта так, как он указан клиентом.
-//	SERVER_NAME - определяет доменное имя сервера.
-//	SERVER_PORT - - определяет порт TCP, по которому осуществляется взаимодействие. По умолчанию для работы
-//	по HTTP используется 80 порт, но он может быть и переназначен при конфигурировании сервера.
-//	SERVER_PROTOCOL - протокол сервера. Вообще говоря, CGI разрабатывалась не только для применения в www с
-//	протоколом HTTP, но и для других протоколов также, но широкое применение получила только в www.
-//	SERVER_SOFTWARE - определяет имя и версию сервера.
-//	REMOTE_HOST - нет в сабже// - доменный адрес машины, с которой осуществляется запрос.
-//
 //PUT localhost:8080/put_test/1.php/user/bin/php?q=r&a=d HTTP/1.1
 ///put_test/html/1.php : argv[1]
 
 
 #include "CGI.hpp"
 
-CGI::CGI(Request &req, Server &ser): env (NULL), envCount (17), RequestBody(""), ResponseBody("") {
+CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""), ResponseBody("") {
 	std::string envKey[] = {"AUTH_TYPE", "CONTENT_LENGTH", "CONTENT_TYPE", "GATEWAY_INTERFACE", "PATH_INFO",
 	"PATH_TRANSLATED","QUERY_STRING", "REMOTE_ADDR", "REMOTE_IDENT", "REMOTE_USER", "REQUEST_METHOD", "REQUEST_URI",
 	"SCRIPT_NAME", "SERVER_NAME", "SERVER_PORT", "SERVER_PROTOCOL", "SERVER_SOFTWARE"};
@@ -96,13 +87,14 @@ void CGI::init(Request &req, Server &ser) {
 //		; //error
 
 
-	this->envMap["REQUEST_URI"] = req.getPath();             //"localhost/1.cgi";
+	this->envMap["REQUEST_URI"] = "/html/YoupiBanane/1.bla"; //req.getPath();             //"localhost/1.cgi";
 	this->envMap["QUERY_STRING"] = req.getQueryString();     // "";
-	this->envMap["SCRIPT_NAME"] = req.getPath(); // "1.bla";   // ?? "1.cgi"
-	this->envMap["PATH_INFO"] = req.getPathInfo(); // "CGI/cgi_tester"; по дефолту "cgi_tester" or path/to/interpretier
+	this->envMap["SCRIPT_NAME"] = "/html/YoupiBanane/1.bla"; // req.getPath(); // "1.bla";   // ?? "1.cgi"
+	this->envMap["PATH_INFO"] = "/html/YoupiBanane/1.bla"; //req.getPathInfo(); // "CGI/cgi_tester"; по дефолту "cgi_tester" or path/to/interpretier
 
-	int r = req.getHeaders().find("AUTHORIZATION")->second.find(" ");
-	this->envMap["AUTH_TYPE"] = req.getHeaders().find("AUTHORIZATION")->second.substr(0, r);                     //?? default Basic,
+	this->envMap["AUTH_TYPE"] = "";
+//	int r = req.getHeaders().find("AUTHORIZATION")->second.find(" ");
+//	this->envMap["AUTH_TYPE"] = req.getHeaders().find("AUTHORIZATION")->second.substr(0, r);                     //?? default Basic,
 //	std::string tmpFoIdent = req.getHeaders().find("AUTHORIZATION")->second.substr(r + 1);
 //	{
 //		дешифратор! из "wergetrhjtuktulruyk" => "aladdin:opensesame";
@@ -112,35 +104,51 @@ void CGI::init(Request &req, Server &ser) {
 
 	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
 	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
-	this->envMap["GATEWAY_INTERFACE"] = ser.getEnvValue("GATEWAY_INTERFACE");
-	this->envMap["REQUEST_METHOD"] = req.getMethod();        //"GET";
-	if (req.getHeaders().find("CONTENT-LENGTH") != req.getHeaders().end())
-		this->envMap["CONTENT_LENGTH"] = req.getHeaders().find("CONTENT-LENGTH")->second; // ?? если нет то??
-	if (req.getHeaders().find("CONTENT-TYPE") != req.getHeaders().end())
-		this->envMap["CONTENT_TYPE"] = req.getHeaders().find("CONTENT-TYPE")->second;   //"plain/text";  ""
-	char dir[1024];
-	getcwd(dir, 1024);
-	this->envMap["PATH_TRANSLATED"] = std::string(dir) + this->envMap["PATH_INFO"];// ?? getcwd() + "cgi_tester" or /full/path/to/interpretier
-	this->envMap["REMOTE_ADDR"] = "127.0.0.1"; //ser.getEnvValue("REMOTE_ADDR");               // IP-adr клиента из запроса Den
-	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");                   //
-	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");                    //
-	this->RequestBody = req.getBody();
-	this->argv = new char *[3];
-	this->argv[0] = strdup(envMap.find("PATH_INFO")->second.c_str()); // strdup("CGI/cgi_tester");
-	this->argv[1] = strdup(envMap.find("REQUEST_URI")->second.c_str()); // strdup("CGI/1.php");
-	this->argv[2] = NULL;
-}
+	this->envMap["GATEWAY_INTERFACE"] = "CGI/1.1"; // ser.getEnvValue("GATEWAY_INTERFACE");
+	this->envMap["REQUEST_METHOD"] = req.getMethod();
 
+	if (req.getHeaders().find("CONTENT-LENGTH") != req.getHeaders().end())
+		this->envMap["CONTENT_LENGTH"] = req.getHeaders().find("CONTENT-LENGTH")->second;
+	else
+		this->envMap["CONTENT_LENGTH"] = "";
+	if (req.getHeaders().find("CONTENT-TYPE") != req.getHeaders().end())
+		this->envMap["CONTENT_TYPE"] = req.getHeaders().find("CONTENT-TYPE")->second;
+	else
+		this->envMap["CONTENT_TYPE"] = "";
+	char dir[1024];
+	if (getcwd(dir, 1024) == NULL)
+		throw std::runtime_error("error getcwd. 500 Internal Server Error");;
+	this->envMap["PATH_TRANSLATED"] = std::string(dir) + "/" + this->envMap["PATH_INFO"];
+	this->envMap["REMOTE_ADDR"] = "127.0.0.1"; //ser.getEnvValue("REMOTE_ADDR");
+	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");
+	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");
+	this->RequestBody = req.getBody();
+	PathInfo = req.getPathInfo();
+	this->argv = new char *[3];
+	this->argv[0] = strdup(req.getPathInfo().c_str()); // strdup("cgi_tester");
+	this->argv[1] = strdup(envMap.find("REQUEST_URI")->second.c_str());
+	this->argv[2] = NULL;
+	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
+	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
+
+}
 
 void CGI::creatENV() {
 	std::string tmp;
-	env = new char *[envCount];
+	env = new char *[envMap.size() + 1];
 	std::map <std::string, std::string>:: iterator it = envMap.begin();
 	for (int i = 0; it != envMap.end(); it++, i++) {
-		tmp = it->first + "=\"" + it->second + "\"";
+		tmp = it->first + "=" + it->second;
 		env[i] = strdup(tmp.c_str());
 	}
+	env[envMap.size()] = NULL;
 
+//	int i = 0;
+//	while(i < envMap.size())
+//	{
+//		std::cout << "ENV "<< i << " " << env[i] << std::endl;
+//		i++;
+//	}
 }
 
 // содержимое скрипта поступает на fd[0](STDIN подменяется fd[0])
@@ -148,32 +156,28 @@ void CGI::creatENV() {
 // в fd[1] - тело запроса
 
 void CGI::exec() {
-	//Программа должна быть или двоичным исполняемым файлом,
-	//или скриптом, начинающимся со строки вида "#! интерпретатор [аргументы]"
-	//В последнем случае интерпретатор -- это правильный путь к исполняемому
-	//файлу, который не является скриптом; этот файл будет выполнен как интерпретатор [arg] filename.
 	pid_t pid;
 	int ex;
 	int fdF = open("./myFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
 	int status;
-	if (pipe(fd) != 0) {
-		std::cerr << "cannot pipe" << std::endl;
-		throw std::runtime_error("cannot pipe");
-	}
+	if (pipe(fd) != 0)
+		throw std::runtime_error("cannot pipe. code: 500 Internal Server Error");
 	pid = fork();
 	if(pid < 0) {
-		throw std::runtime_error("cannot pid");
+		throw std::runtime_error("cannot fork. code: 500 Internal Server Error");
 	}
 	else if(pid == 0) { // ребенок
 		close(fd[1]);
 		if (dup2(fd[0], STDIN) < 0)
-			std::cerr << "Cannot dup, 1" << std::endl;
+			throw std::runtime_error("Cannot dup, 1. code: 500 Internal Server Error");
 		if (dup2(fdF, STDOUT) < 0)
-			std::cerr << "Cannot dup, 2" << std::endl;
-		ex = execve(envMap.find("REQUEST_URI")->second.c_str(), argv , env);
+			throw std::runtime_error("Cannot dup, 2. code: 500 Internal Server Error");
+		ex = execve(PathInfo.c_str(), argv , env);
+		exit(ex); // бессмысленно
 	}
 	else { // родитель
-//		write(fdF, "dfdfdg", 6);
+		close(fd[0]);
+		write(fd[1], RequestBody.c_str(), RequestBody.length());// atoi(this->envMap["CONTENT_LENGTH"].c_str())
 		close(fd[1]);
 		std::cerr << "Waiting..." << std::endl;
 		waitpid(pid, &status, 0);
@@ -182,7 +186,7 @@ void CGI::exec() {
 		}
 		std::cout << "status: " << status << std::endl;
 		if(status != 0)
-			;//gener.error response
+			throw std::runtime_error("Cannot execve. code: 500 Internal Server Error");//gener.error response
 		close(fdF);
 		close(fd[0]);
 	}
