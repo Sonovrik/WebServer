@@ -194,7 +194,7 @@ int main(){
 		it->fullConfigEnvironment();
 	}
 	Request req;
-	std::string tmp3 = "POST http://127.0.0.1:8081/html/YoupiBanane/1.bla/CGI/cgi_tester HTTP/1.1\r\nHost: 127.0.0.1:5991\r\n\r\nbulina,masha,den, 4 po russkomu!\r\n";
+	std::string tmp3 = "POST http://127.0.0.1:8081/html/YoupiBanane/1.bla/CGI/cgi_tester HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\nbulina,masha,den!\r\n";
 //	std::string tmp3 = "PUT http://localhost:8080/post_body/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
 	parseRequest(tmp3, req);
 	if(parsBeforeCGI(req, _serversList.front()) == 0) {
