@@ -10,4 +10,4 @@ add_executable(WebServer CGI/CGI.cpp CGI/CGI.hpp CGI/mainCGI.cpp
         Client/Client.cpp Client/Client.hpp
         utils.cpp utils.hpp)
 
-#CGI.cpp mainCGI.cpp ../ConfigParser/ConfigParser.cpp ../server.cpp ../parser/parser.cpp ../parser/Request.cpp
+#CGI/CGI.cpp CGI/mainCGI.cpp ConfigParser/ConfigParser.cpp server.cpp Request/Request.cpp Client/Client.cpp utils.cpp

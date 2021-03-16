@@ -27,6 +27,7 @@ CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""),
 			a.replace(a.find("-"), 1, "_");
 		std::transform(a.begin(), a.end(), a.begin(), toupper);
 		envMap["HTTP_" + a] = it->second;
+		envCount++;
 	}
 
 }
@@ -44,10 +45,19 @@ CGI::~CGI() {
 }
 
 CGI::CGI(const CGI &copy) {
+
 }
 
 CGI &CGI::operator=(const CGI &copy) {
 	return *this;
+}
+
+const std::string &CGI::getResponseBody() const {
+	return ResponseBody;
+}
+
+void CGI::setResponseBody(const std::string &responseBody) {
+	ResponseBody = responseBody;
 }
 
 std::string b64decode(const void* data, const size_t len)
@@ -93,16 +103,14 @@ void CGI::init(Request &req, Server &ser) {
 //	else
 //		; //error
 
-
 	this->envMap["REQUEST_URI"] = "/html/YoupiBanane/1.bla"; //req.getPath();             //"localhost/1.cgi";
 	this->envMap["QUERY_STRING"] = req.getQueryString();     // "";
 	this->envMap["SCRIPT_NAME"] = "/html/YoupiBanane/1.bla"; // req.getPath(); // "1.bla";   // ?? "1.cgi"
 	this->envMap["PATH_INFO"] = "/html/YoupiBanane/1.bla"; //req.getPathInfo(); // "CGI/cgi_tester"; по дефолту "cgi_tester" or path/to/interpretier
-
-//	this->envMap["AUTH_TYPE"] = "";
-//	this->envMap["REMOTE_IDENT"] = "";
-//	this->envMap["REMOTE_USER"] = "";
-
+	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
+	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
+	this->envMap["GATEWAY_INTERFACE"] = "CGI/1.1"; // ser.getEnvValue("GATEWAY_INTERFACE");
+	this->envMap["REQUEST_METHOD"] = req.getMethod();
 	if(req.getHeaders().find("AUTHORIZATION") != req.getHeaders().end() &&
 					!req.getHeaders().find("AUTHORIZATION")->second.empty()) {
 		std::string tmp = req.getHeaders().find("AUTHORIZATION")->second;
@@ -117,11 +125,6 @@ void CGI::init(Request &req, Server &ser) {
 			}
 		}
 	}
-
-	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
-	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
-	this->envMap["GATEWAY_INTERFACE"] = "CGI/1.1"; // ser.getEnvValue("GATEWAY_INTERFACE");
-	this->envMap["REQUEST_METHOD"] = req.getMethod();
 	if (req.getHeaders().find("CONTENT-LENGTH") != req.getHeaders().end())
 		this->envMap["CONTENT_LENGTH"] = req.getHeaders().find("CONTENT-LENGTH")->second;
 	else
@@ -135,7 +138,6 @@ void CGI::init(Request &req, Server &ser) {
 		throw std::runtime_error("error getcwd. 500 Internal Server Error");
 	this->envMap["PATH_TRANSLATED"] = this->envMap["PATH_INFO"][0] == '/' ?
 		std::string(dir) + this->envMap["PATH_INFO"] : std::string(dir) + "/" + this->envMap["PATH_INFO"];
-//	this->envMap["PATH_TRANSLATED"] = std::string(dir) + "/" + this->envMap["PATH_INFO"];
 	this->envMap["REMOTE_ADDR"] = "127.0.0.1"; //ser.getEnvValue("REMOTE_ADDR");
 	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");
 	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");
@@ -145,14 +147,15 @@ void CGI::init(Request &req, Server &ser) {
 	this->argv[0] = strdup(req.getPathInfo().c_str()); // strdup("cgi_tester");
 	this->argv[1] = strdup(envMap.find("REQUEST_URI")->second.c_str());  // проверка маллокав
 	this->argv[2] = NULL;
-	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
-	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
+//	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
+//	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
 
 }
 
 void CGI::creatENV() {
 	std::string tmp;
-	env = new char *[envMap.size() + 1]; // проверка маллокав
+	envCount = envMap.size();
+	env = new char *[envCount + 1]; // проверка маллокав
 	std::map <std::string, std::string>:: iterator it = envMap.begin();
 	for (int i = 0; it != envMap.end(); it++, i++) {
 		tmp = it->first + "=" + it->second;
@@ -160,12 +163,12 @@ void CGI::creatENV() {
 	}
 	env[envMap.size()] = NULL;
 
-	int i = 0;
-	while(i < envMap.size())
-	{
-		std::cout << "ENV "<< i << " " << env[i] << std::endl;
-		i++;
-	}
+//	int i = 0;
+//	while(i < envMap.size())
+//	{
+//		std::cout << "ENV "<< i << " " << env[i] << std::endl;
+//		i++;
+//	}
 }
 
 // содержимое скрипта поступает на fd[0](STDIN подменяется fd[0])
@@ -190,7 +193,7 @@ void CGI::exec() {
 		if (dup2(fdF, STDOUT) < 0)
 			throw std::runtime_error("Cannot dup, 2. code: 500 Internal Server Error");
 		ex = execve(PathInfo.c_str(), argv , env);
-		exit(ex); // бессмысленно
+		exit(ex);
 	}
 	else { // родитель
 		close(fd[0]);
@@ -203,7 +206,7 @@ void CGI::exec() {
 		}
 		std::cout << "status: " << status << std::endl;
 		if(status != 0)
-			throw std::runtime_error("Cannot execve. code: 500 Internal Server Error");//gener.error response
+			throw std::runtime_error("Cannot execve. code: 500 Internal Server Error");
 		close(fdF);
 		close(fd[0]);
 	}
