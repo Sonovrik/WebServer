@@ -187,8 +187,9 @@ void	Response::set_version(std::string version) {
 	this->_version = version;
 }
 
-void	Response::set_statusCode(int statusCode) {
+void	Response::setStatusCode(int statusCode) {
 	this->_statusCode = statusCode;
+	this->_statusMessage = setStatusMessage(statusCode);
 }
 
 void	Response::set_statusMessage(std::string statusMessage) {

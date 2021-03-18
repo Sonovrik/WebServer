@@ -84,9 +84,12 @@ int main(){
 								std::cout << "wait" << std::endl;
 								continue;
 							}
-							else if (client.getFlag() == ERROR) {
+							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED) {
 								std::cout << "error" << std::endl;
 								Response response(400, *it, client);
+								if (client.getFlag() == ERR_LENGTH_REQUIRED)
+									response.setStatusCode(411);
+
 								std::cout << response.getResponse() << std::endl;
 								client.getRequest().reset();
 							}

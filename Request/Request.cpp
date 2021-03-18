@@ -41,7 +41,7 @@ Request::Request():
 	_pathInfo("cgi_tester"),
 	_return(WAIT),
 	_toClose(false),
-	_chunk(0),
+	_bodyLen(0),
 	_waitBody(false) {}
 
 Request::~Request(){}
@@ -61,7 +61,7 @@ Request &Request::operator=(Request const &other) {
 		this->_queryString = other._queryString;
 		this->_toClose = other._toClose;
 		this->_return = other._return;
-		this->_chunk = other._chunk;
+		this->_bodyLen = other._bodyLen;
 		this->_waitBody = other._waitBody;
 	}
 	return *this;
@@ -160,7 +160,7 @@ void	Request::reset() {
 	_body = "";
 	_toClose = false;
 	_return = WAIT;
-	_chunk = 0;
+	_bodyLen = 0;
 	_waitBody = false;
 }
 
@@ -209,8 +209,8 @@ bool	Request::parseStartLine(std::string str) {
 	if (!parseQueryString())
 		return false;
 	// cut http://
-	if ((pos = this->_path.find("http://")) != std::string::npos)
-		this->_path = this->_path.substr(7, this->_path.length() - 7);
+	// if ((pos = this->_path.find("http://")) != std::string::npos)
+		// this->_path = this->_path.substr(7, this->_path.length() - 7);
 	return true;
 }
 
@@ -331,40 +331,41 @@ bool		Request::parseHeaders(std::string &req) {
 }
 
 bool		Request::parseBody(std::string req) {
+	size_t pos;
 	// wait for body
 	if (req.empty())
 		return true;
-	size_t pos;
 	// chunked
 	if (this->_headers.find("TRANSFER-ENCODING")->second.find("chunked") != std::string::npos) {
 		while ((pos = req.find("\r\n")) != std::string::npos) {
 			// parse chunk value
-			if (this->_chunk == 0) {
+			if (this->_bodyLen == 0) {
 				try {
-					this->_chunk = stoul(req.substr(0, pos), NULL, 16);
+					this->_bodyLen = stoul(req.substr(0, pos), NULL, 16);
 					req.erase(0, pos + 2);
 				}
 				catch (std::exception &e) {
+					this->_return = ERR_BAD_REQUEST;
 					return false;
 				}
 			}
 			// end
-			if (this->_chunk == 0) {
+			if (this->_bodyLen == 0) {
 				this->_return = SEND;
 				this->_waitBody = false;
 				return true;
 			}
 			// parse chunk
-			if (this->_chunk > 0) {
+			if (this->_bodyLen > 0) {
 				if ((pos = req.find("\r\n")) != std::string::npos) {
-					if (req.substr(0, pos).length() >= this->_chunk) {
-						this->_body = this->_body + req.substr(0, this->_chunk);
+					if (req.substr(0, pos).length() >= this->_bodyLen) {
+						this->_body = this->_body + req.substr(0, this->_bodyLen);
 						req.erase(0, pos + 2);
-						this->_chunk = 0;
+						this->_bodyLen = 0;
 					}
-					if (req.substr(0, pos).length() < this->_chunk) {
+					if (req.substr(0, pos).length() < this->_bodyLen) {
 						this->_body = this->_body + req.substr(0, pos);
-						this->_chunk -= pos;
+						this->_bodyLen -= pos;
 						req.erase(0, pos + 2);
 					}
 				}
@@ -372,27 +373,48 @@ bool		Request::parseBody(std::string req) {
 		}
 		return true;
 	}
-	// parse body
-	if ((pos = req.find("\r\n")) != std::string::npos) {
-		_body = req.substr(0, req.length() - 2);
-		this->_return = SEND;
+	// content length
+	// > wait
+	// < cut
+	// no -> error length required
+	if (this->_headers.find("CONTENT-LENGTH") != this->_headers.end()) {
+		if (_bodyLen == 0)
+			this->_bodyLen = atoi(this->_headers.find("CONTENT-LENGTH")->second.c_str());
+		if ((pos = req.find("\r\n")) != std::string::npos) {
+			if (req.substr(0, pos).length() >= this->_bodyLen) {
+					this->_body = this->_body + req.substr(0, this->_bodyLen);
+					req.erase(0, pos + 2);
+					this->_bodyLen = 0;
+			}
+			if (req.substr(0, pos).length() < this->_bodyLen) {
+				this->_body = this->_body + req.substr(0, pos);
+				this->_bodyLen -= pos;
+				req.erase(0, pos + 2);
+			}
+			if (_bodyLen == 0)
+				this->_return = SEND;
+		}
+	}
+	else {
+		this->_return = ERR_LENGTH_REQUIRED;
+		return false;
 	}
 	return true;
 }
 
-// return SEND WAIT ERROR
+// return SEND / WAIT / ERR_BAD_REQUEST / ERR_LENGTH_REQUIRED
 int			parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
 
 	if (request.getMethod() == "") {
 		if ((pos = req.find("\r\n")) == std::string::npos) {
-			request.setReturn(ERROR);
+			request.setReturn(ERR_BAD_REQUEST);
 			std::cout << "fail" << std::endl;
 			return request.getReturn();
 		}
 		std::string	tmp(req.substr(0, pos + 2));
 		if (request.parseStartLine(tmp) == false) {
-			request.setReturn(ERROR);
+			request.setReturn(ERR_BAD_REQUEST);
 			std::cout << "start line problem" << std::endl;
 			return request.getReturn();
 		}
@@ -400,14 +422,13 @@ int			parseRequest(std::string req, Request &request) {
 	}
 	if (request.getWaitBody() == false && request.parseHeaders(req) == false) {
 		std::cout << "header problem" << std::endl;
-		return ERROR;
+		return ERR_BAD_REQUEST;
 	}
-	if (request.getMethod() == "POST") {
+	if (request.getMethod() == "POST" && request.getWaitBody() == true) {
 		if (request.parseBody(req) == false) {
-			request.setReturn(ERROR);
 			return request.getReturn();
 		}
-		// std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
+		std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
 	}
 	return request.getReturn();
 }

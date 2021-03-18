@@ -5,9 +5,11 @@
 #include <map>
 #include <vector>
 
-#define	WAIT	0
-#define SEND	1
-#define ERROR	-1
+#define	WAIT				0
+#define SEND				1
+#define ERR_BAD_REQUEST		-1
+#define ERR_LENGTH_REQUIRED	-2
+
 
 class Request{
 
@@ -22,7 +24,7 @@ private:
 	std::string					_body;
 	// other
 	std::map<std::string,std::string>	_headers;
-	unsigned long				_chunk;
+	unsigned long				_bodyLen;
 	bool						_waitBody;
 	bool						_toClose;
 	int							_return;

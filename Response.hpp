@@ -30,7 +30,7 @@ public:
 
 	// setters
 	void	set_version(std::string);
-	void	set_statusCode(int);
+	void	setStatusCode(int);
 	// void	set_statusMessage(int code);
 	std::string	setStatusMessage(int);
 
