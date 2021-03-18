@@ -52,7 +52,7 @@ void		Server::fullBasicDirectives(void){
 		if (it->_directives.find("max_body_size") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("max_body_size", _maxBodySize));
 		if (it->_directives.find("method") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("method", "GET POST PUT")); // add more
+			it->_directives.insert(std::make_pair<std::string, std::string>("method", "GET POST PUT HEAD")); // add more
 		if (it->_directives.find("autoindex") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("autoindex", "on"));
 		if (it->_directives.find("cgi_extensions") == it->_directives.end())

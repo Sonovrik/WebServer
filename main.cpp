@@ -86,12 +86,24 @@ int main(){
 							}
 							else if (client.getFlag() == SEND){
 							}
+							// else if ()
 						}
 					}
 					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)){
+							// if (check_cgi){
+							// 	int ret = func();
+							// 	if (ret == 1){
+							// 		CGI
+							// 	}
+							// 	if (ret == 0){
+							// 		server
+							// 	}
+							// 	if (ret == 404)
+
+							// }
 						continue;
-							// Response resp(400, *it);
-							// send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
+							Response resp(400, *it);
+							send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
 						// if (write == yes){
 						// 	send();
 						// }

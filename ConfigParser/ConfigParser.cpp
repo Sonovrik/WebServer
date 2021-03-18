@@ -237,7 +237,9 @@ bool	ConfigParser::checkURIS(std::vector<location_t>	&locations) const{
 	std::vector<location_t>::iterator it = locations.begin();
 	std::vector<location_t>::iterator it2;
 
-	for (; it != locations.end() - 1; it++){
+	if (locations.size() == 0)
+		return false;
+	for (; it != locations.end(); it++){
 		it2 = it + 1;
 		for (; it2 != locations.end(); it2++){
 			if (it2->_name == it->_name)
