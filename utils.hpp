@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 
+
 typedef struct		s_location{
 	std::string		_name;
 	std::map<std::string, std::string>	_directives;
@@ -22,5 +23,7 @@ std::string		ipToString(uint32_t addr);
 
 bool location_tCompare(const location_t &x, const location_t &y);
 
+// errors
+std::string	get_errorPage(int code);
 
 #endif

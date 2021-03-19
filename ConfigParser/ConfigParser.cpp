@@ -191,9 +191,10 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 		a= 3;
 	else if (_tokens[index].front() == "listen" && serv.get_ip().empty())
 		a = 4;
-	else if (_tokens[index].front() == "error_page" && serv.get_errorPage().empty())
+	else if (_tokens[index].front() == "error_page" && serv.get_errorPath(atoi((*(_tokens[index].begin() + 1)).c_str())).empty())
 		a = 5;
-	if (a == 0 ||  _tokens[index].size() != 2)
+	if ((a == 5 && _tokens[index].size() != 3) ||
+		((a == 0 || _tokens[index].size() != 2) && a != 5))
 		return false;
 
 	int		val = 0;
@@ -218,12 +219,12 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			serv.set_port(_tokens[index].back().substr(pos + 1, _tokens[index].back().size()));
 			break;
 		case 5:
-			serv.set_errorPage(_tokens[index].back());
-			std::string page = serv.get_errorPage();
+			serv.add_errorPage(std::make_pair(atoi((*(_tokens[index].begin() + 1)).c_str()), _tokens[index].back()));
+			std::string page = _tokens[index].back();
 			if (page.rfind('.') == std::string::npos || 
 				(std::string)&(page.c_str()[page.rfind('.')]) != ".html")
 				return false;
-			std::ifstream in(serv.get_errorPage());
+			std::ifstream in(page);
 			if (in.is_open() == false)
 				return false;
 			in.close();
@@ -236,7 +237,9 @@ bool	ConfigParser::checkURIS(std::vector<location_t>	&locations) const{
 	std::vector<location_t>::iterator it = locations.begin();
 	std::vector<location_t>::iterator it2;
 
-	for (; it != locations.end() - 1; it++){
+	if (locations.size() == 0)
+		return false;
+	for (; it != locations.end(); it++){
 		it2 = it + 1;
 		for (; it2 != locations.end(); it2++){
 			if (it2->_name == it->_name)
@@ -296,11 +299,3 @@ bool	ConfigParser::parseConfig(const std::string &fileName){
 	_serversList.front().sortLocations();
 	return true;
 }
-
-
-// int		main(){
-// 	ConfigParser parser;
-// 	parser.parseConfig("webserv.conf");
-// 	std::vector<Server> _serversList(parser.getServers());
-// 	return 0;
-// }
