@@ -40,9 +40,7 @@ public:
 	void creatENV();
 
 	const std::string &getResponseBody() const;
-
 	void setResponseBody(const std::string &responseBody);
-
 	void exec();
 };
 

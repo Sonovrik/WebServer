@@ -14,6 +14,7 @@ CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/mainCGI.cpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../ConfigParser/ConfigParser.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Response.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../utils.hpp
 
@@ -30,6 +31,13 @@ CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../utils.hpp
 
 CMakeFiles/WebServer.dir/Request/Request.cpp.o: ../Request/Request.cpp
 CMakeFiles/WebServer.dir/Request/Request.cpp.o: ../Request/Request.hpp
+
+CMakeFiles/WebServer.dir/Response.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/Response.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/Response.cpp.o: ../Response.cpp
+CMakeFiles/WebServer.dir/Response.cpp.o: ../Response.hpp
+CMakeFiles/WebServer.dir/Response.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/Response.cpp.o: ../utils.hpp
 
 CMakeFiles/WebServer.dir/server.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/server.cpp.o: ../Request/Request.hpp

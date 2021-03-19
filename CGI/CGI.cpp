@@ -147,8 +147,8 @@ void CGI::init(Request &req, Server &ser) {
 	this->argv[0] = strdup(req.getPathInfo().c_str()); // strdup("cgi_tester");
 	this->argv[1] = strdup(envMap.find("REQUEST_URI")->second.c_str());  // проверка маллокав
 	this->argv[2] = NULL;
-//	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
-//	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
+	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
+	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
 
 }
 
@@ -163,12 +163,12 @@ void CGI::creatENV() {
 	}
 	env[envMap.size()] = NULL;
 
-//	int i = 0;
-//	while(i < envMap.size())
-//	{
-//		std::cout << "ENV "<< i << " " << env[i] << std::endl;
-//		i++;
-//	}
+	int i = 0;
+	while(i < envMap.size())
+	{
+		std::cout << "ENV "<< i << " " << env[i] << std::endl;
+		i++;
+	}
 }
 
 // содержимое скрипта поступает на fd[0](STDIN подменяется fd[0])

@@ -107,6 +107,12 @@
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/Request/Request.hpp">
 			<Option target="WebServer"/>
 		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Response.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Response.hpp">
+			<Option target="WebServer"/>
+		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/Server.hpp">
 			<Option target="WebServer"/>
 		</Unit>

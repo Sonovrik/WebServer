@@ -278,6 +278,33 @@ Request/Request.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Request/Request.cpp.s
 .PHONY : Request/Request.cpp.s
 
+Response.o: Response.cpp.o
+
+.PHONY : Response.o
+
+# target to build an object file
+Response.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Response.cpp.o
+.PHONY : Response.cpp.o
+
+Response.i: Response.cpp.i
+
+.PHONY : Response.i
+
+# target to preprocess a source file
+Response.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Response.cpp.i
+.PHONY : Response.cpp.i
+
+Response.s: Response.cpp.s
+
+.PHONY : Response.s
+
+# target to generate assembly for a file
+Response.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/Response.cpp.s
+.PHONY : Response.cpp.s
+
 server.o: server.cpp.o
 
 .PHONY : server.o
@@ -356,6 +383,9 @@ help:
 	@echo "... Request/Request.o"
 	@echo "... Request/Request.i"
 	@echo "... Request/Request.s"
+	@echo "... Response.o"
+	@echo "... Response.i"
+	@echo "... Response.s"
 	@echo "... server.o"
 	@echo "... server.i"
 	@echo "... server.s"

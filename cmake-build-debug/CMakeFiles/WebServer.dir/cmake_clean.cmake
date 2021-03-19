@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/WebServer.dir/Client/Client.cpp.o"
   "CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o"
   "CMakeFiles/WebServer.dir/Request/Request.cpp.o"
+  "CMakeFiles/WebServer.dir/Response.cpp.o"
   "CMakeFiles/WebServer.dir/server.cpp.o"
   "CMakeFiles/WebServer.dir/utils.cpp.o"
   "WebServer"
