@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
+CGI.hpp
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
+
 /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
 map
 -
@@ -27,16 +31,6 @@ string
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 ../ConfigParser/ConfigParser.hpp
 /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
-
-/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp
-CGI.hpp
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
-../utils.hpp
-/Users/kmoaning/Desktop/ToGit/utils.hpp
-../Response.hpp
-/Users/kmoaning/Desktop/ToGit/Response.hpp
-../Client/Client.hpp
-/Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 
 /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 ../Request/Request.hpp
@@ -73,18 +67,6 @@ map
 -
 vector
 -
-
-/Users/kmoaning/Desktop/ToGit/Response.hpp
-iostream
--
-string
--
-map
--
-fstream
--
-Server.hpp
-/Users/kmoaning/Desktop/ToGit/Server.hpp
 
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 map

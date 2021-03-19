@@ -7,33 +7,34 @@
 #include "../Response.hpp"
 #include "../Client/Client.hpp"
 
-int compareLocation(std::string &uri, location_t loc, std::string &res, bool rootLen) {
+int compareLocation(std::string &uri, location_t loc, std::string &res) {
 	std::string name = loc._name;
-	std::string root = loc._directives.find("root")->second;
-	int len = rootLen ? name.length() : name.length() + root.length();
+//	std::string root = loc._directives.find("root")->second;
+//	int len = rootLen ? name.length() : name.length() + root.length();
+	int len = name.length();
 	if(uri.compare(0, len, name) == 0) {
-		res = root + name;
+		res = name;
 		uri.erase(0, len);
 		return 1;
 	}
 	return 0;
 }
 
-std::string getLocation(std::string &uri, Server &ser, int *pos) {
+std::string getLocation(std::string &uri, Server &ser, int &pos) {
 	std::string res;
 	std::vector<location_t> tmp = ser.get_locations();
 	size_t count = tmp.size();
 	size_t i = 0;
 	while (i < count) {
-		if (compareLocation(uri, tmp[i], res, false))
+		if (compareLocation(uri, tmp[i], res))
 			break;
-		if (compareLocation(uri, tmp[i], res, true))
+		if (compareLocation(uri, tmp[i], res))
 			break;
 		i++;
 	}
 	if(i == count)
 		res = ser.get_root() + "/";
-	*pos = i;
+	pos = i;
 	return res;
 }
 
@@ -41,8 +42,9 @@ std::string getLocation(std::string &uri, Server &ser, int *pos) {
 //
 //}
 
-std::string getPath(std::string &uri, std::string &location, Request &req, const Server &ser) {
-	std::string tmp = location + uri;
+std::string getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
+//	std::string tmp = location + uri;
+	std::string tmp = ser.get_locations()[loc]._directives.find("root")->second + '/' + uri;
 	size_t len = tmp.length();
 	size_t count = 0;
 	struct stat info;
@@ -150,7 +152,7 @@ void checkBodySize(Server &ser, int locIndex, Request &req) {
 	}
 }
 
-void setWhere(Server &ser, int locIndex, Request &req) {
+void setWhere(Server &ser, int locIndex, Request &req, Client &client) {
 	std::string extension;
 	std::string cgiPath;
 	std::map<std::string, std::string> dir = ser.get_locations()[locIndex]._directives;
@@ -163,16 +165,16 @@ void setWhere(Server &ser, int locIndex, Request &req) {
 	}
 	if (!cgiPathConf.empty() || !extConf.empty()) {
 		if (extension == extConf && cgiPath == cgiPathConf)
-			;//where = cgi;
+			client.setWhere(1) ;//where = cgi;
 		else
-			; //where != cgi; какое то поле не совпало
+			client.setWhere(0) ; //where != cgi; какое то поле не совпало
 	}
 	else {
 		// ес..ath, то??
 	}
 }
 
-void checkConf(Server &ser, int locIndex, Request &req) {
+void checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 	if(ser.get_locations()[locIndex]._directives.find("method") != ser.get_locations()[locIndex]._directives.end()) {
 		std::string method = ser.get_locations()[locIndex]._directives.find("method")->second;
 		if (!method.empty()) {
@@ -188,12 +190,12 @@ void checkConf(Server &ser, int locIndex, Request &req) {
 		}
 	}
 	checkBodySize(ser, locIndex, req);
-	setWhere(ser, locIndex, req);
+	setWhere(ser, locIndex, req, client);
 }
 
 int parsBeforeCGI(Client &client, Server &ser) {
-	Request req = client.getRequest();
-	std::string uri = req.getPath();
+	Request *req = &client.getRequest();
+	std::string uri = req->getPath();
 	std::string pathToScript;
 	std::string location;
 	int loc = -1;
@@ -210,49 +212,19 @@ int parsBeforeCGI(Client &client, Server &ser) {
 //			else
 //				; //error
 //		}
-		location = getLocation(uri, ser, &loc);
-		pathToScript = getPath(uri, location, req, ser);
-		req.setPath(pathToScript); //  переделать по нормальному!!!
-		checkConf(ser, loc, req);
+		location = getLocation(uri, ser, loc);
+		pathToScript = getPath(uri, loc, *req, ser);
+		req->setPath(pathToScript); //  переделать по нормальному!!!
+		checkConf(ser, loc, *req, client);
+		client.setPathToFile(pathToScript);
 	}
 	catch (std::exception &exception) {
 		std::cerr << "error : " << exception.what() << std::endl;
 		return -1;
 	}
-	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
+	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req->getPathInfo() << std::endl;
 	return 0;
 }
-
-//int main(){
-//
-//	ConfigParser parser;
-//	parser.parseConfig("webserv.conf");
-//	std::vector<Server> _serversList(parser.getServers());
-//	for (std::vector<Server>::iterator it = _serversList.begin(); it < _serversList.end(); it++){
-//		it->fullConfigEnvironment();
-//	}
-//	Request req;
-//	std::string tmp3 = "POST http://localhost:8081/html/YoupiBanane/1.bla/CGI/cgi_tester?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\ngbfgbfdhnhdnd!\r\n";
-////	std::s tring tmp3 = "PUT http://localhost:8080/post_body/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
-//	parseRequest(tmp3, req);
-//
-//
-//	if(parsBeforeCGI(req, _serversList.front()) == 0) {
-//		try {
-//			CGI qqq(req, _serversList.front());
-//			qqq.init(req, _serversList.front());
-//			qqq.creatENV();
-//			qqq.exec();
-//		}
-//		catch (std::exception &exception) {
-//			std::cerr << "error : " << exception.what() << std::endl;
-//			return 1;
-//		}
-//	}
-//	return 0;
-//}
-
-
 
 int		findMaxSD(std::vector<Server> &servers){
 	std::vector<Server>::iterator it = servers.begin();
@@ -327,7 +299,7 @@ int main(){
 							it->delete_client(i + 1);
 						}
 						else {
-							std::string tmp3 = "POST http://localhost:8081/html/YoupiBanane/1.bla/CGI/cgi_tester?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\nhello denis!\r\n";
+							std::string tmp3 = "POST http://localhost:8081/directory/1.bla/CGI/cgi_tester?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\nhello !!!!!\r\n";
 							tmp.setFlag(parseRequest(tmp3, tmp.getRequest()));
 							if (tmp.getFlag() == WAIT)
 								continue;
@@ -372,3 +344,35 @@ int main(){
 	}
 	return 0;
 }
+
+
+
+
+//int main(){
+//
+//	ConfigParser parser;
+//	parser.parseConfig("webserv.conf");
+//	std::vector<Server> _serversList(parser.getServers());
+//	for (std::vector<Server>::iterator it = _serversList.begin(); it < _serversList.end(); it++){
+//		it->fullConfigEnvironment();
+//	}
+//	Request req;
+//	std::string tmp3 = "POST http://localhost:8081/html/YoupiBanane/1.bla/CGI/cgi_tester?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\fffffffffff!\r\n";
+////	std::s tring tmp3 = "PUT http://localhost:8080/post_body/1.php/user/bin/php?q=r&a=d HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nUser-Agent: curl/7.47.0\r\nAccept: */*    \r\n\r\n";
+//	parseRequest(tmp3, req);
+//
+//
+//	if(parsBeforeCGI(req, _serversList.front()) == 0) {
+//		try {
+//			CGI qqq(req, _serversList.front());
+//			qqq.init(req, _serversList.front());
+//			qqq.creatENV();
+//			qqq.exec();
+//		}
+//		catch (std::exception &exception) {
+//			std::cerr << "error : " << exception.what() << std::endl;
+//			return 1;
+//		}
+//	}
+//	return 0;
+//}

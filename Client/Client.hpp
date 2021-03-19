@@ -15,7 +15,7 @@ private:
 	int		_flag;
 	int		_statusCode;
 	Request _request;
-
+	std::string pathToFile;
 public:
 	Client();
 	Client(int sd);
@@ -25,12 +25,15 @@ public:
 	void	setFlag(int flag);
 	void	setRequest(Request &reqv);
 	void	setStatusCode(int code);
+	void	setPathToFile(const std::string &pathToFile);
+	void setWhere(int where);
 
 	int		getStatusCode(void) const;
 	int		getSd(void) const;
 	int		getFlag(void) const;
 	Request	&getRequest(void);
-
+	const	std::string &getPathToFile() const;
+	int getWhere() const;
 };
 
 #endif

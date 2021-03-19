@@ -41,3 +41,19 @@ Request	&Client::getRequest(void){
 int		Client::getStatusCode(void) const{
 	return this->_statusCode;
 }
+
+const std::string &Client::getPathToFile() const {
+	return pathToFile;
+}
+
+void Client::setPathToFile(const std::string &pathToFile) {
+	Client::pathToFile = pathToFile;
+}
+
+int Client::getWhere() const {
+	return where;
+}
+
+void Client::setWhere(int where) {
+	Client::where = where;
+}

@@ -103,10 +103,11 @@ void CGI::init(Request &req, Server &ser) {
 //	else
 //		; //error
 
-	this->envMap["REQUEST_URI"] = "/html/YoupiBanane/1.bla"; //req.getPath();             //"localhost/1.cgi";
+
+	this->envMap["REQUEST_URI"] = "/" + req.getPath(); //"/html/YoupiBanane/1.bla";      //"localhost/1.cgi";
 	this->envMap["QUERY_STRING"] = req.getQueryString();     // "";
-	this->envMap["SCRIPT_NAME"] = "/html/YoupiBanane/1.bla"; // req.getPath(); // "1.bla";   // ?? "1.cgi"
-	this->envMap["PATH_INFO"] = "/html/YoupiBanane/1.bla"; //req.getPathInfo(); // "CGI/cgi_tester"; по дефолту "cgi_tester" or path/to/interpretier
+	this->envMap["SCRIPT_NAME"] = req.getPath(); //"/html/YoupiBanane/1.bla"; // req.getPath(); // "1.bla";   // ?? "1.cgi"
+	this->envMap["PATH_INFO"] = "/" + req.getPath(); // "/html/YoupiBanane/1.bla"; //req.getPathInfo(); // "CGI/cgi_tester"; по дефолту "cgi_tester" or path/to/interpretier
 	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
 	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
 	this->envMap["GATEWAY_INTERFACE"] = "CGI/1.1"; // ser.getEnvValue("GATEWAY_INTERFACE");

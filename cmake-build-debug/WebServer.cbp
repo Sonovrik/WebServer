@@ -116,6 +116,9 @@
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/Server.hpp">
 			<Option target="WebServer"/>
 		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/errors.cpp">
+			<Option target="WebServer"/>
+		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/server.cpp">
 			<Option target="WebServer"/>
 		</Unit>
