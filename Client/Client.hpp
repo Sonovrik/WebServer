@@ -31,6 +31,7 @@ public:
 	void 	setWhere(int where);
 	void	setToClose(bool toClose);
 
+	std::string const	&getMethod(void) const;
 	int		getStatusCode(void) const;
 	int		getSd(void) const;
 	int		getFlag(void) const;

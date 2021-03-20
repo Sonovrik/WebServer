@@ -8,38 +8,6 @@
 #include "CGI/CGI.hpp"
 #include "CGI/mainCGI.cpp"
 
-// 201 Created
-// 204 No Content
-// 409 Conflict
-// 415 Unsupported Media Type
-
-// HEADERS
-// Content-Location
-
-// Last-Modified - must not been send unless request's representation data was saved without any transformation applied to the body
-// 3xx (Redirection) response
-
-
-void	execPut(Client  &client, Server &serv) {
-	
-
-}
-
-
-
-// void	execGet(Client  &client, Server &serv) {}
-
-// void	initMethod(Client  &client, Server &serv){
-// 	if (client.getRequest().getMethod() == "PUT")
-// 		execPut(client, serv);
-// 	if (client.getRequest().getMethod() == "HEAD" || client.getRequest().getMethod() == "GET")
-// 		execGet(client, serv);
-// 	// if (client.getRequest().getMethod() == "POST")
-// 		// execPut(client, server);
-
-// }
-
-
 int		findMaxSD(std::vector<Server> &servers){
 	std::vector<Server>::iterator it = servers.begin();
 	int maxSd = 0;
@@ -137,8 +105,12 @@ int main(){
 							// else if ()
 						}
 					}
-					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) {
-					// 	continue;
+					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) { // or ERROR
+						Response resp(*it, client);
+						std::string str = "./myFile";
+						resp.set_LastModified(str);
+						exit(1);
+						// 	continue;
 						// if (client.getStatusCode() == true){
 						// 	Response resp(*it, client);
 						// }

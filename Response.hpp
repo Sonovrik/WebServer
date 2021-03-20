@@ -7,6 +7,10 @@
 #include <fstream>
 #include "Server.hpp"
 #include "utils.hpp"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 class	Response{
 
@@ -34,10 +38,16 @@ public:
 	// void	set_statusMessage(int code);
 	std::string	setStatusMessage(int);
 
+	
+	void	execPut(Client &client);
+	void	execGET(Client &client);
+
 	void	set_statusMessage(std::string);
 	void	set_headers(std::map<std::string,std::string>);
 	void	set_body(std::string);
 
+
+	void	set_LastModified(std::string &file);
 	void	set_date();
 
 	// getters
