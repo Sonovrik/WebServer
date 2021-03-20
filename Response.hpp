@@ -21,7 +21,7 @@ private:
 
 public:
 	Response();
-	Response(int code, Server const &serv, Client &client);
+	Response(Server const &serv, Client &client);
 	~Response();
 	Response(Response const &);
 	Response &operator=(Response const &);

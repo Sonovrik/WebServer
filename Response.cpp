@@ -75,7 +75,7 @@ Response::Response():
 // 	}
 // }
 
-
+// add all messages
 std::string	Response::setStatusMessage(int code){
 	switch(code){
 		case 400: return "Bad Request";
@@ -102,7 +102,6 @@ Response::~Response(){}
 void	Response::setError(Server const &serv) {
 	this->_version = serv.getEnvValue("SERVER_PROTOCOL");
 
-	// _headers.insert(std::make_pair("Connection", client.get("CONNECTION")));
 	if (this->_toClose == true)
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
@@ -124,11 +123,11 @@ void	Response::setError(Server const &serv) {
 	set_date();
 }
 
-Response::Response(int code, Server const &serv, Client &client):
+Response::Response(Server const &serv, Client &client):
 	_version(serv.getEnvValue("SERVER_PROTOCOL")),
-	_statusCode(code),
+	_statusCode(client.getStatusCode()),
 	_respSize(0),
-	_statusMessage(setStatusMessage(code)),
+	_statusMessage(setStatusMessage(client.getStatusCode())),
 	_body(""),
 	_toClose(client.getToClose()) {
 		// if (code / 100 == 4){

@@ -10,8 +10,7 @@ Client::Client(int sd):
 	_sd(sd),
 	_flag(WAIT),
 	_where(toServer),
-	_statusCode(200),
-	_toClose(_request.getToClose()){}
+	_statusCode(200) {}
 
 Client::~Client() {}
 
@@ -37,7 +36,7 @@ void	Client::setWhere(int where) {
 }
 
 void	Client::setToClose(bool toClose) {
-	this->_toClose = toClose;
+	this->_request.setToClose(toClose);
 }
 
 // getters
@@ -70,5 +69,5 @@ int Client::getWhere() const {
 }
 
 bool	Client::getToClose(void) const {
-	return this->_toClose;
+	return this->_request.getToClose();
 }

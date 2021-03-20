@@ -16,7 +16,6 @@ private:
 	int		_sd;
 	int		_flag;
 	int		_statusCode;
-	bool		_toClose;
 	Request _request;
 	std::string pathToFile;
 public:
