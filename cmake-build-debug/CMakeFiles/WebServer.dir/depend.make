@@ -9,7 +9,18 @@ CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../Request/Request.hpp
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/CGI/CGI.cpp.o: ../utils.hpp
 
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../CGI/CGI.hpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../CGI/RequestConfigMatch.cpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../CGI/RequestConfigMatch.hpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../Response.hpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o: ../utils.hpp
+
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/CGI.hpp
+CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/RequestConfigMatch.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../CGI/mainCGI.cpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o: ../ConfigParser/ConfigParser.hpp
@@ -38,6 +49,9 @@ CMakeFiles/WebServer.dir/Response.cpp.o: ../Response.cpp
 CMakeFiles/WebServer.dir/Response.cpp.o: ../Response.hpp
 CMakeFiles/WebServer.dir/Response.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/Response.cpp.o: ../utils.hpp
+
+CMakeFiles/WebServer.dir/errors.cpp.o: ../errors.cpp
+CMakeFiles/WebServer.dir/errors.cpp.o: ../utils.hpp
 
 CMakeFiles/WebServer.dir/server.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/server.cpp.o: ../Request/Request.hpp

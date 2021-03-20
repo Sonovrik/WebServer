@@ -170,6 +170,33 @@ CGI/CGI.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/CGI/CGI.cpp.s
 .PHONY : CGI/CGI.cpp.s
 
+CGI/RequestConfigMatch.o: CGI/RequestConfigMatch.cpp.o
+
+.PHONY : CGI/RequestConfigMatch.o
+
+# target to build an object file
+CGI/RequestConfigMatch.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o
+.PHONY : CGI/RequestConfigMatch.cpp.o
+
+CGI/RequestConfigMatch.i: CGI/RequestConfigMatch.cpp.i
+
+.PHONY : CGI/RequestConfigMatch.i
+
+# target to preprocess a source file
+CGI/RequestConfigMatch.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.i
+.PHONY : CGI/RequestConfigMatch.cpp.i
+
+CGI/RequestConfigMatch.s: CGI/RequestConfigMatch.cpp.s
+
+.PHONY : CGI/RequestConfigMatch.s
+
+# target to generate assembly for a file
+CGI/RequestConfigMatch.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.s
+.PHONY : CGI/RequestConfigMatch.cpp.s
+
 CGI/mainCGI.o: CGI/mainCGI.cpp.o
 
 .PHONY : CGI/mainCGI.o
@@ -398,6 +425,9 @@ help:
 	@echo "... CGI/CGI.o"
 	@echo "... CGI/CGI.i"
 	@echo "... CGI/CGI.s"
+	@echo "... CGI/RequestConfigMatch.o"
+	@echo "... CGI/RequestConfigMatch.i"
+	@echo "... CGI/RequestConfigMatch.s"
 	@echo "... CGI/mainCGI.o"
 	@echo "... CGI/mainCGI.i"
 	@echo "... CGI/mainCGI.s"
