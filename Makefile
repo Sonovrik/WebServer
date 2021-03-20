@@ -5,16 +5,16 @@ CC = clang++
 
 FLAGS = -Wall -Wextra -Werror
 
-SRCS_SERVER = Server.cpp Request/Request.cpp Client/Client.cpp ConfigParser/ConfigParser.cpp Response.cpp utils.cpp errors.cpp
+SRCS_SERVER = Server.cpp Request/Request.cpp Client/Client.cpp ConfigParser/ConfigParser.cpp Response.cpp utils.cpp errors.cpp CGI/CGI.cpp
 
-HEADERS = Server.hpp Request/Request.hpp Client/Client.hpp ConfigParser/ConfigParser.hpp Response.hpp utils.hpp
+HEADERS = Server.hpp Request/Request.hpp Client/Client.hpp ConfigParser/ConfigParser.hpp Response.hpp utils.hpp CGI/CGI.hpp
 
 OBJS_SERVER = $(SRCS_SERVER:.cpp=.o)
 
 all: $(NAME_SERVER)
 
 $(NAME_SERVER): $(OBJS_SERVER) $(HEADERS) main.cpp
-	$(CC) main.cpp $(OBJS_SERVER) -o $(NAME_SERVER) 
+	$(CC) -g main.cpp $(OBJS_SERVER) -o $(NAME_SERVER) 
 
 clean:
 	rm -rf $(OBJS_CLIENT) $(OBJS_SERVER)

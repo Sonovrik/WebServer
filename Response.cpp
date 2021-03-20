@@ -129,9 +129,8 @@ Response::Response(int code, Server const &serv, Client &client):
 	_statusCode(code),
 	_respSize(0),
 	_statusMessage(setStatusMessage(code)),
-	_headers(client.getRequest().getHeaders()),  // headers from request
 	_body(""),
-	_toClose(client.getRequest().getToClose()) {
+	_toClose(client.getToClose()) {
 		// if (code / 100 == 4){
 		// 	set_statusMessage(code);
 		// 	setError(serv);
@@ -215,8 +214,7 @@ void	Response::set_date(){
 	strftime (buffer,30,"%a, %d %b %G %T %Z",timeinfo);
 	this->_headers.insert(std::make_pair("Date", buffer));
 
-	// I don't understand when I need to update that time 
-	// and where I should store information about updates
+	// use stat
 	this->_headers.insert(std::make_pair("Last-Modified", buffer)); 
 }
 

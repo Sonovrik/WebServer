@@ -100,6 +100,18 @@ void	Request::setToClose(int toClose) {
 	this->_toClose = toClose;
 }
 
+void	Request::setQueryString(int queryString) {
+	this->_queryString = queryString;
+}	
+
+void	Request::setBodyLen(int bodyLen) {
+	this->_bodyLen = bodyLen;
+}
+
+void	Request::setWaitBody(int waitBody) {
+	this->_waitBody = waitBody;
+}
+
 // getters
 
 std::string const	&Request::getMethod(void) const {
@@ -109,7 +121,6 @@ std::string const	&Request::getMethod(void) const {
 std::string const	&Request::getPath(void) const {
 	return this->_path;
 }
-
 
 std::string const	&Request::getServerName(void) const {
 	return this->_path;
@@ -126,7 +137,6 @@ std::string const	&Request::getBody(void) const {
 std::map<std::string,std::string> const &Request::getHeaders(void) const {
 	return this->_headers;
 }
-
 
 std::string const &Request::getQueryString(void) const {
 	return this->_queryString;
@@ -201,16 +211,12 @@ bool	Request::parseStartLine(std::string str) {
 		return false;
 	this->_path = token[1];
 	// please add envs in this string
-	if (token[2] != "HTTP/1.1\r\n") {
+	if (token[2] != "HTTP/1.1\r\n")
 		return false;
-	}
 	this->_version = token[2].substr(0, token[2].length() - 2);
 	// parse query string
 	if (!parseQueryString())
 		return false;
-	// cut http://
-	// if ((pos = this->_path.find("http://")) != std::string::npos)
-		// this->_path = this->_path.substr(7, this->_path.length() - 7);
 	return true;
 }
 
@@ -374,9 +380,6 @@ bool		Request::parseBody(std::string req) {
 		return true;
 	}
 	// content length
-	// > wait
-	// < cut
-	// no -> error length required
 	if (this->_headers.find("CONTENT-LENGTH") != this->_headers.end()) {
 		if (_bodyLen == 0)
 			this->_bodyLen = atoi(this->_headers.find("CONTENT-LENGTH")->second.c_str());
@@ -424,7 +427,7 @@ int			parseRequest(std::string req, Request &request) {
 		std::cout << "header problem" << std::endl;
 		return ERR_BAD_REQUEST;
 	}
-	if (request.getMethod() == "POST" && request.getWaitBody() == true) {
+	if ((request.getMethod() == "POST" || request.getMethod() == "PUT") && request.getWaitBody() == true) {
 		if (request.parseBody(req) == false) {
 			return request.getReturn();
 		}
@@ -432,14 +435,3 @@ int			parseRequest(std::string req, Request &request) {
 	}
 	return request.getReturn();
 }
-
-// int main() {
-// 	Request req;
-	
-// 	std::string tmp2 = "GET / HTTP/1.1\r\n";
-// 	parseRequest(tmp2, req);
-
-// 	std::cout << req.getBody() << std::endl;
-
-// 	return 0;
-// }

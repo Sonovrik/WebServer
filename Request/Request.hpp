@@ -59,6 +59,9 @@ public:
 	void	setPathInfo(std::string);
 	void	setReturn(int);
 	void	setToClose(int toClose);
+	void	setQueryString(int queryString);
+	void	setBodyLen(int bodyLen);
+	void	setWaitBody(int waitBody);
 
 	// getters
 	std::string const	&getMethod(void) const;

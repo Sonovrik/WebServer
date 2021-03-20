@@ -16,8 +16,9 @@ private:
 	int		_sd;
 	int		_flag;
 	int		_statusCode;
+	bool		_toClose;
 	Request _request;
-
+	std::string pathToFile;
 public:
 	Client();
 	Client(int sd);
@@ -27,13 +28,18 @@ public:
 	void	setFlag(int flag);
 	void	setRequest(Request &reqv);
 	void	setStatusCode(int code);
-	void	setWhere(int where);
+	void	setPathToFile(const std::string &pathToFile);
+	void 	setWhere(int where);
+	void	setToClose(bool toClose);
 
 	int		getStatusCode(void) const;
 	int		getSd(void) const;
 	int		getFlag(void) const;
 	Request	&getRequest(void);
-	int		getWhere(void) const;
+	const	std::string &getPathToFile() const;
+	int 	getWhere() const;
+	bool	getToClose() const;
+
 };
 
 #endif

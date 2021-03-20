@@ -10,7 +10,8 @@ Client::Client(int sd):
 	_sd(sd),
 	_flag(WAIT),
 	_where(toServer),
-	_statusCode(200) {}
+	_statusCode(200),
+	_toClose(_request.getToClose()){}
 
 Client::~Client() {}
 
@@ -35,6 +36,10 @@ void	Client::setWhere(int where) {
 	this->_where = where;
 }
 
+void	Client::setToClose(bool toClose) {
+	this->_toClose = toClose;
+}
+
 // getters
 int		Client::getSd(void) const {
 	return this->_sd;
@@ -52,6 +57,18 @@ int		Client::getStatusCode(void) const {
 	return this->_statusCode;
 }
 
-int		Client::getWhere(void) const {
+const std::string &Client::getPathToFile() const {
+	return pathToFile;
+}
+
+void Client::setPathToFile(const std::string &pathToFile) {
+	this->pathToFile = pathToFile;
+}
+
+int Client::getWhere() const {
 	return this->_where;
+}
+
+bool	Client::getToClose(void) const {
+	return this->_toClose;
 }
