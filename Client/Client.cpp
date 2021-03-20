@@ -47,13 +47,13 @@ const std::string &Client::getPathToFile() const {
 }
 
 void Client::setPathToFile(const std::string &pathToFile) {
-	Client::pathToFile = pathToFile;
+	this->pathToFile = pathToFile;
 }
 
 int Client::getWhere() const {
-	return where;
+	return this->where;
 }
 
 void Client::setWhere(int where) {
-	Client::where = where;
+	this->where = where;
 }

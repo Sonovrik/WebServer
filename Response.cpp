@@ -176,8 +176,7 @@ void	Response::set_date(){
 	strftime (buffer,30,"%a, %d %b %G %T %Z",timeinfo);
 	this->_headers.insert(std::make_pair("Date", buffer));
 
-	// I don't understand when I need to update that time 
-	// and where I should store information about updates
+	// use stat
 	this->_headers.insert(std::make_pair("Last-Modified", buffer)); 
 }
 
