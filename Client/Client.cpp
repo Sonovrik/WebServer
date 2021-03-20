@@ -72,3 +72,7 @@ int Client::getWhere() const {
 bool	Client::getToClose(void) const {
 	return this->_toClose;
 }
+
+std::string const	&Client::getMethod(void) const{
+	return this->_request.getMethod();
+}

@@ -7,7 +7,8 @@
 #include <fstream>
 #include "Server.hpp"
 #include "utils.hpp"
-
+#include <unistd.h>
+// #include "sys\stat.h"
 class	Response{
 
 private:
@@ -21,7 +22,8 @@ private:
 
 public:
 	Response();
-	Response(int code, Server const &serv, Client &client);
+	// Response()
+	Response(Server const &serv, Client &client);
 	~Response();
 	Response(Response const &);
 	Response &operator=(Response const &);
@@ -34,10 +36,16 @@ public:
 	// void	set_statusMessage(int code);
 	std::string	setStatusMessage(int);
 
+	
+	void	execPut(Client &client);
+	void	execGET(Client &client);
+
 	void	set_statusMessage(std::string);
 	void	set_headers(std::map<std::string,std::string>);
 	void	set_body(std::string);
 
+
+	void	set_LastModified(std::string &file);
 	void	set_date();
 
 	// getters

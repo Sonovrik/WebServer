@@ -100,8 +100,6 @@ std::string	Response::setStatusMessage(int code){
 Response::~Response(){}
 
 void	Response::setError(Server const &serv) {
-	this->_version = serv.getEnvValue("SERVER_PROTOCOL");
-
 	// _headers.insert(std::make_pair("Connection", client.get("CONNECTION")));
 	if (this->_toClose == true)
 		_headers.insert(std::make_pair("Connection", "close"));
@@ -117,27 +115,68 @@ void	Response::setError(Server const &serv) {
 		std::ifstream	in(serv.get_errorPath(this->_statusCode));
 		std::string		tmp("");
 		while (getline(in, tmp)){
-			this->_body.append(tmp);
+			this->_body.append(tmp + "\n");
 		}
 	}
 	_headers.insert(std::make_pair("Content-Length", std::to_string(_body.size())));
 	set_date();
 }
 
-Response::Response(int code, Server const &serv, Client &client):
+void	Response::execPut(Client &client){
+	struct stat st;
+	std::string tmp("");
+	std::ifstream	in(client.getPathToFile());
+	std::string fileContent("");
+	if (in.is_open()){
+		std::string		tmp("");
+		while (getline(in, tmp))
+			fileContent.append(tmp + "\n");
+		if (fileContent == client.getRequest().getBody()){
+			// + last modified
+		}
+		else {
+			in.clear();
+			lseek(in, 0, SEEK_END);
+		}
+	}
+
+	// int ret = open();
+
+}
+
+void	Response::execGET(Client &client){
+	std::ifstream	file(client.getPathToFile());
+	std::string		tmp("");
+	if (file.is_open())
+		throw std::exception();
+	while (getline(file, tmp)){
+		this->_body.append(tmp);
+	}
+	this->_headers.insert(std::make_pair("Content-Length", std::to_string(this->_body.size())));
+	if (client.getMethod() == "HEAD")
+		_body.clear();
+
+	if (this->_toClose == true)
+		_headers.insert(std::make_pair("Connection", "close"));
+	else
+		_headers.insert(std::make_pair("Connection", "alive"));
+	
+	set_date();
+
+}
+
+Response::Response(Server const &serv, Client &client):
 	_version(serv.getEnvValue("SERVER_PROTOCOL")),
-	_statusCode(code),
+	_statusCode(client.getStatusCode()),
 	_respSize(0),
-	_statusMessage(setStatusMessage(code)),
+	_statusMessage(setStatusMessage(client.getStatusCode())),
 	_body(""),
 	_toClose(client.getToClose()) {
-		// if (code / 100 == 4){
-		// 	set_statusMessage(code);
-		// 	setError(serv);
-		// }
-		// else{
+		if (client.getMethod() == "GET" || client.getMethod() == "HEAD"){
+			execGET(client);
+		}
 
-		// }
+
 }
 
 size_t			Response::get_respSize(void) const {
@@ -145,7 +184,6 @@ size_t			Response::get_respSize(void) const {
 }
 
 std::string		Response::getResponse(void) {
-
 	std::string		ret("");
 	ret.append(this->_version);
 	ret.append(" " + std::to_string(this->_statusCode));
@@ -201,6 +239,21 @@ void	Response::set_headers(std::map<std::string,std::string> headers) {
 
 void	Response::set_body(std::string body) {
 	this->_body = body;
+}
+#include <sys/types.h>
+#include <sys/stat.h>
+void	Response::set_LastModified(std::string &file) {
+	struct stat st;
+	time_t rawtime;
+	struct tm	*timeinfo;
+	char		buffer[30];
+
+	stat(file.c_str(), &st);
+	// st.
+	std::ctime(&st.st_mtime);
+	timeinfo = localtime(&(time_t)(st.st_mtimespec));
+	strftime (buffer,30,"%a, %d %b %G %T %Z",timeinfo);
+	std::cout << buffer << std::endl;
 }
 
 void	Response::set_date(){

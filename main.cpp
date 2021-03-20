@@ -8,17 +8,6 @@
 #include "CGI/CGI.hpp"
 #include "CGI/mainCGI.cpp"
 
-void		initMethod(Client  &client, Server &serv){
-	if (client.getRequest().getMethod() == "PUT")
-		execPut(client, serv);
-	if (client.getRequest().getMethod() == "HEAD" || client.getRequest().getMethod() == "GET")
-		execGet(client, serv);
-	// if (client.getRequest().getMethod() == "POST")
-		// execPut(client, server);
-
-}
-
-
 int		findMaxSD(std::vector<Server> &servers){
 	std::vector<Server>::iterator it = servers.begin();
 	int maxSd = 0;
@@ -116,6 +105,10 @@ int main(){
 						}
 					}
 					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) { // or ERROR
+					Response respl(*it, client);
+					std::string str = "./myFile";
+					respl.set_LastModified(str);
+					exit(1);
 					// 	continue;
 						// if (client.getStatusCode() == true){
 						// 	Response resp(client, *it);

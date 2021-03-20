@@ -16,8 +16,8 @@ private:
 	int		_sd;
 	int		_flag;
 	int		_statusCode;
-	bool		_toClose;
-	Request _request;
+	bool	_toClose;
+	Request	_request;
 	std::string pathToFile;
 public:
 	Client();
@@ -32,6 +32,7 @@ public:
 	void 	setWhere(int where);
 	void	setToClose(bool toClose);
 
+	std::string const	&getMethod(void) const;
 	int		getStatusCode(void) const;
 	int		getSd(void) const;
 	int		getFlag(void) const;
