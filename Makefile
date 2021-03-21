@@ -5,9 +5,11 @@ CC = clang++
 
 FLAGS = -Wall -Wextra -Werror
 
-SRCS_SERVER = Server.cpp Request/Request.cpp Client/Client.cpp ConfigParser/ConfigParser.cpp Response.cpp utils.cpp errors.cpp CGI/CGI.cpp MIMEtypes.cpp
+SRCS_SERVER = Server.cpp Request/Request.cpp Client/Client.cpp ConfigParser/ConfigParser.cpp \
+				Response.cpp utils.cpp errors.cpp CGI/CGI.cpp MIMEtypes.cpp CGI/RequestConfigMatch.cpp
 
-HEADERS = Server.hpp Request/Request.hpp Client/Client.hpp ConfigParser/ConfigParser.hpp Response.hpp utils.hpp CGI/CGI.hpp
+HEADERS = Server.hpp Request/Request.hpp Client/Client.hpp ConfigParser/ConfigParser.hpp Response.hpp \
+				utils.hpp CGI/CGI.hpp CGI/RequestConfigMatch.hpp
 
 OBJS_SERVER = $(SRCS_SERVER:.cpp=.o)
 

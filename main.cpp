@@ -6,7 +6,7 @@
 #include "./ConfigParser/ConfigParser.hpp"
 #include "Response.hpp"
 #include "CGI/CGI.hpp"
-#include "CGI/mainCGI.cpp"
+#include "CGI/RequestConfigMatch.hpp"
 
 int		findMaxSD(std::vector<Server> &servers){
 	std::vector<Server>::iterator it = servers.begin();
@@ -107,21 +107,21 @@ int main(){
 						}
 					}
 					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) { // or ERROR
-						std::cout << "send" << std::endl;
+						// std::cout << "send" << std::endl;
 
 						// Response resp(*it, client);
 						// std::string str = "./myFile";
 						// resp.set_LastModified(str);
-						Response resp(*it, client);
-						std::cout << resp.getResponse() << std::endl;
+						// Response resp(*it, client);
+						// std::cout << resp.getResponse() << std::endl;
 						// std::cout << "HERE" << std::endl;
-						exit(1);
+						// exit(1);
 						// continue;
 						// if (client.getStatusCode() == true){
 						// 	Response resp(*it, client);
 						// }
 						// else{
-							if (parsBeforeCGI(client, *it) != 0) {
+							if (RequestConfigMatch(client, *it) != 0) {
 								// try {
 								// 	CGI qqq(client.getRequest(), *it);
 								// 	qqq.init(client.getRequest(), *it);
@@ -133,8 +133,9 @@ int main(){
 								// 	return 1;
 								// }
 							}
-							// Response resp(*it, client);
-							// send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
+							Response resp(*it, client);
+							std::cout << resp.getResponse() << std::endl;
+							// st//(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
 							// exit(0);
 							// exit(1);
 							// else{
