@@ -50,14 +50,14 @@ CMakeFiles/WebServer.dir/Response.cpp.o
  /Users/kmoaning/Desktop/ToGit/Response.hpp
  /Users/kmoaning/Desktop/ToGit/Server.hpp
  /Users/kmoaning/Desktop/ToGit/utils.hpp
-CMakeFiles/WebServer.dir/errors.cpp.o
- /Users/kmoaning/Desktop/ToGit/errors.cpp
- /Users/kmoaning/Desktop/ToGit/utils.hpp
-CMakeFiles/WebServer.dir/server.cpp.o
+CMakeFiles/WebServer.dir/Server.cpp.o
  /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
  /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
+ /Users/kmoaning/Desktop/ToGit/Server.cpp
  /Users/kmoaning/Desktop/ToGit/Server.hpp
- /Users/kmoaning/Desktop/ToGit/server.cpp
+ /Users/kmoaning/Desktop/ToGit/utils.hpp
+CMakeFiles/WebServer.dir/errors.cpp.o
+ /Users/kmoaning/Desktop/ToGit/errors.cpp
  /Users/kmoaning/Desktop/ToGit/utils.hpp
 CMakeFiles/WebServer.dir/utils.cpp.o
  /Users/kmoaning/Desktop/ToGit/utils.cpp

@@ -15,7 +15,7 @@ int		findMaxSD(std::vector<Server> &servers) {
 }
 
 int main(){
-	std::string tmp3 = "POST http://localhost:8081/directory/1.php HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\nhello buli!\r\n";
+	std::string tmp3 = "POST http://localhost:8081/directory HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\nhello bulina!\r\n";
 	try{
 		ConfigParser parser;
 		if (!parser.parseConfig("webserv.conf")){

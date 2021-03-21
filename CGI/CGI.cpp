@@ -97,7 +97,7 @@ void CGI::init(Request &req, Server &ser) {
 //		; //error
 	char dir[1024];
 	if (getcwd(dir, 1024) == NULL)
-	throw std::runtime_error("error getcwd. 500 Internal Server Error");
+	throw std::runtime_error("500"); //("error getcwd. 500 Internal Server Error");
 
 	this->envMap["REQUEST_URI"] = "/" + req.getPath();  // "/html/YoupiBanane/1.bla";
 	this->envMap["QUERY_STRING"] = req.getQueryString();
@@ -173,17 +173,17 @@ void CGI::exec() {
 	int fdF = open("./myFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
 	int status;
 	if (pipe(fd) != 0)
-		throw std::runtime_error("cannot pipe. code: 500 Internal Server Error");
+		throw std::runtime_error("500"); //"cannot pipe. code: 500 Internal Server Error");
 	pid = fork();
 	if(pid < 0) {
-		throw std::runtime_error("cannot fork. code: 500 Internal Server Error");
+		throw std::runtime_error("500"); //("cannot fork. code: 500 Internal Server Error");
 	}
 	else if(pid == 0) { // ребенок
 		close(fd[1]);
 		if (dup2(fd[0], STDIN) < 0)
-			throw std::runtime_error("Cannot dup, 1. code: 500 Internal Server Error");
+			throw std::runtime_error("500"); //("Cannot dup, 1. code: 500 Internal Server Error");
 		if (dup2(fdF, STDOUT) < 0)
-			throw std::runtime_error("Cannot dup, 2. code: 500 Internal Server Error");
+			throw std::runtime_error("500"); //("Cannot dup, 2. code: 500 Internal Server Error");
 		ex = execve(PathInfo.c_str(), argv , env);
 		exit(ex);
 	}
@@ -198,7 +198,7 @@ void CGI::exec() {
 		}
 		std::cout << "status: " << status << std::endl;
 		if(status != 0)
-			throw std::runtime_error("Cannot execve. code: 500 Internal Server Error");
+			throw std::runtime_error("500"); //("Cannot execve. code: 500 Internal Server Error");
 		close(fdF);
 		close(fd[0]);
 	}

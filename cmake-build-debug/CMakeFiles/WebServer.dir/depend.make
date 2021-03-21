@@ -50,14 +50,14 @@ CMakeFiles/WebServer.dir/Response.cpp.o: ../Response.hpp
 CMakeFiles/WebServer.dir/Response.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/Response.cpp.o: ../utils.hpp
 
+CMakeFiles/WebServer.dir/Server.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/Server.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/Server.cpp.o: ../Server.cpp
+CMakeFiles/WebServer.dir/Server.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/Server.cpp.o: ../utils.hpp
+
 CMakeFiles/WebServer.dir/errors.cpp.o: ../errors.cpp
 CMakeFiles/WebServer.dir/errors.cpp.o: ../utils.hpp
-
-CMakeFiles/WebServer.dir/server.cpp.o: ../Client/Client.hpp
-CMakeFiles/WebServer.dir/server.cpp.o: ../Request/Request.hpp
-CMakeFiles/WebServer.dir/server.cpp.o: ../Server.hpp
-CMakeFiles/WebServer.dir/server.cpp.o: ../server.cpp
-CMakeFiles/WebServer.dir/server.cpp.o: ../utils.hpp
 
 CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.cpp
 CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.hpp

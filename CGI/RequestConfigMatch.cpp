@@ -4,6 +4,11 @@
 
 #include "RequestConfigMatch.hpp"
 
+void setErrorCode(const std::string& str, Client &client) {
+	client.setStatusCode( atoi(str.c_str()));
+	std::cerr << "error : " << str << std::endl;
+}
+
 std::vector<std::string> splitString(std::string str) {
 	std::vector<std::string> ret;
 	size_t pos;
@@ -15,10 +20,18 @@ std::vector<std::string> splitString(std::string str) {
 	return ret;
 }
 
+size_t countChar(const std::string& str, char c) {
+	size_t len = str.length();
+	size_t count = 0;
+	for (size_t i = 0; i < len; ++i) {
+		if (str[i] == '/')
+			count++;
+	}
+	return count;
+}
+
 int compareLocation(std::string &uri, location_t loc, std::string &res) {
 	std::string name = loc._name;
-//	std::string root = loc._directives.find("root")->second;
-//	int len = rootLen ? name.length() : name.length() + root.length();
 	int len = name.length();
 	if(uri.compare(0, len, name) == 0) {
 		res = name;
@@ -40,28 +53,40 @@ std::string getLocation(std::string &uri, Server &ser, int &pos) {
 			break;
 		i++;
 	}
-//	if(i == count)
-//		res = ser.get_root() + res;
 	pos = i;
 	return res;
 }
 
-int checkIndex(std::string &ret,const Server &ser, std::string &location) {
-
+void checkIndex(std::string &ret, location_t &location) {
+	struct stat info;
+	std::string tmp;
+	std::string str = location._directives.find("index")->second;
+	if (!str.empty()) {
+		std::vector<std::string> index = splitString(str);
+		size_t size = index.size();
+		size_t i;
+		for (i = 0; i < size; ++i) {
+			tmp = ret + index[i];
+			if(stat(tmp.c_str() , &info) == 0)
+				break;
+		}
+		if(i == size) {									//  не нашла index
+			if (location._directives.find("autoindex")->second == "on")
+				;										// листинг директорий
+			else
+				throw std::runtime_error("403"); //"Index Not Found, code: 403");
+		}
+		else											// нашла индекс, добавила его к директории
+			ret = tmp;
+	}
 }
 
 std::string getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
-//	std::string tmp = location + uri;
+	struct stat info;
 	std::string tmp = ser.get_root() + '/';
 	if (!ser.get_locations()[loc]._directives.find("root")->second.empty())
 		tmp = tmp + ser.get_locations()[loc]._directives.find("root")->second + '/' + uri;
-	size_t len = tmp.length();
-	size_t count = 0;
-	struct stat info;
-	for (size_t i = 0; i < len; ++i) {
-		if (tmp[i] == '/')
-			count++;
-	}
+	size_t count = countChar(tmp, '/');
 	size_t pos = tmp.find('/');
 	if(pos == std::string::npos)
 		; //error?? не будет
@@ -69,7 +94,7 @@ std::string getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 	tmp.erase(0, pos + 1);
 	const char *path = ret.c_str();
 	for (size_t i = 0; i <= count; ++i) {
-		if (lstat(path, &info) == 0){
+		if (stat(path, &info) == 0){
 			if ((pos = tmp.find('/')) == std::string::npos) {
 				if(tmp.length())
 					pos = tmp.length() - 1;
@@ -82,29 +107,27 @@ std::string getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		break;
 	}
 	size_t last = ret.length() - 1;
-	if (ret[last] == '/' && tmp.length() == 0) { // папка, checkIndex
-//		path = checkIndex(ret, ser, location);
-		if (stat(path, &info) != 0)
-			throw std::runtime_error("paht not found. code: 404 Not Found");
+	if (ret[last] == '/' && tmp.length() == 0) { // папка, checkIndex checkAutoIndex
+		checkIndex(ret, ser.get_locations()[loc]);
 	}
 	else if(ret[last] == '/' && tmp.length() != 0) { // точно файл, проверить его наличие
 		ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
 		req.setPathInfo(tmp);
 		if (stat(path, &info) != 0)
-			throw std::runtime_error("paht not found. code: 404 Not Found");
+			throw std::runtime_error("404"); //"paht not found. code: 404 Not Found");
 	}
 	return (ret);
 }
 
 void compareHostName(const std::string& hostName, const std::string& ip, const std::string& servName) {
 	if(hostName != ip && hostName != servName)
-		throw std::runtime_error("error! Server name does not match configuration! code: ????"); // код ошибки??
+		throw std::runtime_error("400"); //"error! Server name does not match configuration! code: ????"); // код ошибки??
 }
 
 void comparePort(const std::string& port, const std::string& servPort) {
 	if(port != servPort)
-		throw std::runtime_error("error! Port does not match configuration! code: ????"); // код ошибки??
+		throw std::runtime_error("400"); //"error! Port does not match configuration! code: ????"); // код ошибки??
 }
 
 int checkHost(int pos, std::string &uri, Server &ser) {
@@ -137,43 +160,40 @@ int checkHost(int pos, std::string &uri, Server &ser) {
 
 void checkBodySize(Server &ser, int locIndex, Request &req) {
 	std::string maxBody;
-	std::map<std::string, std::string> dir = ser.get_locations()[locIndex]._directives;
-	if(dir.find("max_body_size") != dir.end()) // может ли быть поле пустым?
-		maxBody = ser.get_locations()[locIndex]._directives.find("max_body_size")->second;
-	else if (!ser.get_maxBodySize().empty())
-		maxBody = ser.get_maxBodySize();
-	else
-		maxBody = "";
+	maxBody = ser.get_locations()[locIndex]._directives.find("max_body_size")->second;
 	if (!maxBody.empty()) {
 		double len = strtod(maxBody.c_str(), NULL);
 		if (req.getBody().size() > len)
-			throw std::runtime_error("Payload Too Large. code: 413 ");
+			throw std::runtime_error("413"); // "Payload Too Large. code: 413 "
 	}
 }
 
-void setWhere(Server &ser, int locIndex, Request &req, Client &client) {
-	std::string extension;
-	std::string cgiPath;
-	std::map<std::string, std::string> dir = ser.get_locations()[locIndex]._directives;
-	std::string extConf = dir.find("cgi_extensions") != dir.end() ? dir.find("cgi_extensions")->second : ""; //может быть несколько??
-	std::string cgiPathConf = dir.find("cgi_path") != dir.end() ? dir.find("cgi_path")->second : "";
+bool getWhere(std::map<std::string, std::string> dir, Request &req) {
+	std::string extReq;
+	std::string pathReq;
+	std::string extsConf = dir.find("cgi_extensions")->second;
+	std::string PathConf = dir.find("cgi_path")->second;
+	std::vector<std::string> extConfArr = splitString(extsConf);
+	size_t extCount = extConfArr.size();
 	const std::string& tmp = req.getPath();
 	size_t pos;
-	if((pos = tmp.find('.')) != std::string::npos) {
-		extension = tmp.substr(pos);
+	if((pos = tmp.rfind('.')) != std::string::npos)
+		extReq = tmp.substr(pos);					//вместе с точкой
+	else
+		extReq = "";
+	size_t i;
+	for (i = 0; i < extCount; ++i) {
+		if (extReq == extConfArr[i])
+			break;
 	}
-	if (!cgiPathConf.empty() || !extConf.empty()) {
-		if (extension == extConf && cgiPath == cgiPathConf) {
-			client.setWhere(1) ;//where = cgi;
-//			if(req.getPathInfo().empty())
-//
-		}
-		else
-			client.setWhere(0) ; //where != cgi; какое то поле не совпало
-	}
-	else {
-		// ес..ath, то??
-	}
+	if (i == extCount)
+		return false;
+	if(pathReq != req.getPathInfo())				//если cgi_tester и /cgi_tester????
+		return false;
+	const std::string& method = req.getMethod();
+	if(method == "GET" || method == "HEAD" || method == "POST")
+		return true;
+	return false;
 }
 
 void checkConf(Server &ser, int locIndex, Request &req, Client &client) {
@@ -188,11 +208,11 @@ void checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 					break;
 			}
 			if(i == size)
-				throw std::runtime_error("Method Not Allowed. code: 405????"); // не может быть при GET/HEAD
+				throw std::runtime_error("405"); // не может быть при GET/HEAD
 		}
 	}
 	checkBodySize(ser, locIndex, req);
-	setWhere(ser, locIndex, req, client);
+	getWhere(ser.get_locations()[locIndex]._directives, req) == true ? client.setWhere(1) : client.setWhere(0);
 }
 
 int RequestConfigMatch(Client &client, Server &ser) {
@@ -222,9 +242,9 @@ int RequestConfigMatch(Client &client, Server &ser) {
 		client.setPathToFile(pathToScript);
 	}
 	catch (std::exception &exception) {
-		std::cerr << "error : " << exception.what() << std::endl;
+		setErrorCode(exception.what(), client);
 		return -1;
 	}
-	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
+//	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
 	return 0;
 }
