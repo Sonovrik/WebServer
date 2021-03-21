@@ -39,16 +39,17 @@ public:
 	std::string	setStatusMessage(int);
 
 	
-	void	execPut(Client &client);
+	void	execPUT(Client &client);
 	void	execGET(Client &client);
 
 	void	set_statusMessage(std::string);
 	void	set_headers(std::map<std::string,std::string>);
 	void	set_body(std::string);
 
-
-	void	set_LastModified(std::string &file);
-	void	set_date();
+	void	setContentLocation(std::string const &pathToFile, std::string const &serverRoot);
+	void	setContentType(std::string const &pathToFile);
+	void	setLastModified(std::string const &file);
+	void	setDate();
 
 	// getters
 	std::string 	get_version(void) const;

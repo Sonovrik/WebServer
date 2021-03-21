@@ -18,6 +18,7 @@ private:
 	int		_statusCode;
 	Request _request;
 	std::string pathToFile;
+
 public:
 	Client();
 	Client(int sd);

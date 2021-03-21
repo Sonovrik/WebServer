@@ -26,6 +26,7 @@ int main(){
 			std::cerr << "Some parser error!!!" << std::endl;
 			return -1;
 		}
+		initMimeTypes();
 		timeval time;
 		time.tv_sec = 10;
 		time.tv_usec = 0;
@@ -112,6 +113,7 @@ int main(){
 						// std::string str = "./myFile";
 						// resp.set_LastModified(str);
 						Response resp(*it, client);
+						std::cout << resp.getResponse() << std::endl;
 						// std::cout << "HERE" << std::endl;
 						exit(1);
 						// continue;
@@ -131,14 +133,13 @@ int main(){
 								// 	return 1;
 								// }
 							}
-
-							// std::cout << client.getStatusCode() << std::endl;
-							// std::cout << client.getPathToFile() << std::endl;
+							// Response resp(*it, client);
+							// send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
+							// exit(0);
 							// exit(1);
-							// else {
+							// else{
 								// initMethod(client, *it);
-								// Response resp(*it, client);
-								// std::cout << resp.getResponse() << std::endl;
+								// Response resp(client, *it);
 							// }
 						// }
 						// 	Response resp(&client);{
@@ -148,7 +149,6 @@ int main(){
 						// 		}
 						// 	}
 					// 		Response resp(400, *it);
-					// 		send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
 					// 	// if (write == yes){
 					// 	// 	send();
 						// }
