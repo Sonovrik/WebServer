@@ -26,4 +26,10 @@ bool location_tCompare(const location_t &x, const location_t &y);
 // errors
 std::string	get_errorPage(int code);
 
+
+// MIME types
+void			initMimeTypes(void);
+std::string		findMimeType(const std::string &ext);
+
+
 #endif

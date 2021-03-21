@@ -26,6 +26,7 @@ int main(){
 			std::cerr << "Some parser error!!!" << std::endl;
 			return -1;
 		}
+		initMimeTypes();
 		timeval time;
 		time.tv_sec = 10;
 		time.tv_usec = 0;
@@ -105,10 +106,9 @@ int main(){
 						}
 					}
 					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) { // or ERROR
-					Response respl(*it, client);
-					std::string str = "./myFile";
-					respl.set_LastModified(str);
-					exit(1);
+					// Response respl(*it, client);
+					// std::string str = "./myFile";
+					// respl.set_LastModified(str);
 					// 	continue;
 						// if (client.getStatusCode() == true){
 						// 	Response resp(client, *it);
@@ -126,13 +126,13 @@ int main(){
 								// 	return 1;
 								// }
 							}
-
-							std::cout << client.getStatusCode() << std::endl;
-							std::cout << client.getPathToFile() << std::endl;
+							Response resp(*it, client);
+							send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
+							exit(0);
 							// exit(1);
 							// else{
-								initMethod(client, *it);
-								Response resp(client, *it);
+								// initMethod(client, *it);
+								// Response resp(client, *it);
 							// }
 						// }
 						// 	Response resp(&client);{
@@ -142,7 +142,6 @@ int main(){
 						// 		}
 						// 	}
 					// 		Response resp(400, *it);
-					// 		send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
 					// 	// if (write == yes){
 					// 	// 	send();
 						// }

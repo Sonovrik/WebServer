@@ -19,6 +19,7 @@ private:
 	bool	_toClose;
 	Request	_request;
 	std::string pathToFile;
+
 public:
 	Client();
 	Client(int sd);

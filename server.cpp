@@ -48,11 +48,11 @@ void		Server::fullBasicDirectives(void){
 	std::vector<location_t>::iterator it = _locations.begin();
 	for (; it < _locations.end(); it++){
 		if (it->_directives.find("root") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("root", _root));
+			it->_directives.insert(std::make_pair<std::string, std::string>("root", ""));
 		if (it->_directives.find("max_body_size") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("max_body_size", _maxBodySize));
 		if (it->_directives.find("method") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("method", "GET POST PUT HEAD")); // add more
+			it->_directives.insert(std::make_pair<std::string, std::string>("method", "GET HEAD PUT POST"));
 		if (it->_directives.find("autoindex") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("autoindex", "on"));
 		if (it->_directives.find("cgi_extensions") == it->_directives.end())

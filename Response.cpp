@@ -100,7 +100,6 @@ std::string	Response::setStatusMessage(int code){
 Response::~Response(){}
 
 void	Response::setError(Server const &serv) {
-	// _headers.insert(std::make_pair("Connection", client.get("CONNECTION")));
 	if (this->_toClose == true)
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
@@ -117,28 +116,32 @@ void	Response::setError(Server const &serv) {
 		while (getline(in, tmp)){
 			this->_body.append(tmp + "\n");
 		}
+		this->_body.pop_back();
 	}
 	_headers.insert(std::make_pair("Content-Length", std::to_string(_body.size())));
-	set_date();
+	setDate();
+	if (this->_statusCode == 405){
+		// _headers.insert(std::make_pair("Allow", std::to_string(_body.size())));
+	}
 }
 
 void	Response::execPut(Client &client){
-	struct stat st;
-	std::string tmp("");
-	std::ifstream	in(client.getPathToFile());
-	std::string fileContent("");
-	if (in.is_open()){
-		std::string		tmp("");
-		while (getline(in, tmp))
-			fileContent.append(tmp + "\n");
-		if (fileContent == client.getRequest().getBody()){
-			// + last modified
-		}
-		else {
-			in.clear();
-			lseek(in, 0, SEEK_END);
-		}
-	}
+	// struct stat st;
+	// std::string tmp("");
+	// std::ifstream	in(client.getPathToFile());
+	// std::string fileContent("");
+	// if (in.is_open()){
+	// 	std::string		tmp("");
+	// 	while (getline(in, tmp))
+	// 		fileContent.append(tmp + "\n");
+	// 	if (fileContent == client.getRequest().getBody()){
+	// 		// + last modified
+	// 	}
+	// 	else {
+	// 		in.clear();
+	// 		// lseek(in, 0, SEEK_END);
+	// 	}
+	// }
 
 	// int ret = open();
 
@@ -147,22 +150,25 @@ void	Response::execPut(Client &client){
 void	Response::execGET(Client &client){
 	std::ifstream	file(client.getPathToFile());
 	std::string		tmp("");
-	if (file.is_open())
+	if (file.is_open() == 0)
 		throw std::exception();
 	while (getline(file, tmp)){
-		this->_body.append(tmp);
+		this->_body.append(tmp.append("\n"));
 	}
+	_body.pop_back();
+	std::cout << client.getPathToFile() << std::endl;
 	this->_headers.insert(std::make_pair("Content-Length", std::to_string(this->_body.size())));
 	if (client.getMethod() == "HEAD")
 		_body.clear();
-
 	if (this->_toClose == true)
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
 		_headers.insert(std::make_pair("Connection", "alive"));
 	
-	set_date();
-
+	setDate();
+	setLastModified(client.getPathToFile());
+	setContentType(client.getPathToFile());
+	_headers.insert(std::make_pair("Content-Language", "en"));
 }
 
 Response::Response(Server const &serv, Client &client):
@@ -172,10 +178,12 @@ Response::Response(Server const &serv, Client &client):
 	_statusMessage(setStatusMessage(client.getStatusCode())),
 	_body(""),
 	_toClose(client.getToClose()) {
-		if (client.getMethod() == "GET" || client.getMethod() == "HEAD"){
+		if (this->_statusCode / 4 == 1){
+			setError(serv);
+		}
+		else if (client.getMethod() == "GET" || client.getMethod() == "HEAD"){
 			execGET(client);
 		}
-
 
 }
 
@@ -240,35 +248,49 @@ void	Response::set_headers(std::map<std::string,std::string> headers) {
 void	Response::set_body(std::string body) {
 	this->_body = body;
 }
-#include <sys/types.h>
-#include <sys/stat.h>
-void	Response::set_LastModified(std::string &file) {
-	struct stat st;
-	time_t rawtime;
-	struct tm	*timeinfo;
-	char		buffer[30];
 
-	stat(file.c_str(), &st);
-	// st.
-	std::ctime(&st.st_mtime);
-	timeinfo = localtime(&(time_t)(st.st_mtimespec));
-	strftime (buffer,30,"%a, %d %b %G %T %Z",timeinfo);
-	std::cout << buffer << std::endl;
+void	Response::setContentLocation(std::string const &pathToFile, std::string const &serverRoot){
+
+	std::string tmp = pathToFile.substr(serverRoot.size() + 1, pathToFile.size());
+	this->_headers.insert(std::make_pair("Content-Location", tmp));
+
 }
 
-void	Response::set_date(){
-	time_t		rawtime;
-	struct tm	*timeinfo;
-	char		buffer[30];
 
-	time(&rawtime);
-	timeinfo = localtime(&rawtime);
+void	Response::setContentType(std::string const &pathToFile){
+	std::string file(pathToFile.substr(pathToFile.rfind('/'), pathToFile.size()));
+	size_t pos;
+	if ((pos = file.rfind('.')) == std::string::npos)
+		this->_headers.insert(std::make_pair("Content-Type", "text/plain"));
+	else{
+		std::string extension(file.substr(pos, file.size()));
+		std::cout << extension << std::endl;
+		this->_headers.insert(std::make_pair("Content-Type", findMimeType(extension)));
+	}
+}
 
-	strftime (buffer,30,"%a, %d %b %G %T %Z",timeinfo);
-	this->_headers.insert(std::make_pair("Date", buffer));
+void	Response::setLastModified(std::string const &file) {
+	struct tm		timeinfo;
+	char			buffer[30];
+	struct stat		st;
 
-	// use stat
-	this->_headers.insert(std::make_pair("Last-Modified", buffer)); 
+	stat(file.c_str(), &st);
+	std::string time(std::to_string(st.st_mtimespec.tv_sec));
+	strptime(time.c_str(), "%s", &timeinfo);
+	strftime(buffer,30,"%a, %d %b %G %T %Z", &timeinfo);
+	this->_headers.insert(std::make_pair("Last-Modified", (std::string)(buffer)));
+}
+
+void	Response::setDate(void){
+	struct tm		timeinfo;
+	char			buffer[30];
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	std::string time(std::to_string(tv.tv_sec));
+	strptime(time.c_str(), "%s", &timeinfo);
+	strftime (buffer,30,"%a, %d %b %G %T %Z", &timeinfo);
+	this->_headers.insert(std::make_pair("Date", (std::string)(buffer)));
 }
 
 // getters
