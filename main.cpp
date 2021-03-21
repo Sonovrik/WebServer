@@ -88,6 +88,7 @@ int main(){
 								continue;
 							}
 							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED) {
+								// no response - will status code be rewritten after response creation
 								if (client.getFlag() == ERR_LENGTH_REQUIRED)
 									client.setStatusCode(411);
 								if (client.getFlag() == ERR_BAD_REQUEST)
@@ -97,7 +98,6 @@ int main(){
 							}
 							// else if (client.getFlag() == SEND) {
 							// 	// client.getWhere() ?= server || cgi
-							// 	std::cout << "send" << std::endl;
 							// 	Response response(*it, client);
 							// 	std::cout << response.getResponse() << std::endl;
 							// 	client.getRequest().reset();
@@ -106,11 +106,15 @@ int main(){
 						}
 					}
 					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) { // or ERROR
+						std::cout << "send" << std::endl;
+
+						// Response resp(*it, client);
+						// std::string str = "./myFile";
+						// resp.set_LastModified(str);
 						Response resp(*it, client);
-						std::string str = "./myFile";
-						resp.set_LastModified(str);
+						// std::cout << "HERE" << std::endl;
 						exit(1);
-						// 	continue;
+						// continue;
 						// if (client.getStatusCode() == true){
 						// 	Response resp(*it, client);
 						// }

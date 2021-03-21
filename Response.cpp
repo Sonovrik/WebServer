@@ -23,59 +23,6 @@ Response::Response():
 	_body(""),
 	_toClose(false){}
 
-// void	Response::set_statusMessage(int code){
-// 	switch(code){
-// 		case 400:
-// 			this->_statusMessage = "Bad Request";
-// 			break;
-// 		case 401:
-// 			this->_statusMessage = "Payment Required";
-// 			break;
-// 		case 403:
-// 			this->_statusMessage = "Forbidden";
-// 			break;
-// 		case 404:
-// 			this->_statusMessage = "Not Found";
-// 			break;
-// 		case 405:
-// 			this->_statusMessage = "Method Not Allowed";
-// 			break;
-// 		case 406:
-// 			this->_statusMessage = "Not Acceptable";
-// 			break;
-// 		case 408:
-// 			this->_statusMessage = "Request Timeout";
-// 			break;
-// 		case 409:
-// 			this->_statusMessage = "Conflict";
-// 			break;
-// 		case 410:
-// 			this->_statusMessage = "Gone";
-// 			break;
-// 		case 411:
-// 			this->_statusMessage = "Length Required";
-// 			break;
-// 		case 413:
-// 			this->_statusMessage = "Payload Too Large";
-// 			break;
-// 		case 414:
-// 			this->_statusMessage = "URI Too Long";
-// 			break;
-// 		case 415:
-// 			this->_statusMessage = "Unsupported Media Type";
-// 			break;
-// 		case 417:
-// 			this->_statusMessage = "Expectation Failed";
-// 			break;
-// 		case 426:
-// 			this->_statusMessage = "Upgrade Required";
-// 			break;
-// 		default:
-// 			break;
-// 	}
-// }
-
-// add all messages
 std::string	Response::setStatusMessage(int code){
 	switch(code){
 		case 400: return "Bad Request";
@@ -121,29 +68,56 @@ void	Response::setError(Server const &serv) {
 	set_date();
 }
 
+// 200 updated - 201 created 
+// Content-Location
+// Last-Modified
+
 void	Response::execPut(Client &client) {
 	struct stat st;
 	std::string tmp("");
-	std::fstream	file(client.getPathToFile());
+	int file = open("./files/myFile2", O_RDWR, 0666);
 	std::string fileContent("");
-	// int fd = open(client.getPathToFile(), O_RDONLY || O_WRONLY || O_APPEND);
 
-	if (file.is_open()) {
-		std::string	tmp("");
-		while (getline(file, tmp))
-			fileContent.append(tmp + "\n");
+	if (file != -1) {
+		char buf[2];
+		int ret;
+		while ((ret = read(file, buf, 1) > 0)) {
+			buf[ret] = '\0';
+			fileContent.append(std::string(buf));
+		}
+		// std::cout << "|" << fileContent << "|" << client.getRequest().getBody() << "|" << std::endl;
 		if (fileContent == client.getRequest().getBody()) {
+			std::cout << "the same" << std::endl;
+			this->setStatusCode(200);
 			// set_LastModified(client.getPathToFile());
+			// this->_headers.insert(std::make_pair("Last-Modified", ));
+
 		}
 		else {
-			file.clear(); // clear eof flag
-			// + seek to 0
+			std::cout << "update" << std::endl;
+			close(file);
+			int file = open("files/myFile2", O_RDWR | O_TRUNC, 0666);
+			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
 			
+			this->setStatusCode(200);
+			// this->_headers.insert(std::make_pair("Date", ));
+
+			// this->_headers.insert(std::make_pair("Content-Location", ));
+
         }
 	}
+	else {
+		std::cout << "create" << std::endl;
 
-	// int ret = open();
+		close(file);
+		int file = open("files/myFile2", O_RDWR | O_CREAT, 0666);
+		write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
+			
+		this->setStatusCode(201);
+		// this->_headers.insert(std::make_pair("Content-Location", ));
 
+	}
+	close(file);
 }
 
 void	Response::execGET(Client &client){
@@ -177,7 +151,7 @@ Response::Response(Server const &serv, Client &client):
 		if (client.getMethod() == "GET" || client.getMethod() == "HEAD")
 			execGET(client);
 		if (client.getMethod() == "PUT")
-			execGET(client);
+			execPut(client);
 
 }
 

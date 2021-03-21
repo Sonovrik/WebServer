@@ -302,7 +302,6 @@ bool		Request::setHeader(std::string line) {
 		this->_headers.find(node.first)->second = node.second;
 	else
 		this->_headers.insert(node);
-	// std::cout << this->_headers.find(node.first)->first << ":" << this->_headers.find(node.first)->second << std::endl;
 	return true;
 }
 
@@ -328,7 +327,7 @@ bool		Request::parseHeaders(std::string &req) {
 	}
 	if ((pos = req.find("\r\n")) == 0) {
 		req.erase(0, 2);
-		if (this->_method != "POST")
+		if (this->_method != "POST" && this->_method != "PUT")
 			this->_return = SEND;
 		else
 			this->_waitBody = true;
