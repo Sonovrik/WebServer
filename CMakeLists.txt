@@ -5,10 +5,10 @@ set(CMAKE_CXX_STANDARD 98)
 
 add_executable(WebServer CGI/CGI.cpp CGI/CGI.hpp CGI/mainCGI.cpp
         ConfigParser/ConfigParser.cpp ConfigParser/ConfigParser.hpp
-        Server.hpp server.cpp
+        Server.hpp Server.cpp
         Request/Request.cpp Request/Request.hpp
         Client/Client.cpp Client/Client.hpp
         utils.cpp utils.hpp
-        Response.cpp Response.hpp errors.cpp)
+        Response.cpp Response.hpp errors.cpp CGI/RequestConfigMatch.cpp CGI/RequestConfigMatch.hpp)
 
 #CGI/CGI.cpp CGI/mainCGI.cpp ConfigParser/ConfigParser.cpp server.cpp Request/Request.cpp Client/Client.cpp utils.cpp

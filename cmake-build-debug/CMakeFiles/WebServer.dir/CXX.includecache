@@ -6,32 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
-CGI.hpp
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
-
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
-map
--
-iostream
--
-vector
--
-unistd.h
--
-sys/stat.h
--
-fcntl.h
--
-string
--
-../Request/Request.hpp
-/Users/kmoaning/Desktop/ToGit/Request/Request.hpp
-../Server.hpp
-/Users/kmoaning/Desktop/ToGit/Server.hpp
-../ConfigParser/ConfigParser.hpp
-/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
-
 /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 ../Request/Request.hpp
 /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
@@ -42,22 +16,6 @@ map
 vector
 -
 
-/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
-iostream
--
-string
--
-map
--
-vector
--
-fstream
--
-array
--
-../Server.hpp
-/Users/kmoaning/Desktop/ToGit/Server.hpp
-
 /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
 iostream
 -
@@ -67,6 +25,10 @@ map
 -
 vector
 -
+
+/Users/kmoaning/Desktop/ToGit/Server.cpp
+Server.hpp
+/Users/kmoaning/Desktop/ToGit/Server.hpp
 
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 map

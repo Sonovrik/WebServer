@@ -86,6 +86,12 @@
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp">
 			<Option target="WebServer"/>
 		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp">
+			<Option target="WebServer"/>
+		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp">
 			<Option target="WebServer"/>
 		</Unit>
@@ -113,16 +119,13 @@
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/Response.hpp">
 			<Option target="WebServer"/>
 		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/Server.cpp">
+			<Option target="WebServer"/>
+		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/Server.hpp">
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/errors.cpp">
-			<Option target="WebServer"/>
-		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/ToGit/server.cpp">
-			<Option target="WebServer"/>
-		</Unit>
-		<Unit filename="/Users/kmoaning/Desktop/ToGit/server.hpp">
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/utils.cpp">
