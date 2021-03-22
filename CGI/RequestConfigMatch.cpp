@@ -53,6 +53,8 @@ std::string getLocation(std::string &uri, Server &ser, int &pos) {
 			break;
 		i++;
 	}
+	if (i == count)
+		throw std::runtime_error("404");
 	pos = i;
 	return res;
 }
@@ -70,11 +72,11 @@ void checkIndex(std::string &ret, location_t &location) {
 			if(stat(tmp.c_str() , &info) == 0)
 				break;
 		}
-		if(i == size) {									//  не нашла index
+		if(i == size) {									// не нашла index
 			if (location._directives.find("autoindex")->second == "on")
 				;										// листинг директорий
 			else
-				throw std::runtime_error("403"); //"Index Not Found, code: 403");
+				throw std::runtime_error("403");		//"Index Not Found, code: 403");
 		}
 		else											// нашла индекс, добавила его к директории
 			ret = tmp;
@@ -107,27 +109,29 @@ std::string getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		break;
 	}
 	size_t last = ret.length() - 1;
-	if (ret[last] == '/' && tmp.length() == 0) { // папка, checkIndex checkAutoIndex
+	if (ret[last] == '/' && tmp.length() == 0) {			//папка, checkIndex
 		checkIndex(ret, ser.get_locations()[loc]);
 	}
-	else if(ret[last] == '/' && tmp.length() != 0) { // точно файл, проверить его наличие
+	else if(ret[last] == '/' && tmp.length() != 0) {		//точно файл, проверить его наличие
 		ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
 		req.setPathInfo(tmp);
 		if (stat(path, &info) != 0)
-			throw std::runtime_error("404"); //"paht not found. code: 404 Not Found");
+			throw std::runtime_error("404");				//"paht not found. code: 404 Not Found";
 	}
+	else
+		; // проверить если файл без пути интерпритатора
 	return (ret);
 }
 
 void compareHostName(const std::string& hostName, const std::string& ip, const std::string& servName) {
 	if(hostName != ip && hostName != servName)
-		throw std::runtime_error("400"); //"error! Server name does not match configuration! code: ????"); // код ошибки??
+		throw std::runtime_error("400"); //"error! Server name does not match configuration! code: ????";
 }
 
 void comparePort(const std::string& port, const std::string& servPort) {
 	if(port != servPort)
-		throw std::runtime_error("400"); //"error! Port does not match configuration! code: ????"); // код ошибки??
+		throw std::runtime_error("400"); //"error! Port does not match configuration! code: ????";
 }
 
 int checkHost(int pos, std::string &uri, Server &ser) {
@@ -145,7 +149,7 @@ int checkHost(int pos, std::string &uri, Server &ser) {
 				comparePort(port, ser.get_port());
 			}
 			else
-				hostName = host; // error?
+				compareHostName(host, ser.get_ip(), ser.get_serverName());
 			uri.erase(0, host.length());
 		}
 		else {
@@ -170,9 +174,9 @@ void checkBodySize(Server &ser, int locIndex, Request &req) {
 
 bool getWhere(std::map<std::string, std::string> dir, Request &req) {
 	std::string extReq;
-	std::string pathReq;
+	const std::string& pathReq = req.getPathInfo();
 	std::string extsConf = dir.find("cgi_extensions")->second;
-	std::string PathConf = dir.find("cgi_path")->second;
+	std::string pathConf = dir.find("cgi_path")->second;
 	std::vector<std::string> extConfArr = splitString(extsConf);
 	size_t extCount = extConfArr.size();
 	const std::string& tmp = req.getPath();
@@ -188,11 +192,11 @@ bool getWhere(std::map<std::string, std::string> dir, Request &req) {
 	}
 	if (i == extCount)
 		return false;
-	if(pathReq != req.getPathInfo())				//если cgi_tester и /cgi_tester????
+	if(pathReq != pathConf)
 		return false;
 	const std::string& method = req.getMethod();
 	if(method == "GET" || method == "HEAD" || method == "POST")
-		return true;
+		return true; // true == cgi == 1 in Where
 	return false;
 }
 
@@ -219,7 +223,6 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	Request &req = client.getRequest();
 	std::string uri = req.getPath();
 	std::string pathToScript;
-	std::string location;
 	int loc = -1;
 	size_t pos;
 	if((pos = uri.rfind('?')) != std::string::npos)
@@ -228,23 +231,23 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	try {  // Сказать Маше оставлять http
 //		if(uri.compare(0, 7, "http://") == 0) {
 //			uri.erase(0, 7); //delete http:
-		req.setPathInfo("cgi_tester"); // проверить у Маши проставление /CGI/cgi_tester
-		if((pos = uri.find('/')) != std::string::npos) {
-			checkHost(pos, uri, ser);
-		}
-//			else
-//				; //error
+			req.setPathInfo("/Users/kmoaning/.brew/bin/php-cgi"); // /Users/kmoaning/Desktop/ToGit/cgi_tester
+			if((pos = uri.find('/')) != std::string::npos)
+				checkHost(pos, uri, ser);
 //		}
-		location = getLocation(uri, ser, loc);
+//		else
+//				; //сразу путь без схемы и хоста
+		client.setStatusCode(200);  // удалить
+		getLocation(uri, ser, loc);
 		pathToScript = getPath(uri, loc, req, ser);
-		req.setPath(pathToScript); //  переделать по нормальному!!!
-		checkConf(ser, loc, req, client);
+		req.setPath(pathToScript);
 		client.setPathToFile(pathToScript);
+		checkConf(ser, loc, req, client);
 	}
 	catch (std::exception &exception) {
 		setErrorCode(exception.what(), client);
 		return -1;
 	}
 //	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
-	return 0;
+	return (client.getWhere() == 1) ? 0 : 1;
 }

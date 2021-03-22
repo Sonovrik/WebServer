@@ -24,6 +24,7 @@ class CGI {
 private:
 	char								**env;
 	char								**argv;
+	char								*dir;
 	int									envCount;
 	std::string							RequestBody;
 	std::string							ResponseBody;

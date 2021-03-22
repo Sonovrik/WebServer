@@ -5,12 +5,12 @@
 
 #include "CGI.hpp"
 
-static const int B64index[256] = { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 62, 63, 62, 62, 63, 52, 53, 54, 55,
-   56, 57, 58, 59, 60, 61,  0,  0,  0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6,
-   7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,  0,
-   0,  0,  0, 63,  0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+static const int B64index[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 63, 62, 62, 63, 52, 53, 54, 55,
+   56, 57, 58, 59, 60, 61, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3,  4, 5, 6,
+   7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,  0,
+   0, 0, 0, 63, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51 };
 
 CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""), ResponseBody("") {
@@ -29,7 +29,10 @@ CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""),
 		envMap["HTTP_" + a] = it->second;
 		envCount++;
 	}
-
+//	char dir[1024];
+	dir = getcwd(NULL, 0);
+	if (dir == NULL)
+		throw std::runtime_error("500"); //("error getcwd. 500 Internal Server Error");
 }
 
 CGI::~CGI() {
@@ -95,14 +98,13 @@ void CGI::init(Request &req, Server &ser) {
 //	else if(method == "POST")
 //	else
 //		; //error
-	char dir[1024];
-	if (getcwd(dir, 1024) == NULL)
-	throw std::runtime_error("500"); //("error getcwd. 500 Internal Server Error");
 
-	this->envMap["REQUEST_URI"] = "/" + req.getPath();  // "/html/YoupiBanane/1.bla";
+	std::string pathCgi = req.getPath();
+	pathCgi = pathCgi.erase(0, 1);
+	this->envMap["REQUEST_URI"] = pathCgi;  // "/html/YoupiBanane/1.bla";
 	this->envMap["QUERY_STRING"] = req.getQueryString();
-	this->envMap["SCRIPT_NAME"] = "/" + req.getPath(); // "/html/YoupiBanane/1.bla";
-	this->envMap["PATH_INFO"] = "/" + req.getPath(); // "/html/YoupiBanane/1.bla"; //req.getPathInfo()
+	this->envMap["SCRIPT_NAME"] = pathCgi; // "/html/YoupiBanane/1.bla";
+	this->envMap["PATH_INFO"] = pathCgi; // "/html/YoupiBanane/1.bla"; //req.getPathInfo()
 	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
 	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
 	this->envMap["GATEWAY_INTERFACE"] = ser.getEnvValue("GATEWAY_INTERFACE");
@@ -137,8 +139,8 @@ void CGI::init(Request &req, Server &ser) {
 	this->RequestBody = req.getBody();
 	PathInfo = req.getPathInfo();
 	this->argv = new char *[3]; // проверка маллокав
-	this->argv[0] = strdup((req.getPathInfo()).c_str());
-	this->argv[1] = strdup((envMap.find("REQUEST_URI")->second).c_str());  // проверка маллокав
+	this->argv[0] = strdup(("/" + req.getPathInfo()).c_str());
+	this->argv[1] = strdup((dir + envMap.find("REQUEST_URI")->second).c_str());  // проверка маллокав
 	this->argv[2] = NULL;
 //	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
 //	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
@@ -154,7 +156,6 @@ void CGI::creatENV() {
 		env[i] = strdup(tmp.c_str()); // проверка маллокав
 	}
 	env[envMap.size()] = NULL;
-
 //	int i = 0;
 //	while(i < envMap.size())
 //	{
@@ -184,7 +185,9 @@ void CGI::exec() {
 			throw std::runtime_error("500"); //("Cannot dup, 1. code: 500 Internal Server Error");
 		if (dup2(fdF, STDOUT) < 0)
 			throw std::runtime_error("500"); //("Cannot dup, 2. code: 500 Internal Server Error");
-		ex = execve(PathInfo.c_str(), argv , env);
+		if(argv[0] != "/Users/kmoaning/Desktop/ToGit/cgi_tester")
+			env = NULL;
+		ex = execve(argv[0], argv , env);
 		exit(ex);
 	}
 	else { // родитель
@@ -203,8 +206,3 @@ void CGI::exec() {
 		close(fd[0]);
 	}
 }
-
-
-
-
-

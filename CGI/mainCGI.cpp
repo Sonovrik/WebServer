@@ -15,7 +15,7 @@ int		findMaxSD(std::vector<Server> &servers) {
 }
 
 int main(){
-	std::string tmp3 = "POST http://localhost:8081/directory HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\nhello bulina!\r\n";
+	std::string tmp3 = "GET http://localhost:8081/directory/ HTTP/1.1\r\nHost: 127.0.0.1:5991\r\nAuthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n<?php echo Hello TOXYGEN!!!!!; exit; ?>\r\n";
 	try{
 		ConfigParser parser;
 		if (!parser.parseConfig("webserv.conf")){
@@ -103,7 +103,9 @@ int main(){
 								return 1;
 							}
 						}
-						exit(1);
+						else
+							std::cerr << "server exec" << std::endl;
+						exit(tmp.getStatusCode());
 						// if (write == yes){
 						// 	send();
 						// }
@@ -116,7 +118,7 @@ int main(){
 		}
 	}
 	catch(const std::exception& e){
-		std::cout << e.what() << std::endl;
+		std::cout << "ddd" << e.what() << std::endl;
 		return -1;
 	}
 	return 0;

@@ -1,5 +1,5 @@
 
 <?php
-    echo "Hello TOXYGEN!!!!!";
+    echo "Hello TOXYGEN!!!!! I'm from php-cgi";
     exit;
 ?>
