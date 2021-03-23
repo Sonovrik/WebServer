@@ -6,7 +6,7 @@
 
 void	setErrorCode(const std::string& str, Client &client) {
 	client.setStatusCode( atoi(str.c_str()));
-	std::cerr << "error : " << str << std::endl;
+	std::cerr << "1 : "  << "error : " << str << std::endl;
 }
 
 std::vector<std::string>	splitString(std::string str) {
@@ -216,7 +216,7 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 		}
 	}
 	checkBodySize(ser, locIndex, req);
-	getWhere(ser.get_locations()[locIndex]._directives, req) == true ? client.setWhere(1) : client.setWhere(0);
+	getWhere(ser.get_locations()[locIndex]._directives, req) == true ? client.setWhere(toCGI) : client.setWhere(toServer);
 }
 
 int RequestConfigMatch(Client &client, Server &ser) {
@@ -225,13 +225,13 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	std::string pathToScript;
 	int loc = -1;
 	size_t pos;
-	if((pos = uri.rfind('?')) != std::string::npos)
-		uri.erase(pos);
-	pos = 0;
+	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 	try {
+		if((pos = uri.rfind('?')) != std::string::npos)
+			uri.erase(pos);
+		pos = 0;
 		if(uri.compare(0, 7, "http://") == 0) {
 			uri.erase(0, 7); //delete http:
-			req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 			if((pos = uri.find('/')) != std::string::npos)
 				checkHost(pos, uri, ser);
 		}
@@ -248,5 +248,5 @@ int RequestConfigMatch(Client &client, Server &ser) {
 		return -1;
 	}
 //	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
-	return (client.getWhere() == 1) ? 0 : 1;
+	return client.getWhere();
 }
