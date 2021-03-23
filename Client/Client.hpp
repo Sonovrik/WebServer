@@ -41,6 +41,8 @@ public:
 	int 	getWhere() const;
 	bool	getToClose() const;
 
+
+	void	clear(void);
 };
 
 #endif
