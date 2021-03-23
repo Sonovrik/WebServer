@@ -246,6 +246,7 @@ int RequestConfigMatch(Client &client, Server &ser) {
 		getLocation(uri, ser, loc);
 		pathToScript = getPath(uri, loc, req, ser);
 		req.setPath(pathToScript);
+		client.setLocPos(loc);
 		client.setPathToFile(pathToScript);
 		checkConf(ser, loc, req, client);
 	}

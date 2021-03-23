@@ -15,6 +15,7 @@ private:
 	int		_where;
 	int		_sd;
 	int		_flag;
+	int		_locPos;
 	int		_statusCode;
 	Request _request;
 	std::string pathToFile;
@@ -31,6 +32,7 @@ public:
 	void	setPathToFile(const std::string &pathToFile);
 	void 	setWhere(int where);
 	void	setToClose(bool toClose);
+	void	setLocPos(int pos);
 
 	std::string const	&getMethod(void) const;
 	int		getStatusCode(void) const;
@@ -40,6 +42,7 @@ public:
 	const	std::string &getPathToFile() const;
 	int 	getWhere() const;
 	bool	getToClose() const;
+	int		getLocPos(void) const;
 
 
 	void	clear(void);
