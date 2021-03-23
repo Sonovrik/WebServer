@@ -4,9 +4,11 @@
 
 #include "RequestConfigMatch.hpp"
 
+
+
 void	setErrorCode(const std::string& str, Client &client) {
 	client.setStatusCode( atoi(str.c_str()));
-	std::cerr << "1 : "  << "error : " << str << std::endl;
+	std::cerr << "error : " << str << std::endl;
 }
 
 std::vector<std::string>	splitString(std::string str) {
@@ -234,7 +236,7 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	if((pos = uri.rfind('?')) != std::string::npos)
 		uri.erase(pos);
 	pos = 0;
-	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
+//	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 	try {
 		if((pos = uri.rfind('?')) != std::string::npos)
 			uri.erase(pos);
@@ -256,6 +258,5 @@ int RequestConfigMatch(Client &client, Server &ser) {
 		setErrorCode(exception.what(), client);
 		return -1;
 	}
-//	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
 	return client.getWhere();
 }

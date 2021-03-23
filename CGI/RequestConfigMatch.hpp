@@ -22,7 +22,7 @@ void						checkBodySize(Server &ser, int locIndex, Request &req);
 bool						getWhere(std::map<std::string, std::string> dir, Request &req);
 void						checkConf(Server &ser, int locIndex, Request &req, Client &client);
 int							RequestConfigMatch(Client &client, Server &ser);
-void setErrorCode(const std::string& str, Client &client);
+void						setErrorCode(const std::string& str, Client &client);
 
 #endif
 
