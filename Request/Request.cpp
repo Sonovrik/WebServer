@@ -208,7 +208,8 @@ bool	Request::parseStartLine(std::string str) {
 		str.erase(0, pos + 1);
 	}
 	token[2] = str.substr(0, str.length());
-	if (token[2].empty())
+	std::cout << "1" << std::endl;
+	if (token[2].empty()) 
 		return false;
 	// find methods
 	for (int i = 0; i < _numMethods; i++) {
@@ -217,10 +218,14 @@ bool	Request::parseStartLine(std::string str) {
 	}
 	if (this->_method.empty())
 		return false;
+	std::cout << "2" << std::endl;
+
 	this->_path = token[1];
 	// please add envs in this string
 	if (token[2] != "HTTP/1.1\r\n")
 		return false;
+	std::cout << "3" << std::endl;
+
 	this->_version = token[2].substr(0, token[2].length() - 2);
 	// parse query string
 	if (!parseQueryString())
@@ -322,9 +327,6 @@ bool		Request::parseHeaders(std::string &req) {
 
 	if (this->_waitBody)
 		return true;
-	std::cout << "{" << ((pos = req.find(delimenter)) != std::string::npos) << "}";
-	std::cout << "{" << (int)req.find(delimenter) << "}";
-	std::cout << "{" << (pos == 0) << "}" << std::endl;
 	while ((pos = req.find(delimenter)) != std::string::npos && pos != req.length() && pos != 0) {
 		tmp = req.substr(0, pos);
 		if (!(setHeader(tmp)))
@@ -333,7 +335,7 @@ bool		Request::parseHeaders(std::string &req) {
 	}
 	pos = req.find("\r\n");
 	// std::cout << "{" << pos << "}" << std::endl;
-	if (pos == std::string::npos && !req.empty()) {
+	if (pos == std::string::npos && req[0] != '\0') {
 		// std::cout << "P" << std::endl;
 		this->_buffer = req;
 		req.erase();
@@ -427,7 +429,8 @@ bool		Request::parseBody(std::string req) {
 int			parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
 
-	if (!request.getBuffer().empty()) {
+	// if (!request.getBuffer().empty()) {
+	if (request.getBuffer() != "") {
 		req = request.getBuffer() + req;
 		request.setBuffer("");
 	}
