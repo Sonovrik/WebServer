@@ -31,6 +31,7 @@ private:
 	// constants
 	static std::string const	_methodsNames[];
 	static int const			_numMethods;
+	std::string					_buffer;
 
 public:
 	Request();
