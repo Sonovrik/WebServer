@@ -107,6 +107,11 @@ void		Server::FD_reset(fd_set *to_set){
 	}
 }
 
+std::string const	&Server::getLocationMethods(int pos) const{
+	return this->_locations[pos]._directives.find("method")->second;
+}
+
+
 void	Server::create_master_socket(int domain, int type, int protocol){
 	_master_socket = create_socket(domain, type, protocol);
 	allow_mul_cons_socket(_master_socket);

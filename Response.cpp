@@ -56,7 +56,7 @@ std::string	Response::setStatusMessage(int code){
 }
 Response::~Response(){}
 
-void	Response::setError(Server const &serv) {
+void	Response::setError(Server const &serv, Client &client) {
 	if (this->_toClose == true)
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
@@ -79,13 +79,9 @@ void	Response::setError(Server const &serv) {
 	_headers.insert(std::make_pair("Content-Length", std::to_string(_body.size())));
 	setDate();
 	if (this->_statusCode == 405){
-		// _headers.insert(std::make_pair("Allow", std::to_string(_body.size())));
+		_headers.insert(std::make_pair("Allow", serv.getLocationMethods(client.getLocPos())));
 	}
 }
-
-// 200 updated - 201 created 
-// Content-Location
-// Last-Modified
 
 void	Response::execPUT(Client &client) {
 	struct stat st;
@@ -189,7 +185,7 @@ Response::Response(Server const &serv, Client &client):
 	_body(""),
 	_toClose(client.getToClose()) {
 		if (this->_statusCode  >= 400)
-			setError(serv);
+			setError(serv, client);
 		else if (client.getWhere() == toCGI)
 			parseCgiFile(client);
 		else if (client.getMethod() == "GET" || client.getMethod() == "HEAD")

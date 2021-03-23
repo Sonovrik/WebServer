@@ -85,6 +85,8 @@ public:
 	std::string			get_maxBodySize(void) const;
 	std::string			get_errorPath(int code) const;
 	std::vector<location_t>	get_locations(void) const;
+	std::string const	&getLocationMethods(int pos) const;
+
 
 	int			get_maxSd(void) const;
 	int			get_master_socket(void) const;

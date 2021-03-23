@@ -30,7 +30,7 @@ public:
 	Response(Response const &);
 	Response &operator=(Response const &);
 
-	void		setError(Server const &);
+	void		setError(Server const &, Client &client);
 
 	// setters
 	void	set_version(std::string);

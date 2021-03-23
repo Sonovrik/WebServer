@@ -165,7 +165,7 @@ bool	ConfigParser::getLocation(size_t *index, location_t &location){
 	size_t	i = *index;
 	location._name = *(_tokens[i].begin() + 1);
 	while (_tokens[++i].back() != "}"){
-		std::pair<std::string, std::string>		p;
+		std::pair<std::string, std::string>	p;
 		p.first = _tokens[i].front();
 		for (std::vector<std::string>::iterator it = _tokens[i].begin() + 1; it != _tokens[i].end(); it++){
 			p.second += *it;

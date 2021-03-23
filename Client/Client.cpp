@@ -3,12 +3,14 @@
 Client::Client():
 	_sd(0),
 	_flag(WAIT),
+	_locPos(0),
 	_where(toServer),
 	_statusCode(200) {}
 
 Client::Client(int sd):
 	_sd(sd),
 	_flag(WAIT),
+	_locPos(0),
 	_where(toServer),
 	_statusCode(200) {}
 
@@ -52,6 +54,16 @@ Request	&Client::getRequest(void) {
 	return this->_request;
 }
 
+void	Client::setLocPos(int pos){
+	this->_locPos = pos;
+}
+
+
+int		Client::getLocPos(void) const{
+	return this->_locPos;
+}
+
+
 int		Client::getStatusCode(void) const {
 	return this->_statusCode;
 }
@@ -77,9 +89,6 @@ std::string const	&Client::getMethod(void) const{
 }
 
 void	Client::clear(void){
-	// if (getToClose() == true){
-	// 	this->_sd = 0;
-	// }
 	this->_where = toServer;
 	this->_flag = WAIT;
 	this->_statusCode = 200;
