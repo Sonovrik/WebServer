@@ -52,6 +52,7 @@ public:
 	bool	parseQueryString();
 
 	// setters
+	void	setBuffer(std::string);
 	void	setMethod(std::string);
 	void	setPath(std::string);
 	void	setVersion(std::string);
@@ -65,6 +66,7 @@ public:
 	void	setWaitBody(int waitBody);
 
 	// getters
+	std::string			getBuffer(void) const;
 	std::string const	&getMethod(void) const;
 	std::string	const	&getPath(void) const;
 	std::string	const	&getVersion(void) const;

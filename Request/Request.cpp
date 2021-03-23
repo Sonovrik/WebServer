@@ -112,6 +112,10 @@ void	Request::setWaitBody(int waitBody) {
 	this->_waitBody = waitBody;
 }
 
+void	Request::setBuffer(std::string buffer) {
+	this->_buffer = buffer;
+}
+
 // getters
 
 std::string const	&Request::getMethod(void) const {
@@ -158,9 +162,14 @@ bool				Request::getWaitBody(void) const {
 	return this->_waitBody;
 }
 
+std::string			Request::getBuffer(void) const {
+	return this->_buffer;
+}
+
 // methods
 
 void	Request::reset() {
+	_buffer = "";
 	_method = "";
 	_path = "";
 	_version = "";
@@ -182,7 +191,6 @@ bool	Request::parseQueryString() {
 	if ((pos = this->_path.find("?")) == std::string::npos)
 		return true;
 	this->_queryString = this->_path.substr(pos + 1, this->_path.length());
-	std::cout << this->_queryString << std::endl;
 	return true;
 }
 
@@ -289,8 +297,8 @@ bool		Request::setHeader(std::string line) {
 	for (int i = 0; i < node.first.length(); i++) {
 		node.first[i] = std::toupper(node.first[i]);
 	}
-	if (!checkHeaderName(node.first))
-		return false;
+	// if (!checkHeaderName(node.first))
+	// 	return false;
 	line.erase(0, pos + 1);
 	trimString(line);
 	node.second = line;
@@ -303,7 +311,7 @@ bool		Request::setHeader(std::string line) {
 		this->_headers.find(node.first)->second = node.second;
 	else
 		this->_headers.insert(node);
-	std::cout << "|" << node.first << "|" << node.second << "|" << std::endl;
+	// std::cout << "|" << node.first << "|" << node.second << "|" << std::endl;
 	return true;
 }
 
@@ -312,31 +320,36 @@ bool		Request::parseHeaders(std::string &req) {
 	size_t		pos = 0;
 	std::string	delimenter = "\r\n";
 
-	if (!this->_buffer.empty()) {
-		req = this->_buffer + req;
-		this->_buffer.erase(0, this->_buffer.length());
-	}
 	if (this->_waitBody)
 		return true;
+	std::cout << "{" << ((pos = req.find(delimenter)) != std::string::npos) << "}";
+	std::cout << "{" << (int)req.find(delimenter) << "}";
+	std::cout << "{" << (pos == 0) << "}" << std::endl;
 	while ((pos = req.find(delimenter)) != std::string::npos && pos != req.length() && pos != 0) {
 		tmp = req.substr(0, pos);
 		if (!(setHeader(tmp)))
 			return false;
 		req.erase(0, pos + delimenter.size());
 	}
-	if ((pos = req.find("\r\n")) == std::string::npos)
+	pos = req.find("\r\n");
+	// std::cout << "{" << pos << "}" << std::endl;
+	if (pos == std::string::npos && !req.empty()) {
+		// std::cout << "P" << std::endl;
 		this->_buffer = req;
+		req.erase();
+	}
 	// if end and no host
-	else if (this->_headers.find("HOST") == this->_headers.end()) {
+	else if (pos != std::string::npos && this->_headers.find("HOST") == this->_headers.end()) {
 		this->_toClose = true;
 		return false;
 	}
-	if (pos == 0) {
+	else if (pos == 0) {
 		req.erase(0, 2);
 		if (this->_method != "POST" && this->_method != "PUT")
 			this->_return = SEND;
 		else
 			this->_waitBody = true;
+		// std::cout << "here" << std::end;
 	}
 	return true;
 }
@@ -414,12 +427,19 @@ bool		Request::parseBody(std::string req) {
 int			parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
 
+	if (!request.getBuffer().empty()) {
+		req = request.getBuffer() + req;
+		request.setBuffer("");
+	}
+	if ((pos = req.find("\r\n")) == std::string::npos) {
+		request.setBuffer(req);
+		return request.getReturn();
+	}
+	// else if (pos == 0)
+	// 	return request.getReturn();
+	std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
-		if ((pos = req.find("\r\n")) == std::string::npos) {
-			request.setReturn(ERR_BAD_REQUEST);
-			std::cout << "fail" << std::endl;
-			return request.getReturn();
-		}
+		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));
 		if (request.parseStartLine(tmp) == false) {
 			request.setReturn(ERR_BAD_REQUEST);
@@ -430,17 +450,13 @@ int			parseRequest(std::string req, Request &request) {
 	}
 	if (request.getWaitBody() == false && request.parseHeaders(req) == false) {
 		std::cout << "header problem" << std::endl;
-		std::map<std::string, std::string>::const_iterator it = request.getHeaders().begin();
-		for (; it != request.getHeaders().end(); it++){
-			std::cout << it->first <<  " : " << it->second << std::endl;
-		}
 		return ERR_BAD_REQUEST;
 	}
 	if ((request.getMethod() == "POST" || request.getMethod() == "PUT") && request.getWaitBody() == true) {
 		if (request.parseBody(req) == false) {
 			return request.getReturn();
 		}
-		std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
+		// std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
 	}
 	return request.getReturn();
 }
