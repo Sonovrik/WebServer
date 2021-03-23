@@ -216,7 +216,7 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 		}
 	}
 	checkBodySize(ser, locIndex, req);
-	getWhere(ser.get_locations()[locIndex]._directives, req) == true ? client.setWhere(1) : client.setWhere(0);
+	getWhere(ser.get_locations()[locIndex]._directives, req) == true ? client.setWhere(toCGI) : client.setWhere(toServer);
 }
 
 int RequestConfigMatch(Client &client, Server &ser) {
@@ -228,10 +228,10 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	if((pos = uri.rfind('?')) != std::string::npos)
 		uri.erase(pos);
 	pos = 0;
+	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 	try {
 		if(uri.compare(0, 7, "http://") == 0) {
 			uri.erase(0, 7); //delete http:
-			req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 			if((pos = uri.find('/')) != std::string::npos)
 				checkHost(pos, uri, ser);
 		}
@@ -248,5 +248,6 @@ int RequestConfigMatch(Client &client, Server &ser) {
 		return -1;
 	}
 //	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
-	return (client.getWhere() == 1) ? 0 : 1;
+	return client.getWhere();
+	// return (client.getWhere() == 1) ? toServer : toCGI;
 }

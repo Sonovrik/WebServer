@@ -4,3 +4,4 @@ server
 a.out.dSYM
 *.o
 webserv
+webserv.dSYM

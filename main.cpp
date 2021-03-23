@@ -118,7 +118,8 @@ int main(){
 						// exit(1);
 						// continue;
 						 if (client.getStatusCode() == 200) {
-							 if (RequestConfigMatch(client, *it) == 0) {
+							 int ret =9;
+							 if ((ret = RequestConfigMatch(client, *it)) == toCGI) {
 								 try {
 									 CGI qqq(client.getRequest(), *it);
 									 qqq.init(client.getRequest(), *it);
@@ -131,6 +132,7 @@ int main(){
 								 }
 							 } else
 								 std::cerr << "server exec" << std::endl;
+							std::cout << "{" << ret << "}" << std::endl;
 						 }
 						 Response resp(*it, client);
 //						 std::cout << resp.getResponse() << "|" << std::endl;
