@@ -134,7 +134,7 @@ int main(){
 		}
 	}
 	catch(const std::exception& e){
-		std::cout << "2 : " << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
 		return -1;
 	}
 	return 0;
