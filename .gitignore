@@ -1,0 +1,6 @@
+a.out
+.vscode
+server
+a.out.dSYM
+*.o
+webserv

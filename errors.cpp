@@ -8,7 +8,7 @@ static std::string error_400(void) {
 
 // Forbidden
 static std::string error_403(void) {
-	return "<html>\n<title>Error 403</title>\n<body>\n<h1>403</h1>\n<h2>Payment Required</h2>\n</body>\n</html>";
+	return "<html>\n<title>Error 403</title>\n<body>\n<h1>403</h1>\n<h2>Forbidden</h2>\n</body>\n</html>";
 }
 
 // Not Found
@@ -59,7 +59,7 @@ static std::string error_414(void) {
 
 // Unsupported Media Type
 static std::string error_415(void) {
-	return "<html>\n<title>Error 415</title>\n<body>\n<h1>415</h1>\n<h2>URI Too Long</h2>\n</body>\n</html>";
+	return "<html>\n<title>Error 415</title>\n<body>\n<h1>415</h1>\n<h2>Unsupported Media Type</h2>\n</body>\n</html>";
 }
 
 // Expectation Failed

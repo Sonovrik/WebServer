@@ -1,5 +1,3 @@
-
-
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
@@ -9,6 +7,10 @@
 #include <fstream>
 #include "Server.hpp"
 #include "utils.hpp"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 class	Response{
 
@@ -18,12 +20,12 @@ private:
 	std::string		_statusMessage;
 	std::map<std::string, std::string>	_headers;
 	std::string		_body;
-
+	bool			_toClose;
 	size_t			_respSize;
 
 public:
 	Response();
-	Response(int code, Server const &serv);
+	Response(Server const &serv, Client &client);
 	~Response();
 	Response(Response const &);
 	Response &operator=(Response const &);
@@ -32,13 +34,22 @@ public:
 
 	// setters
 	void	set_version(std::string);
-	void	set_statusCode(int);
-	void	set_statusMessage(int code);
+	void	setStatusCode(int);
+	// void	set_statusMessage(int code);
+	std::string	setStatusMessage(int);
+
+	
+	void	execPUT(Client &client);
+	void	execGET(Client &client);
+
 	void	set_statusMessage(std::string);
 	void	set_headers(std::map<std::string,std::string>);
 	void	set_body(std::string);
 
-	void	set_date();
+	void	setContentLocation(std::string const &pathToFile, std::string const &serverRoot);
+	void	setContentType(std::string const &pathToFile);
+	void	setLastModified(std::string const &file);
+	void	setDate();
 
 	// getters
 	std::string 	get_version(void) const;

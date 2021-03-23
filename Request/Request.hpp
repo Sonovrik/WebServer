@@ -5,9 +5,11 @@
 #include <map>
 #include <vector>
 
-#define	WAIT	0
-#define SEND	1
-#define ERROR	-1
+#define	WAIT				0
+#define SEND				1
+#define ERR_BAD_REQUEST		-1
+#define ERR_LENGTH_REQUIRED	-2
+
 
 class Request{
 
@@ -18,12 +20,14 @@ private:
 	std::string					_version;
 	std::string					_queryString;
 	std::string					_pathInfo;
-
-	std::map<std::string,std::string>	_headers;
 	// body
 	std::string					_body;
-	// errors
-	int							_statusCode;
+	// other
+	std::map<std::string,std::string>	_headers;
+	unsigned long				_bodyLen;
+	bool						_waitBody;
+	bool						_toClose;
+	int							_return;
 	// constants
 	static std::string const	_methodsNames[];
 	static int const			_numMethods;
@@ -34,6 +38,7 @@ public:
 	Request(Request const &);
 	Request	&operator=(Request const &);
 
+	void	reset();
 	// parse request
 	bool	parseStartLine(std::string);
 	bool	parseBody(std::string);
@@ -41,7 +46,7 @@ public:
 	bool	setHeader(std::string);
 	bool	checkHeaderName(std::string);
 	bool	checkHeaderValue(std::string);
-	bool	checkRepeatHeader(std::pair<std::string, std::string>);
+	bool	checkHeader(std::pair<std::string, std::string>);
 	void	trimString(std::string &);
 	bool	parseQueryString();
 
@@ -51,8 +56,12 @@ public:
 	void	setVersion(std::string);
 	void	setBody(std::string);
 	void	setHeaders(std::map<std::string,std::string>);
-	void	setStatusCode(int);
 	void	setPathInfo(std::string);
+	void	setReturn(int);
+	void	setToClose(int toClose);
+	void	setQueryString(int queryString);
+	void	setBodyLen(int bodyLen);
+	void	setWaitBody(int waitBody);
 
 	// getters
 	std::string const	&getMethod(void) const;
@@ -60,10 +69,13 @@ public:
 	std::string	const	&getVersion(void) const;
 	std::string const	&getServerName(void) const;
 	std::string	const	&getBody(void) const;
-	int const		 	&getStatusCode(void) const;
 	std::map<std::string,std::string> const &getHeaders(void) const;
 	std::string const 	&getQueryString(void) const;
 	std::string const	&getPathInfo(void) const;
+	int					getReturn(void) const;
+	bool				getToClose(void) const;
+	bool				getWaitBody(void) const;
+
 };
 
 int			parseRequest(std::string req, Request &request);

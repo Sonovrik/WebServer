@@ -5,6 +5,8 @@
 #include <fcntl.h>
 #include "./ConfigParser/ConfigParser.hpp"
 #include "Response.hpp"
+#include "CGI/CGI.hpp"
+#include "CGI/RequestConfigMatch.hpp"
 
 int		findMaxSD(std::vector<Server> &servers){
 	std::vector<Server>::iterator it = servers.begin();
@@ -24,6 +26,7 @@ int main(){
 			std::cerr << "Some parser error!!!" << std::endl;
 			return -1;
 		}
+		initMimeTypes();
 		timeval time;
 		time.tv_sec = 10;
 		time.tv_usec = 0;
@@ -80,35 +83,79 @@ int main(){
 						}
 						else {
 							client.setFlag(parseRequest(buf, client.getRequest()));
-							if (client.getFlag() == WAIT)
+
+							if (client.getFlag() == WAIT) {
+								std::cout << "wait" << std::endl;
 								continue;
-							else if (client.getFlag() == ERROR){
 							}
-							else if (client.getFlag() == SEND){
+							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED) {
+								// no response - will status code be rewritten after response creation
+								if (client.getFlag() == ERR_LENGTH_REQUIRED)
+									client.setStatusCode(411);
+								if (client.getFlag() == ERR_BAD_REQUEST)
+									client.setStatusCode(400);
+								client.getRequest().reset();
+								client.setFlag(SEND);
 							}
+							// else if (client.getFlag() == SEND) {
+							// 	// client.getWhere() ?= server || cgi
+							// 	Response response(*it, client);
+							// 	std::cout << response.getResponse() << std::endl;
+							// 	client.getRequest().reset();
+							// }
 							// else if ()
 						}
 					}
-					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)){
-							// if (check_cgi){
-							// 	int ret = func();
-							// 	if (ret == 1){
-							// 		CGI
-							// 	}
-							// 	if (ret == 0){
-							// 		server
-							// 	}
-							// 	if (ret == 404)
+					if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)) { // or ERROR
+						// std::cout << "send" << std::endl;
 
-							// }
-						continue;
-							Response resp(400, *it);
-							send(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
-						// if (write == yes){
-						// 	send();
+						// Response resp(*it, client);
+						// std::string str = "./myFile";
+						// resp.set_LastModified(str);
+						// Response resp(*it, client);
+						// std::cout << resp.getResponse() << std::endl;
+						// std::cout << "HERE" << std::endl;
+						// exit(1);
+						// continue;
+						// if (client.getStatusCode() == true){
+						// 	Response resp(*it, client);
 						// }
-						// writefds.fds_bits;
-						// delete sd writefds;
+						// else{
+							if (RequestConfigMatch(client, *it) != 0) {
+								// try {
+								// 	CGI qqq(client.getRequest(), *it);
+								// 	qqq.init(client.getRequest(), *it);
+								// 	qqq.creatENV();
+								// 	qqq.exec();
+								// } 
+								// catch (std::exception &exception) {
+								// 	std::cerr << "error : " << exception.what() << std::endl;
+								// 	return 1;
+								// }
+							}
+							Response resp(*it, client);
+							std::cout << resp.getResponse() << std::endl;
+							// st//(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
+							// exit(0);
+							// exit(1);
+							// else{
+								// initMethod(client, *it);
+								// Response resp(client, *it);
+							// }
+						// }
+						// 	Response resp(&client);{
+						// 		code == error{
+						// 			client.getRequext().toClose() == 1
+						// 				close();
+						// 		}
+						// 	}
+					// 		Response resp(400, *it);
+					// 	// if (write == yes){
+					// 	// 	send();
+						// }
+					// 	// writefds.fds_bits;
+					// 	// delete sd writefds;
+					exit(1);
 					}
 				}
 			}

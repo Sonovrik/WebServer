@@ -2,43 +2,57 @@
 
 Client::Client():
 	_sd(0),
-	_flag(WAIT){}
+	_flag(WAIT),
+	_where(toServer),
+	_statusCode(200) {}
 
 Client::Client(int sd):
 	_sd(sd),
-	_flag(WAIT){}
+	_flag(WAIT),
+	_where(toServer),
+	_statusCode(200) {}
 
 Client::~Client() {}
 
-void	Client::setStatusCode(int code){
+// setters
+void	Client::setStatusCode(int code) {
 	this->_statusCode = code;
 }
 
-void	Client::setSd(int sd){
+void	Client::setSd(int sd) {
 	this->_sd = sd;
 }
 
-void	Client::setFlag(int flag){
+void	Client::setFlag(int flag) {
 	this->_flag = flag;
 }
 
-void	Client::setRequest(Request &reqv){
+void	Client::setRequest(Request &reqv) {
 	this->_request = reqv;
 }
 
-int		Client::getSd(void) const{
+void	Client::setWhere(int where) {
+	this->_where = where;
+}
+
+void	Client::setToClose(bool toClose) {
+	this->_request.setToClose(toClose);
+}
+
+// getters
+int		Client::getSd(void) const {
 	return this->_sd;
 }
 
-int		Client::getFlag(void) const{
+int		Client::getFlag(void) const {
 	return this->_flag;
 }
 
-Request	&Client::getRequest(void){
+Request	&Client::getRequest(void) {
 	return this->_request;
 }
 
-int		Client::getStatusCode(void) const{
+int		Client::getStatusCode(void) const {
 	return this->_statusCode;
 }
 
@@ -47,13 +61,17 @@ const std::string &Client::getPathToFile() const {
 }
 
 void Client::setPathToFile(const std::string &pathToFile) {
-	Client::pathToFile = pathToFile;
+	this->pathToFile = pathToFile;
 }
 
 int Client::getWhere() const {
-	return where;
+	return this->_where;
 }
 
-void Client::setWhere(int where) {
-	Client::where = where;
+bool	Client::getToClose(void) const {
+	return this->_request.getToClose();
+}
+
+std::string const	&Client::getMethod(void) const{
+	return this->_request.getMethod();
 }
