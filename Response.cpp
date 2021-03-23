@@ -39,6 +39,17 @@ std::string	Response::setStatusMessage(int code){
 		case 415: return "Unsupported Media Type";
 		case 417: return "Expectation Failed";
 		case 426: return "Upgrade Required";
+		case 500: return "Internal Server Error";
+		case 501: return "Not Implemented";
+		case 502: return "Bad Gateway";
+		case 503: return "Service Unavailable";
+		case 504: return "Gateway Timeout";
+		case 505: return "HTTP Version Not Supported";
+		case 506: return "Variant Also Negotiates";
+		case 507: return "Insufficient Storage";
+		case 508: return "Loop Detected";
+		case 510: return "Not Extended";
+		case 511: return "Network Authentication Required";
 		default:
 			return "OK";
 	}
@@ -138,6 +149,37 @@ void	Response::execGET(Client &client){
 	_headers.insert(std::make_pair("Content-Language", "en"));
 }
 
+void Response::parseCgiFile(Client &client) {
+	std::ifstream file("./cgiFile", std::ifstream::in);
+	std::string line("");
+
+	if (file.is_open()) {
+		while (getline(file, line)) {
+			if (line.find("Status:") != std::string::npos) {
+				this->setStatusCode(atoi(line.substr(8, 3).c_str()));
+			}
+			else {
+				if (line == "\r")
+					break;
+				size_t pos = line.find(':');
+				std::pair<std::string, std::string> node;
+				node.first = line.substr(0, pos);
+				line.erase(0, pos + 2);
+				node.second = line.substr(0, (line.length() - 1));
+				this->_headers.insert(node);
+			}
+		}
+		while (getline(file, line))
+			this->_body.append(line);
+	}
+	else {
+		std::cerr << "CGI, WHERE FILE ????" << std::endl;
+	}
+	file.close();
+	int fd = open("./cgiFile", O_TRUNC);
+	close(fd);
+}
+
 Response::Response(Server const &serv, Client &client):
 	_version(serv.getEnvValue("SERVER_PROTOCOL")),
 	_statusCode(client.getStatusCode()),
@@ -147,6 +189,8 @@ Response::Response(Server const &serv, Client &client):
 	_toClose(client.getToClose()) {
 		if (this->_statusCode / 4 == 1)
 			setError(serv);
+		else if (client.getWhere() == toCGI)
+			parseCgiFile(client);
 		else if (client.getMethod() == "GET" || client.getMethod() == "HEAD")
 			execGET(client);
 		else if (client.getMethod() == "PUT")
@@ -280,3 +324,5 @@ std::map<std::string,std::string>		&Response::get_headers(void) {
 std::string		Response::get_body(void) const {
 	return _body;
 }
+
+

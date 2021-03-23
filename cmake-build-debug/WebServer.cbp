@@ -107,6 +107,9 @@
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp">
 			<Option target="WebServer"/>
 		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/MIMEtypes.cpp">
+			<Option target="WebServer"/>
+		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/Request/Request.cpp">
 			<Option target="WebServer"/>
 		</Unit>
@@ -126,6 +129,9 @@
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/errors.cpp">
+			<Option target="WebServer"/>
+		</Unit>
+		<Unit filename="/Users/kmoaning/Desktop/ToGit/main.cpp">
 			<Option target="WebServer"/>
 		</Unit>
 		<Unit filename="/Users/kmoaning/Desktop/ToGit/utils.cpp">

@@ -228,16 +228,15 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	if((pos = uri.rfind('?')) != std::string::npos)
 		uri.erase(pos);
 	pos = 0;
-	try {  // Сказать Маше оставлять http
-//		if(uri.compare(0, 7, "http://") == 0) {
-//			uri.erase(0, 7); //delete http:
-			req.setPathInfo("/Users/kmoaning/.brew/bin/php-cgi"); // /Users/kmoaning/Desktop/ToGit/cgi_tester
+	try {
+		if(uri.compare(0, 7, "http://") == 0) {
+			uri.erase(0, 7); //delete http:
+			req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 			if((pos = uri.find('/')) != std::string::npos)
 				checkHost(pos, uri, ser);
-//		}
-//		else
-//				; //сразу путь без схемы и хоста
-		client.setStatusCode(200);  // удалить
+		}
+		else
+				; //сразу путь без схемы и хоста
 		getLocation(uri, ser, loc);
 		pathToScript = getPath(uri, loc, req, ser);
 		req.setPath(pathToScript);

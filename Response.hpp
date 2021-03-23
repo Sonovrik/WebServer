@@ -41,6 +41,8 @@ public:
 	
 	void	execPUT(Client &client);
 	void	execGET(Client &client);
+	void	parseCgiFile(Client &client);
+
 
 	void	set_statusMessage(std::string);
 	void	set_headers(std::map<std::string,std::string>);

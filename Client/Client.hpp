@@ -6,8 +6,8 @@
 // #include <map>
 // #include <vector>
 
-#define	toCGI		0
-#define	toServer	1
+#define	toCGI		1
+#define	toServer	0
 
 class Client {
 

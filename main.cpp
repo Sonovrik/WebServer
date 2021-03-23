@@ -117,32 +117,32 @@ int main(){
 						// std::cout << "HERE" << std::endl;
 						// exit(1);
 						// continue;
-						// if (client.getStatusCode() == true){
-						// 	Response resp(*it, client);
-						// }
-						// else{
-							if (RequestConfigMatch(client, *it) != 0) {
-								// try {
-								// 	CGI qqq(client.getRequest(), *it);
-								// 	qqq.init(client.getRequest(), *it);
-								// 	qqq.creatENV();
-								// 	qqq.exec();
-								// } 
-								// catch (std::exception &exception) {
-								// 	std::cerr << "error : " << exception.what() << std::endl;
-								// 	return 1;
-								// }
-							}
-							Response resp(*it, client);
-							std::cout << resp.getResponse() << std::endl;
-							// st//(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
+						 if (client.getStatusCode() == 200) {
+							 if (RequestConfigMatch(client, *it) == 0) {
+								 try {
+									 CGI qqq(client.getRequest(), *it);
+									 qqq.init(client.getRequest(), *it);
+									 qqq.creatENV();
+									 qqq.exec();
+								 }
+								 catch (std::exception &exception) {
+									 setErrorCode(exception.what(), client);
+									 return 1;
+								 }
+							 } else
+								 std::cerr << "server exec" << std::endl;
+						 }
+						 Response resp(*it, client);
+//						 std::cout << resp.getResponse() << "|" << std::endl;
+						 send(client.getSd(), resp.getResponse().c_str(), resp.get_respSize(), 0);
+						// st//(sd, resp.getResponse().c_str(), resp.get_respSize(), 0);
 							// exit(0);
 							// exit(1);
 							// else{
 								// initMethod(client, *it);
 								// Response resp(client, *it);
 							// }
-						// }
+//						 }
 						// 	Response resp(&client);{
 						// 		code == error{
 						// 			client.getRequext().toClose() == 1

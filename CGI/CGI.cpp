@@ -166,7 +166,7 @@ void				CGI::creatENV() {
 void				CGI::exec() {
 	pid_t pid;
 	int ex;
-	int fdF = open("./myFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
+	int fdF = open("./cgiFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
 	int status;
 	if (pipe(fd) != 0)
 		throw std::runtime_error("500"); //"cannot pipe. code: 500 Internal Server Error");
@@ -180,8 +180,8 @@ void				CGI::exec() {
 			throw std::runtime_error("500"); //("Cannot dup, 1. code: 500 Internal Server Error");
 		if (dup2(fdF, STDOUT) < 0)
 			throw std::runtime_error("500"); //("Cannot dup, 2. code: 500 Internal Server Error");
-		if(argv[0] != "/Users/kmoaning/Desktop/ToGit/cgi_tester")   //    чекнуть ENV для php-cgi
-			env = NULL;
+//		if(argv[0] != "/Users/kmoaning/Desktop/ToGit/cgi_tester")    //    чекнуть ENV для php-cgi
+//			env = NULL;
 		ex = execve(argv[0], argv , env);
 		exit(ex);
 	}

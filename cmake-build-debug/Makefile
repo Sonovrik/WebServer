@@ -278,6 +278,33 @@ ConfigParser/ConfigParser.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.s
 .PHONY : ConfigParser/ConfigParser.cpp.s
 
+MIMEtypes.o: MIMEtypes.cpp.o
+
+.PHONY : MIMEtypes.o
+
+# target to build an object file
+MIMEtypes.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/MIMEtypes.cpp.o
+.PHONY : MIMEtypes.cpp.o
+
+MIMEtypes.i: MIMEtypes.cpp.i
+
+.PHONY : MIMEtypes.i
+
+# target to preprocess a source file
+MIMEtypes.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/MIMEtypes.cpp.i
+.PHONY : MIMEtypes.cpp.i
+
+MIMEtypes.s: MIMEtypes.cpp.s
+
+.PHONY : MIMEtypes.s
+
+# target to generate assembly for a file
+MIMEtypes.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/MIMEtypes.cpp.s
+.PHONY : MIMEtypes.cpp.s
+
 Request/Request.o: Request/Request.cpp.o
 
 .PHONY : Request/Request.o
@@ -386,6 +413,33 @@ errors.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/errors.cpp.s
 .PHONY : errors.cpp.s
 
+main.o: main.cpp.o
+
+.PHONY : main.o
+
+# target to build an object file
+main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/main.cpp.o
+.PHONY : main.cpp.o
+
+main.i: main.cpp.i
+
+.PHONY : main.i
+
+# target to preprocess a source file
+main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/main.cpp.i
+.PHONY : main.cpp.i
+
+main.s: main.cpp.s
+
+.PHONY : main.s
+
+# target to generate assembly for a file
+main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/main.cpp.s
+.PHONY : main.cpp.s
+
 utils.o: utils.cpp.o
 
 .PHONY : utils.o
@@ -437,6 +491,9 @@ help:
 	@echo "... ConfigParser/ConfigParser.o"
 	@echo "... ConfigParser/ConfigParser.i"
 	@echo "... ConfigParser/ConfigParser.s"
+	@echo "... MIMEtypes.o"
+	@echo "... MIMEtypes.i"
+	@echo "... MIMEtypes.s"
 	@echo "... Request/Request.o"
 	@echo "... Request/Request.i"
 	@echo "... Request/Request.s"
@@ -449,6 +506,9 @@ help:
 	@echo "... errors.o"
 	@echo "... errors.i"
 	@echo "... errors.s"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 	@echo "... utils.o"
 	@echo "... utils.i"
 	@echo "... utils.s"

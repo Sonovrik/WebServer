@@ -314,8 +314,10 @@ bool		Request::parseHeaders(std::string &req) {
 		return true;
 	while ((pos = req.find(delimenter)) != std::string::npos && pos != req.length() && pos != 0) {
 		tmp = req.substr(0, pos);
-		if (!(setHeader(tmp)))
+		if (!(setHeader(tmp))){
+			std::cout << tmp << "!!!" << std::endl;
 			return false;
+		}
 		req.erase(0, pos + delimenter.size());
 	}
 	// if end and no host
@@ -424,6 +426,10 @@ int			parseRequest(std::string req, Request &request) {
 	}
 	if (request.getWaitBody() == false && request.parseHeaders(req) == false) {
 		std::cout << "header problem" << std::endl;
+		std::map<std::string, std::string>::const_iterator it = request.getHeaders().begin();
+		for (; it != request.getHeaders().end(); it++){
+			std::cout << it->first <<  " : " << it->second << std::endl;
+		}
 		return ERR_BAD_REQUEST;
 	}
 	if ((request.getMethod() == "POST" || request.getMethod() == "PUT") && request.getWaitBody() == true) {
