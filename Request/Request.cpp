@@ -302,6 +302,7 @@ bool		Request::setHeader(std::string line) {
 		this->_headers.find(node.first)->second = node.second;
 	else
 		this->_headers.insert(node);
+	std::cout << "|" << node.first << "|" << node.second << "|" << std::endl;
 	return true;
 }
 
@@ -310,24 +311,26 @@ bool		Request::parseHeaders(std::string &req) {
 	size_t		pos = 0;
 	std::string	delimenter = "\r\n";
 
+	if (!this->_buffer.empty()) {
+		req = this->_buffer + req;
+		this->_buffer.erase(0, this->_buffer.length());
+	}
 	if (this->_waitBody)
 		return true;
 	while ((pos = req.find(delimenter)) != std::string::npos && pos != req.length() && pos != 0) {
 		tmp = req.substr(0, pos);
-		if (!(setHeader(tmp))){
-//			std::cout << tmp << "!!!" << std::endl;
+		if (!(setHeader(tmp)))
 			return false;
-		}
 		req.erase(0, pos + delimenter.size());
 	}
+	if ((pos = req.find("\r\n")) == std::string::npos)
+		this->_buffer = req;
 	// if end and no host
-	if ((pos = req.find("\r\n")) != std::string::npos) {
-		if (this->_headers.find("HOST") == this->_headers.end()) {
-			this->_toClose = true;
-			return false;
-		}
+	else if (this->_headers.find("HOST") == this->_headers.end()) {
+		this->_toClose = true;
+		return false;
 	}
-	if ((pos = req.find("\r\n")) == 0) {
+	if (pos == 0) {
 		req.erase(0, 2);
 		if (this->_method != "POST" && this->_method != "PUT")
 			this->_return = SEND;

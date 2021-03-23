@@ -47,7 +47,7 @@ void	initMimeTypes(void){
 	types.insert(std::make_pair(".otf", "font/otf"));
 	types.insert(std::make_pair(".png", "image/png"));
 	types.insert(std::make_pair(".pdf", "application/pdf"));
-	types.insert(std::make_pair(".php", "application/php"));
+	types.insert(std::make_pair(".php", "text/html"));
 	types.insert(std::make_pair(".ppt", "application/vnd.ms-powerpoint"));
 	types.insert(std::make_pair(".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"));
 	types.insert(std::make_pair(".rar", "application/vnd.rar"));
