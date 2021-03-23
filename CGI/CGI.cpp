@@ -29,7 +29,6 @@ CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""),
 		envMap["HTTP_" + a] = it->second;
 		envCount++;
 	}
-//	char dir[1024];
 	dir = getcwd(NULL, 0);
 	if (dir == NULL)
 		throw std::runtime_error("500"); //("error getcwd. 500 Internal Server Error");
@@ -48,22 +47,21 @@ CGI::~CGI() {
 }
 
 CGI::CGI(const CGI &copy) {
-
 }
 
-CGI &CGI::operator=(const CGI &copy) {
+CGI					&CGI::operator=(const CGI &copy) {
 	return *this;
 }
 
-const std::string &CGI::getResponseBody() const {
+const std::string	&CGI::getResponseBody() const {
 	return ResponseBody;
 }
 
-void CGI::setResponseBody(const std::string &responseBody) {
+void				CGI::setResponseBody(const std::string &responseBody) {
 	ResponseBody = responseBody;
 }
 
-std::string b64decode(const void* data, const size_t len)
+std::string			b64decode(const void* data, const size_t len)
 {
 	unsigned char* p = (unsigned char*)data;
 	int pad = len > 0 && (len % 4 || p[len - 1] == '=');
@@ -91,24 +89,7 @@ std::string b64decode(const void* data, const size_t len)
 	return str;
 }
 
-void CGI::init(Request &req, Server &ser) {
-//	сортировка по методам и в зависимости от этого установка значение переменных
-//	std::string method = req.getMethod();
-//	if(method == "GET" || method == "HEAD")
-//	else if(method == "POST")
-//	else
-//		; //error
-
-	std::string pathCgi = req.getPath();
-	pathCgi = pathCgi.erase(0, 1);
-	this->envMap["REQUEST_URI"] = pathCgi;  // "/html/YoupiBanane/1.bla";
-	this->envMap["QUERY_STRING"] = req.getQueryString();
-	this->envMap["SCRIPT_NAME"] = pathCgi; // "/html/YoupiBanane/1.bla";
-	this->envMap["PATH_INFO"] = pathCgi; // "/html/YoupiBanane/1.bla"; //req.getPathInfo()
-	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
-	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
-	this->envMap["GATEWAY_INTERFACE"] = ser.getEnvValue("GATEWAY_INTERFACE");
-	this->envMap["REQUEST_METHOD"] = req.getMethod();
+void				CGI::setAuthorization(Request &req) {
 	if(req.getHeaders().find("AUTHORIZATION") != req.getHeaders().end() &&
 					!req.getHeaders().find("AUTHORIZATION")->second.empty()) {
 		std::string tmp = req.getHeaders().find("AUTHORIZATION")->second;
@@ -121,8 +102,29 @@ void CGI::init(Request &req, Server &ser) {
 				this->envMap["REMOTE_USER"] = tmpFoIdent.substr(0, pos);
 				this->envMap["REMOTE_IDENT"] = tmpFoIdent.substr(pos + 1);
 			}
+			else
+				; //error
 		}
+		else
+			; //error
 	}
+}
+
+void				CGI::init(Request &req, Server &ser) {
+	std::string pathCgi = req.getPath();
+	pathCgi = pathCgi.erase(0, 1);
+	this->envMap["REQUEST_URI"] = pathCgi;
+	this->envMap["QUERY_STRING"] = req.getQueryString();
+	this->envMap["SCRIPT_NAME"] = pathCgi;
+	this->envMap["PATH_INFO"] = pathCgi;
+	this->envMap["SERVER_SOFTWARE"] = ser.getEnvValue("SERVER_SOFTWARE");
+	this->envMap["SERVER_PROTOCOL"] = ser.getEnvValue("SERVER_PROTOCOL");
+	this->envMap["GATEWAY_INTERFACE"] = ser.getEnvValue("GATEWAY_INTERFACE");
+	this->envMap["REQUEST_METHOD"] = req.getMethod();
+	this->envMap["REMOTE_ADDR"] = ser.getEnvValue("REMOTE_ADDR");
+	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");
+	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");
+	setAuthorization(req);
 	if (req.getHeaders().find("CONTENT-LENGTH") != req.getHeaders().end())
 		this->envMap["CONTENT_LENGTH"] = req.getHeaders().find("CONTENT-LENGTH")->second;
 	else
@@ -133,20 +135,17 @@ void CGI::init(Request &req, Server &ser) {
 		this->envMap["CONTENT_TYPE"] = "";
 	this->envMap["PATH_TRANSLATED"] = this->envMap["PATH_INFO"][0] == '/' ?
 		std::string(dir) + this->envMap["PATH_INFO"] : std::string(dir) + "/" + this->envMap["PATH_INFO"];
-	this->envMap["REMOTE_ADDR"] = ser.getEnvValue("REMOTE_ADDR");
-	this->envMap["SERVER_NAME"] = ser.getEnvValue("SERVER_NAME");
-	this->envMap["SERVER_PORT"] = ser.getEnvValue("SERVER_PORT");
 	this->RequestBody = req.getBody();
 	PathInfo = req.getPathInfo();
-	this->argv = new char *[3]; // проверка маллокав
+	this->argv = new char *[3];
 	this->argv[0] = strdup(("/" + req.getPathInfo()).c_str());
-	this->argv[1] = strdup((dir + envMap.find("REQUEST_URI")->second).c_str());  // проверка маллокав
+	this->argv[1] = strdup((dir + envMap.find("REQUEST_URI")->second).c_str());  // проверка strdup
 	this->argv[2] = NULL;
 //	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
 //	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
 }
 
-void CGI::creatENV() {
+void				CGI::creatENV() {
 	std::string tmp;
 	envCount = envMap.size();
 	env = new char *[envCount + 1]; // проверка маллокав
@@ -164,11 +163,7 @@ void CGI::creatENV() {
 //	}
 }
 
-// содержимое скрипта поступает на fd[0](STDIN подменяется fd[0])
-// результат на STDOUT(подменненный на fdF)
-// в fd[1] - тело запроса
-
-void CGI::exec() {
+void				CGI::exec() {
 	pid_t pid;
 	int ex;
 	int fdF = open("./myFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
@@ -185,7 +180,7 @@ void CGI::exec() {
 			throw std::runtime_error("500"); //("Cannot dup, 1. code: 500 Internal Server Error");
 		if (dup2(fdF, STDOUT) < 0)
 			throw std::runtime_error("500"); //("Cannot dup, 2. code: 500 Internal Server Error");
-		if(argv[0] != "/Users/kmoaning/Desktop/ToGit/cgi_tester")
+		if(argv[0] != "/Users/kmoaning/Desktop/ToGit/cgi_tester")   //    чекнуть ENV для php-cgi
 			env = NULL;
 		ex = execve(argv[0], argv , env);
 		exit(ex);

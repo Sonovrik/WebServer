@@ -4,12 +4,12 @@
 
 #include "RequestConfigMatch.hpp"
 
-void setErrorCode(const std::string& str, Client &client) {
+void	setErrorCode(const std::string& str, Client &client) {
 	client.setStatusCode( atoi(str.c_str()));
 	std::cerr << "error : " << str << std::endl;
 }
 
-std::vector<std::string> splitString(std::string str) {
+std::vector<std::string>	splitString(std::string str) {
 	std::vector<std::string> ret;
 	size_t pos;
 	while ((pos = str.find(' ')) != std::string::npos) {
@@ -20,7 +20,7 @@ std::vector<std::string> splitString(std::string str) {
 	return ret;
 }
 
-size_t countChar(const std::string& str, char c) {
+size_t	countChar(const std::string& str, char c) {
 	size_t len = str.length();
 	size_t count = 0;
 	for (size_t i = 0; i < len; ++i) {
@@ -30,7 +30,7 @@ size_t countChar(const std::string& str, char c) {
 	return count;
 }
 
-int compareLocation(std::string &uri, location_t loc, std::string &res) {
+int	compareLocation(std::string &uri, location_t loc, std::string &res) {
 	std::string name = loc._name;
 	int len = name.length();
 	if(uri.compare(0, len, name) == 0) {
@@ -41,7 +41,7 @@ int compareLocation(std::string &uri, location_t loc, std::string &res) {
 	return 0;
 }
 
-std::string getLocation(std::string &uri, Server &ser, int &pos) {
+std::string	getLocation(std::string &uri, Server &ser, int &pos) {
 	std::string res;
 	std::vector<location_t> tmp = ser.get_locations();
 	size_t count = tmp.size();
@@ -59,7 +59,7 @@ std::string getLocation(std::string &uri, Server &ser, int &pos) {
 	return res;
 }
 
-void checkIndex(std::string &ret, location_t &location) {
+void	checkIndex(std::string &ret, location_t &location) {
 	struct stat info;
 	std::string tmp;
 	std::string str = location._directives.find("index")->second;
@@ -83,7 +83,7 @@ void checkIndex(std::string &ret, location_t &location) {
 	}
 }
 
-std::string getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
+std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
 	struct stat info;
 	std::string tmp = ser.get_root() + '/';
 	if (!ser.get_locations()[loc]._directives.find("root")->second.empty())
@@ -124,17 +124,17 @@ std::string getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 	return (ret);
 }
 
-void compareHostName(const std::string& hostName, const std::string& ip, const std::string& servName) {
+void	compareHostName(const std::string& hostName, const std::string& ip, const std::string& servName) {
 	if(hostName != ip && hostName != servName)
 		throw std::runtime_error("400"); //"error! Server name does not match configuration! code: ????";
 }
 
-void comparePort(const std::string& port, const std::string& servPort) {
+void	comparePort(const std::string& port, const std::string& servPort) {
 	if(port != servPort)
 		throw std::runtime_error("400"); //"error! Port does not match configuration! code: ????";
 }
 
-int checkHost(int pos, std::string &uri, Server &ser) {
+int	checkHost(int pos, std::string &uri, Server &ser) {
 	std::string port;
 	std::string host;
 	std::string hostName;
@@ -162,7 +162,7 @@ int checkHost(int pos, std::string &uri, Server &ser) {
 	return 0;
 }
 
-void checkBodySize(Server &ser, int locIndex, Request &req) {
+void	checkBodySize(Server &ser, int locIndex, Request &req) {
 	std::string maxBody;
 	maxBody = ser.get_locations()[locIndex]._directives.find("max_body_size")->second;
 	if (!maxBody.empty()) {
@@ -172,7 +172,7 @@ void checkBodySize(Server &ser, int locIndex, Request &req) {
 	}
 }
 
-bool getWhere(std::map<std::string, std::string> dir, Request &req) {
+bool	getWhere(std::map<std::string, std::string> dir, Request &req) {
 	std::string extReq;
 	const std::string& pathReq = req.getPathInfo();
 	std::string extsConf = dir.find("cgi_extensions")->second;
@@ -200,7 +200,7 @@ bool getWhere(std::map<std::string, std::string> dir, Request &req) {
 	return false;
 }
 
-void checkConf(Server &ser, int locIndex, Request &req, Client &client) {
+void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 	if(ser.get_locations()[locIndex]._directives.find("method") != ser.get_locations()[locIndex]._directives.end()) {
 		std::string method = ser.get_locations()[locIndex]._directives.find("method")->second;
 		if (!method.empty()) {

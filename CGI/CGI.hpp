@@ -39,6 +39,7 @@ public:
 	CGI& operator= (CGI const &copy);
 
 	void	init(Request &req, Server &ser);
+	void	setAuthorization(Request &req);
 	void	creatENV();
 	void	exec();
 	const	std::string &getResponseBody() const;
