@@ -118,7 +118,7 @@ int main(){
 						// exit(1);
 						// continue;
 						 if (client.getStatusCode() == 200) {
-							 if (RequestConfigMatch(client, *it) == 0) {
+							 if (RequestConfigMatch(client, *it) == toCGI) {
 								 try {
 									 CGI qqq(client.getRequest(), *it);
 									 qqq.init(client.getRequest(), *it);
@@ -127,7 +127,7 @@ int main(){
 								 }
 								 catch (std::exception &exception) {
 									 setErrorCode(exception.what(), client);
-									 return 1;
+									 return 228;
 								 }
 							 } else
 								 std::cerr << "server exec" << std::endl;
@@ -162,8 +162,13 @@ int main(){
 		}
 	}
 	catch(const std::exception& e){
-		std::cout << e.what() << std::endl;
+		std::cout << "2 : " << e.what() << std::endl;
 		return -1;
 	}
 	return 0;
 }
+
+//|GET /directory/1.bla/ HTTP/1.1
+//Host: localhost:8081
+//User-Agent: Go-http-client/1.1
+//Accept-Encoding: gzip
