@@ -119,7 +119,13 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		if (stat(path, &info) != 0)
 			throw std::runtime_error("404");				//"paht not found. code: 404 Not Found";
 	}
-	else
+	else{
+		// ret.erase(ret.length() - 1, 1);
+		path = ret.c_str();
+		// req.setPathInfo(tmp);
+		if (stat(path, &info) != 0)
+			throw std::runtime_error("404");
+	}
 		; // проверить если файл без пути интерпритатора
 	return (ret);
 }
@@ -249,5 +255,4 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	}
 //	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
 	return client.getWhere();
-	// return (client.getWhere() == 1) ? toServer : toCGI;
 }

@@ -68,6 +68,7 @@ void	Response::setError(Server const &serv) {
 		this->_body = get_errorPage(this->_statusCode);
 	}
 	else{
+		std::cout << serv.get_errorPath(this->_statusCode) << std::endl;
 		std::ifstream	in(serv.get_errorPath(this->_statusCode));
 		std::string		tmp("");
 		while (getline(in, tmp)){
@@ -187,7 +188,7 @@ Response::Response(Server const &serv, Client &client):
 	_statusMessage(setStatusMessage(client.getStatusCode())),
 	_body(""),
 	_toClose(client.getToClose()) {
-		if (this->_statusCode / 4 == 1)
+		if (this->_statusCode  >= 400)
 			setError(serv);
 		else if (client.getWhere() == toCGI)
 			parseCgiFile(client);

@@ -75,3 +75,15 @@ bool	Client::getToClose(void) const {
 std::string const	&Client::getMethod(void) const{
 	return this->_request.getMethod();
 }
+
+void	Client::clear(void){
+	// if (getToClose() == true){
+	// 	this->_sd = 0;
+	// }
+	this->_where = toServer;
+	this->_flag = WAIT;
+	this->_statusCode = 200;
+	this->_request.reset();
+	this->pathToFile.clear();
+}
+
