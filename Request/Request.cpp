@@ -332,7 +332,7 @@ bool		Request::parseHeaders(std::string &req) {
 	}
 	pos = req.find("\r\n");
 	// std::cout << "{" << pos << "}" << std::endl;
-	if (pos == std::string::npos && !req.empty()) {
+	if (pos == std::string::npos && req[0] != '\0') {
 		// std::cout << "P" << std::endl;
 		this->_buffer = req;
 		req.erase();
