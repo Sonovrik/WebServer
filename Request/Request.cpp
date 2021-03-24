@@ -431,7 +431,7 @@ int			parseRequest(std::string req, Request &request) {
 	}
 	// else if (pos == 0)
 	// 	return request.getReturn();
-//	std::cout << "|" << req << "|" << std::endl;
+	std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
 		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));

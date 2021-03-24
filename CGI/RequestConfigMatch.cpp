@@ -75,10 +75,10 @@ void	checkIndex(std::string &ret, location_t &location) {
 				break;
 		}
 		if(i == size) {									// не нашла index
-			if (location._directives.find("autoindex")->second == "on")
+			if (location._directives.find("autoindex")->second == "off")
 				;										// листинг директорий
 			else
-				throw std::runtime_error("403");		//"Index Not Found, code: 403");
+				throw std::runtime_error("404");		//"Index Not Found, code: 403");
 		}
 		else											// нашла индекс, добавила его к директории
 			ret = tmp;
@@ -128,6 +128,11 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		if (stat(path, &info) != 0) {
             if (S_ISDIR(info.st_mode))
                 throw std::runtime_error("404");
+		}
+		if (S_ISDIR(info.st_mode)) {
+			ret = ret + '/';
+			checkIndex(ret,ser.get_locations()[loc]);
+//			throw std::runtime_error("404");
 		}
 
 	}
@@ -223,9 +228,9 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 					break;
 			}
 			if(i == size) {
-				if (req.getMethod() == "GET" || req.getMethod() == "HEAD")
-					throw std::runtime_error("400");
-				else
+//				if (req.getMethod() == "GET" || req.getMethod() == "HEAD")
+//					throw std::runtime_error("400");
+//				else
 					throw std::runtime_error("405");
 			}
 		}

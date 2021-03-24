@@ -90,7 +90,7 @@ void	Response::setError(Server const &serv) {
 void	Response::execPUT(Client &client) {
 	struct stat st;
 	std::string tmp("");
-	int file = open("myFile2", O_RDWR, 0666);
+	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
 	std::string fileContent("");
 
 	if (file != -1) {
@@ -102,18 +102,18 @@ void	Response::execPUT(Client &client) {
 		}
 		if (fileContent == client.getRequest().getBody()) {
 			this->setStatusCode(200);
-			setLastModified("myFile2");
+			setLastModified(client.getPathToFile());
 		}
 		else {
 			close(file);
-			int file = open("myFile2", O_RDWR | O_TRUNC, 0666);
+			int file = open(client.getPathToFile().c_str(), O_RDWR | O_TRUNC, 0666);
 			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
 			this->setStatusCode(200);
         }
 	}
 	else {
 		close(file);
-		int file = open("myFile2", O_RDWR | O_CREAT, 0666);
+		int file = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666);
 		write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
 		this->setStatusCode(201);
 	}
@@ -122,7 +122,7 @@ void	Response::execPUT(Client &client) {
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
 		_headers.insert(std::make_pair("Connection", "alive"));
-	setContentLocation("myFile2", "./");
+	setContentLocation(client.getPathToFile().c_str(), "./");
 	close(file);
 }
 
