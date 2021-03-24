@@ -112,12 +112,13 @@ int main(){
 									qqq.exec();
 								}
 								catch (std::exception &exception) {
+                                    std::cout << "ggggg" << exception.what() << std::endl;
 									setErrorCode(exception.what(), client);
-									return 1;
+                                    return 1;
 								}
 							}
-							else
-								std::cerr << "server exec" << std::endl;
+//							else
+//								std::cerr << "server exec" << std::endl;
 						}
 						Response resp(*it, client);
 						send(client.getSd(), resp.getResponse().c_str(), resp.get_respSize(), 0);

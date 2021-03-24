@@ -296,8 +296,8 @@ bool		Request::setHeader(std::string line) {
 	for (int i = 0; i < node.first.length(); i++) {
 		node.first[i] = std::toupper(node.first[i]);
 	}
-	// if (!checkHeaderName(node.first))
-	// 	return false;
+	 if (!checkHeaderName(node.first))
+	 	return false;
 	line.erase(0, pos + 1);
 	trimString(line);
 	node.second = line;
@@ -321,9 +321,6 @@ bool		Request::parseHeaders(std::string &req) {
 
 	if (this->_waitBody)
 		return true;
-	std::cout << "{" << ((pos = req.find(delimenter)) != std::string::npos) << "}";
-	std::cout << "{" << (int)req.find(delimenter) << "}";
-	std::cout << "{" << (pos == 0) << "}" << std::endl;
 	while ((pos = req.find(delimenter)) != std::string::npos && pos != req.length() && pos != 0) {
 		tmp = req.substr(0, pos);
 		if (!(setHeader(tmp)))
@@ -331,9 +328,7 @@ bool		Request::parseHeaders(std::string &req) {
 		req.erase(0, pos + delimenter.size());
 	}
 	pos = req.find("\r\n");
-	// std::cout << "{" << pos << "}" << std::endl;
 	if (pos == std::string::npos && req[0] != '\0') {
-		// std::cout << "P" << std::endl;
 		this->_buffer = req;
 		req.erase();
 	}
@@ -348,7 +343,6 @@ bool		Request::parseHeaders(std::string &req) {
 			this->_return = SEND;
 		else
 			this->_waitBody = true;
-		// std::cout << "here" << std::end;
 	}
 	return true;
 }
@@ -426,8 +420,9 @@ bool		Request::parseBody(std::string req) {
 int			parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
 
-	if (!request.getBuffer().empty()) {
-		req = request.getBuffer() + req;
+	if (request.getBuffer() != "") {
+        pos = request.getBuffer().find('\0');
+        req.insert(0, request.getBuffer().substr(0, pos));
 		request.setBuffer("");
 	}
 	if ((pos = req.find("\r\n")) == std::string::npos) {
@@ -436,7 +431,7 @@ int			parseRequest(std::string req, Request &request) {
 	}
 	// else if (pos == 0)
 	// 	return request.getReturn();
-	std::cout << "|" << req << "|" << std::endl;
+//	std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
 		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));
