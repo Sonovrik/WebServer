@@ -219,8 +219,12 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 				if(methods[i] == req.getMethod())
 					break;
 			}
-			if(i == size)
-				throw std::runtime_error("405"); // не может быть при GET/HEAD
+			if(i == size) {
+				if (req.getMethod() == "GET" || req.getMethod() == "HEAD")
+					throw std::runtime_error("400");
+				else
+					throw std::runtime_error("405");
+			}
 		}
 	}
 	checkBodySize(ser, locIndex, req);
