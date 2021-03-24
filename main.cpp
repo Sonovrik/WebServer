@@ -87,17 +87,20 @@ int main(){
 							break;
 						}
 						else {
-							client.setFlag(parseRequest(buf, client.getRequest()));
+							client.setFlag(parseRequest(buf, client.getRequest(), it->get_maxBodySize()));
 							if (client.getFlag() == WAIT) {
 								std::cout << "wait" << std::endl;
 								break;
 							}
-							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED) {
+							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED
+							|| client.getFlag() == ERR_TOO_LARGE_BODY) {
 								// no response - will status code be rewritten after response creation
 								if (client.getFlag() == ERR_LENGTH_REQUIRED)
 									client.setStatusCode(411);
 								if (client.getFlag() == ERR_BAD_REQUEST)
 									client.setStatusCode(400);
+                                if (client.getFlag() == ERR_TOO_LARGE_BODY)
+                                    client.setStatusCode(413);
 								client.setFlag(SEND);
 							}
 						}

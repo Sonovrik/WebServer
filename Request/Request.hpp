@@ -9,7 +9,7 @@
 #define SEND				1
 #define ERR_BAD_REQUEST		-1
 #define ERR_LENGTH_REQUIRED	-2
-
+#define ERR_TOO_LARGE_BODY	-3
 
 class Request{
 
@@ -81,6 +81,6 @@ public:
 
 };
 
-int			parseRequest(std::string req, Request &request);
+int			parseRequest(std::string req, Request &request, std::string maxBodySize);
 
 #endif
