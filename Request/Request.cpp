@@ -208,8 +208,7 @@ bool	Request::parseStartLine(std::string str) {
 		str.erase(0, pos + 1);
 	}
 	token[2] = str.substr(0, str.length());
-	std::cout << "1" << std::endl;
-	if (token[2].empty()) 
+	if (token[2].empty())
 		return false;
 	// find methods
 	for (int i = 0; i < _numMethods; i++) {
@@ -218,14 +217,10 @@ bool	Request::parseStartLine(std::string str) {
 	}
 	if (this->_method.empty())
 		return false;
-	std::cout << "2" << std::endl;
-
 	this->_path = token[1];
 	// please add envs in this string
 	if (token[2] != "HTTP/1.1\r\n")
 		return false;
-	std::cout << "3" << std::endl;
-
 	this->_version = token[2].substr(0, token[2].length() - 2);
 	// parse query string
 	if (!parseQueryString())
@@ -302,8 +297,8 @@ bool		Request::setHeader(std::string line) {
 	for (int i = 0; i < node.first.length(); i++) {
 		node.first[i] = std::toupper(node.first[i]);
 	}
-	// if (!checkHeaderName(node.first))
-	// 	return false;
+	 if (!checkHeaderName(node.first))
+	 	return false;
 	line.erase(0, pos + 1);
 	trimString(line);
 	node.second = line;
@@ -334,9 +329,7 @@ bool		Request::parseHeaders(std::string &req) {
 		req.erase(0, pos + delimenter.size());
 	}
 	pos = req.find("\r\n");
-	// std::cout << "{" << pos << "}" << std::endl;
 	if (pos == std::string::npos && req[0] != '\0') {
-		// std::cout << "P" << std::endl;
 		this->_buffer = req;
 		req.erase();
 	}
@@ -351,7 +344,6 @@ bool		Request::parseHeaders(std::string &req) {
 			this->_return = SEND;
 		else
 			this->_waitBody = true;
-		// std::cout << "here" << std::end;
 	}
 	return true;
 }
@@ -429,9 +421,9 @@ bool		Request::parseBody(std::string req) {
 int			parseRequest(std::string req, Request &request) {
 	size_t		pos = 0;
 
-	// if (!request.getBuffer().empty()) {
 	if (request.getBuffer() != "") {
-		req = request.getBuffer() + req;
+        pos = request.getBuffer().find('\0');
+        req.insert(0, request.getBuffer().substr(0, pos));
 		request.setBuffer("");
 	}
 	if ((pos = req.find("\r\n")) == std::string::npos) {
@@ -440,7 +432,7 @@ int			parseRequest(std::string req, Request &request) {
 	}
 	// else if (pos == 0)
 	// 	return request.getReturn();
-	std::cout << "|" << req << "|" << std::endl;
+//	std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
 		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));

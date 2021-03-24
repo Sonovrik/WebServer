@@ -123,8 +123,11 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		// ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
 		// req.setPathInfo(tmp);
-		if (stat(path, &info) != 0)
-			throw std::runtime_error("404");
+		if (stat(path, &info) != 0) {
+            if (S_ISDIR(info.st_mode))
+                throw std::runtime_error("404");
+		}
+
 	}
 		; // проверить если файл без пути интерпритатора
 	return (ret);
