@@ -89,7 +89,7 @@ int main(){
 						else {
 							client.setFlag(parseRequest(buf, client.getRequest()));
 							if (client.getFlag() == WAIT) {
-								std::cout << "wait" << std::endl;
+//								std::cout << "wait" << std::endl;
 								break;
 							}
 							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED) {
