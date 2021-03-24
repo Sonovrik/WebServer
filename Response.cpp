@@ -93,8 +93,9 @@ void	Response::execPUT(Client &client) {
 	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
 	std::string fileContent("");
 
+	std::cout << client.getPathToFile() << std::endl;
 	if (file != -1) {
-		char buf[2];
+        char buf[2];
 		int ret;
 		while ((ret = read(file, buf, 1) > 0)) {
 			buf[ret] = '\0';
@@ -102,7 +103,7 @@ void	Response::execPUT(Client &client) {
 		}
 		if (fileContent == client.getRequest().getBody()) {
 			this->setStatusCode(200);
-			setLastModified(client.getPathToFile());
+			setLastModified(client.getPathToFile().c_str());
 		}
 		else {
 			close(file);
@@ -112,10 +113,15 @@ void	Response::execPUT(Client &client) {
         }
 	}
 	else {
-		close(file);
+        close(file);
 		int file = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666);
-		write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
-		this->setStatusCode(201);
+		if (file != -1) {
+            write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
+            this->setStatusCode(201);
+        }
+		else {
+            // what should i do if there is dir with the same name?
+		}
 	}
 	setDate();
 	if (this->_toClose == true)
