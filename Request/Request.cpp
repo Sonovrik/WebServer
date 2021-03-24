@@ -417,7 +417,7 @@ bool		Request::parseBody(std::string req) {
 }
 
 // return SEND / WAIT / ERR_BAD_REQUEST / ERR_LENGTH_REQUIRED
-int			parseRequest(std::string req, Request &request) {
+int			parseRequest(std::string req, Request &request, std::string maxBodySize) {
 	size_t		pos = 0;
 
 	if (request.getBuffer() != "") {
@@ -447,9 +447,12 @@ int			parseRequest(std::string req, Request &request) {
 		return ERR_BAD_REQUEST;
 	}
 	if ((request.getMethod() == "POST" || request.getMethod() == "PUT") && request.getWaitBody() == true) {
-		if (request.parseBody(req) == false) {
+		if (request.parseBody(req) == false)
 			return request.getReturn();
-		}
+		else if (request.getBody().length() > atoi(maxBodySize.c_str())) {
+		    request.setReturn(ERR_TOO_LARGE_BODY);
+            return request.getReturn();
+        }
 		// std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
 	}
 	return request.getReturn();
