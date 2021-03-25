@@ -9,7 +9,7 @@
 #define SEND				1
 #define ERR_BAD_REQUEST		-1
 #define ERR_LENGTH_REQUIRED	-2
-
+#define ERR_TOO_LARGE_BODY	-3
 
 class Request{
 
@@ -52,6 +52,7 @@ public:
 	bool	parseQueryString();
 
 	// setters
+	void	setBuffer(std::string);
 	void	setMethod(std::string);
 	void	setPath(std::string);
 	void	setVersion(std::string);
@@ -65,6 +66,7 @@ public:
 	void	setWaitBody(int waitBody);
 
 	// getters
+	std::string			getBuffer(void) const;
 	std::string const	&getMethod(void) const;
 	std::string	const	&getPath(void) const;
 	std::string	const	&getVersion(void) const;
@@ -79,6 +81,6 @@ public:
 
 };
 
-int			parseRequest(std::string req, Request &request);
+int			parseRequest(std::string req, Request &request, std::string maxBodySize);
 
 #endif

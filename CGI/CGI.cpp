@@ -141,8 +141,8 @@ void				CGI::init(Request &req, Server &ser) {
 	this->argv[0] = strdup(("/" + req.getPathInfo()).c_str());
 	this->argv[1] = strdup((dir + envMap.find("REQUEST_URI")->second).c_str());  // проверка strdup
 	this->argv[2] = NULL;
-//	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
-//	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
+	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
+	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
 }
 
 void				CGI::creatENV() {
@@ -169,17 +169,17 @@ void				CGI::exec() {
 	int fdF = open("./cgiFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
 	int status;
 	if (pipe(fd) != 0)
-		throw std::runtime_error("500"); //"cannot pipe. code: 500 Internal Server Error");
+		throw std::runtime_error("500");
 	pid = fork();
 	if(pid < 0) {
-		throw std::runtime_error("500"); //("cannot fork. code: 500 Internal Server Error");
+		throw std::runtime_error("500");
 	}
 	else if(pid == 0) { // ребенок
 		close(fd[1]);
 		if (dup2(fd[0], STDIN) < 0)
-			throw std::runtime_error("500"); //("Cannot dup, 1. code: 500 Internal Server Error");
+			throw std::runtime_error("500");
 		if (dup2(fdF, STDOUT) < 0)
-			throw std::runtime_error("500"); //("Cannot dup, 2. code: 500 Internal Server Error");
+			throw std::runtime_error("500");
 //		if(argv[0] != "/Users/kmoaning/Desktop/ToGit/cgi_tester")    //    чекнуть ENV для php-cgi
 //			env = NULL;
 		ex = execve(argv[0], argv , env);
@@ -196,7 +196,7 @@ void				CGI::exec() {
 		}
 		std::cout << "status: " << status << std::endl;
 		if(status != 0)
-			throw std::runtime_error("500"); //("Cannot execve. code: 500 Internal Server Error");
+			throw std::runtime_error("500");
 		close(fdF);
 		close(fd[0]);
 	}

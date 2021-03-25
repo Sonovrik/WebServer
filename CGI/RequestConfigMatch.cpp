@@ -4,6 +4,8 @@
 
 #include "RequestConfigMatch.hpp"
 
+
+
 void	setErrorCode(const std::string& str, Client &client) {
 	client.setStatusCode( atoi(str.c_str()));
 	std::cerr << "error : " << str << std::endl;
@@ -73,10 +75,10 @@ void	checkIndex(std::string &ret, location_t &location) {
 				break;
 		}
 		if(i == size) {									// не нашла index
-			if (location._directives.find("autoindex")->second == "on")
+			if (location._directives.find("autoindex")->second == "off")
 				;										// листинг директорий
 			else
-				throw std::runtime_error("403");		//"Index Not Found, code: 403");
+				throw std::runtime_error("404");		//"Index Not Found, code: 403");
 		}
 		else											// нашла индекс, добавила его к директории
 			ret = tmp;
@@ -123,8 +125,16 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		// ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
 		// req.setPathInfo(tmp);
-		if (stat(path, &info) != 0)
-			throw std::runtime_error("404");
+		if (stat(path, &info) != 0) {
+            if (S_ISDIR(info.st_mode))
+                throw std::runtime_error("404");
+		}
+		if (S_ISDIR(info.st_mode)) {
+			ret = ret + '/';
+			checkIndex(ret,ser.get_locations()[loc]);
+//			throw std::runtime_error("404");
+		}
+
 	}
 		; // проверить если файл без пути интерпритатора
 	return (ret);
@@ -217,8 +227,12 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 				if(methods[i] == req.getMethod())
 					break;
 			}
-			if(i == size)
-				throw std::runtime_error("405"); // не может быть при GET/HEAD
+			if(i == size) {
+//				if (req.getMethod() == "GET" || req.getMethod() == "HEAD")
+//					throw std::runtime_error("400");
+//				else
+					throw std::runtime_error("405");
+			}
 		}
 	}
 	checkBodySize(ser, locIndex, req);
@@ -234,8 +248,11 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	if((pos = uri.rfind('?')) != std::string::npos)
 		uri.erase(pos);
 	pos = 0;
-	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
+//	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 	try {
+		if((pos = uri.rfind('?')) != std::string::npos)
+			uri.erase(pos);
+		pos = 0;
 		if(uri.compare(0, 7, "http://") == 0) {
 			uri.erase(0, 7); //delete http:
 			if((pos = uri.find('/')) != std::string::npos)
@@ -254,6 +271,5 @@ int RequestConfigMatch(Client &client, Server &ser) {
 		setErrorCode(exception.what(), client);
 		return -1;
 	}
-//	std::cout << "pathToScript : " << pathToScript << std::endl << "path Info : " << req.getPathInfo() << std::endl;
 	return client.getWhere();
 }
