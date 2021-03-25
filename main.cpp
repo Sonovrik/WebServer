@@ -87,17 +87,20 @@ int main(){
 							break;
 						}
 						else {
-							client.setFlag(parseRequest(buf, client.getRequest()));
+							client.setFlag(parseRequest(buf, client.getRequest(), it->get_maxBodySize()));
 							if (client.getFlag() == WAIT) {
-								std::cout << "wait" << std::endl;
+//								std::cout << "wait" << std::endl;
 								break;
 							}
-							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED) {
+							else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED
+							|| client.getFlag() == ERR_TOO_LARGE_BODY) {
 								// no response - will status code be rewritten after response creation
 								if (client.getFlag() == ERR_LENGTH_REQUIRED)
 									client.setStatusCode(411);
 								if (client.getFlag() == ERR_BAD_REQUEST)
 									client.setStatusCode(400);
+                                if (client.getFlag() == ERR_TOO_LARGE_BODY)
+                                    client.setStatusCode(413);
 								client.setFlag(SEND);
 							}
 						}
@@ -112,12 +115,13 @@ int main(){
 									qqq.exec();
 								}
 								catch (std::exception &exception) {
+                                    std::cout << "ggggg" << exception.what() << std::endl;
 									setErrorCode(exception.what(), client);
-									return 1;
+                                    return 1;
 								}
 							}
-							else
-								std::cerr << "server exec" << std::endl;
+//							else
+//								std::cerr << "server exec" << std::endl;
 						}
 						Response resp(*it, client);
 						send(client.getSd(), resp.getResponse().c_str(), resp.get_respSize(), 0);
@@ -139,3 +143,8 @@ int main(){
 	}
 	return 0;
 }
+
+//|GET /directory/1.bla/ HTTP/1.1
+//Host: localhost:8081
+//User-Agent: Go-http-client/1.1
+//Accept-Encoding: gzip
