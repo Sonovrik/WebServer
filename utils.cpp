@@ -1,34 +1,65 @@
 #include "utils.hpp"
 
-void	allow_mul_cons_socket(int socket){
-	int fd = 1;
-	if( setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &fd, sizeof(int)) < 0 ){
-		std::cerr << "Error: setsockopt" << std::endl;
-		exit(EXIT_FAILURE);
+static	int		num(int c)
+{
+	int		count;
+
+	count = 0;
+	if (c == 0)
+		return (1);
+	if (c < 0)
+		count++;
+	while (c != 0)
+	{
+		c = c / 10;
+		count++;
 	}
+	return (count);
 }
 
-int		create_socket(int domain, int type, int protocol){
-	int new_socket;
-	if((new_socket = socket(domain, type, protocol)) == 0){
-		std::cerr << "Socket create failed" << std::endl;
-		exit(EXIT_FAILURE);
+static char			*lltoa(long long c){
+	int			count;
+	char		*list;
+	long long	number;
+
+	number = c;
+	count = num(number);
+	list = new char[(count + 1)];
+	if (number < 0)
+	{
+		list[0] = '-';
+		number = -number;
 	}
-	return new_socket;
+	list[count--] = '\0';
+	while (number > 9)
+	{
+		list[count] = (char)((number % 10) + '0');
+		number = number / 10;
+		count--;
+	}
+	list[count] = (char)number + '0';
+	return (list);
 }
 
-void	bind_socket(int socket, sockaddr_in *addr, socklen_t addrlen){
-	if (bind(socket, (struct sockaddr *)addr, addrlen)<0){
-		std::cerr << "Bind failed" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+void		trimString(std::string &line){
+	size_t i = 0;
+	while (line[i] == ' ' || line[i] == '\t')
+		i++;
+	line.erase(0, i);
+
+	size_t len = line.length();
+	i = len - 1;
+	while (line[i] == ' ' || line[i] == '\t')
+		i--;
+	if (i < len)
+		line.erase(i + 1, len);
 }
 
-void	listen_socket(int master_socket, int max_connections){
-	if (listen(master_socket, max_connections) < 0){
-		std::cerr << "Listen failed" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+std::string		to_string(long long number){
+	char *tmp = lltoa(number);
+	std::string ret(tmp);
+	delete tmp;
+	return ret;
 }
 
 bool location_tCompare(const location_t &x, const location_t &y){
@@ -45,14 +76,14 @@ bool location_tCompare(const location_t &x, const location_t &y){
 	return false;
 }
 
-std::string		ipToString(uint32_t addr) {
+std::string const		ipToString(uint32_t addr){
 	std::string ret;
-	ret.append(std::to_string(addr & 0xff));
+	ret.append(to_string(addr & 0xff));
 	ret.append(".");
-	ret.append(std::to_string((addr >> 8) & 0xff));
+	ret.append(to_string((addr >> 8) & 0xff));
 	ret.append(".");
-	ret.append(std::to_string((addr >> 16) & 0xff));
+	ret.append(to_string((addr >> 16) & 0xff));
 	ret.append(".");
-	ret.append(std::to_string(addr >> 24));
+	ret.append(to_string(addr >> 24));
 	return ret;
 }

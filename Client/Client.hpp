@@ -3,8 +3,6 @@
 
 #include "../Request/Request.hpp"
 #include <iostream>
-// #include <map>
-// #include <vector>
 
 #define	toCGI		1
 #define	toServer	0
@@ -17,14 +15,17 @@ private:
 	int		_flag;
 	int		_locPos;
 	int		_statusCode;
-	Request _request;
-	std::string pathToFile;
+	Request	_request;
+	std::string	pathToFile;
 
 public:
+
+	// Coplin
 	Client();
 	Client(int sd);
 	~Client();
 
+	// setters
 	void	setSd(int sd);
 	void	setFlag(int flag);
 	void	setRequest(Request &reqv);
@@ -34,6 +35,7 @@ public:
 	void	setToClose(bool toClose);
 	void	setLocPos(int pos);
 
+	// getters
 	std::string const	&getMethod(void) const;
 	int		getStatusCode(void) const;
 	int		getSd(void) const;
@@ -44,8 +46,11 @@ public:
 	bool	getToClose() const;
 	int		getLocPos(void) const;
 
-
+	// Update Methods
 	void	clear(void);
 };
+
+bool operator==(const Client &c1, const Client &c2);
+
 
 #endif

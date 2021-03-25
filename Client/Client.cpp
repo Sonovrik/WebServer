@@ -1,5 +1,7 @@
 #include "Client.hpp"
 
+//////////////////////////   Coplin   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
 Client::Client():
 	_sd(0),
 	_flag(WAIT),
@@ -16,7 +18,17 @@ Client::Client(int sd):
 
 Client::~Client() {}
 
-// setters
+bool operator==(const Client &c1, const Client &c2){
+	if (&c1 == &c2)
+		return true;
+	return false;
+}
+
+//////////////////////////   Coplin   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+//////////////////////////   Setters   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
 void	Client::setStatusCode(int code) {
 	this->_statusCode = code;
 }
@@ -41,7 +53,11 @@ void	Client::setToClose(bool toClose) {
 	this->_request.setToClose(toClose);
 }
 
-// getters
+//////////////////////////   Setters   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+//////////////////////////   Getters   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
 int		Client::getSd(void) const {
 	return this->_sd;
 }
@@ -88,6 +104,11 @@ std::string const	&Client::getMethod(void) const{
 	return this->_request.getMethod();
 }
 
+//////////////////////////   Getters   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+//////////////////////////   Update Methods   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
 void	Client::clear(void){
 	this->_where = toServer;
 	this->_flag = WAIT;
@@ -95,4 +116,7 @@ void	Client::clear(void){
 	this->_request.reset();
 	this->pathToFile.clear();
 }
+
+//////////////////////////   Update Methods   \\\\\\\\\\\\\\\\\\\\\\\\\\
+
 
