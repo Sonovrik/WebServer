@@ -8,20 +8,13 @@
 #include "CGI/CGI.hpp"
 #include "CGI/RequestConfigMatch.hpp"
 
-int		findMaxSD(std::vector<Server> &servers){
-	std::vector<Server>::iterator it = servers.begin();
-	int maxSd = 0;
-	for (; it != servers.end(); it++){
-		if (it->get_maxSd() > maxSd)
-			maxSd = it->get_maxSd();
-	}
-	return maxSd;
-}
+
 
 int main(){
 
 	try{
 		ConfigParser parser;
+		write(1, "asd", 3);
 		if (!parser.parseConfig("webserv.conf")){
 			std::cerr << "Some parser error!!!" << std::endl;
 			return -1;
@@ -35,10 +28,10 @@ int main(){
 
 		it = serversList.begin();
 		for (; it != serversList.end(); it++){
-			it->create_master_socket(AF_INET, SOCK_STREAM, 0);
-			it->set_address_socket(it->get_ip().c_str(), atoi(it->get_port().c_str()), AF_INET);
-			it->bind_master_socket();
-			listen_socket(it->get_master_socket(), SOMAXCONN);
+			it->create_masterSocket(AF_INET, SOCK_STREAM, 0);
+			it->set_addressSocket(it->get_ip().c_str(), atoi(it->get_port().c_str()), AF_INET);
+			it->bind_masterSocket();
+			it->listen_socket(SOMAXCONN);
 			it->fullConfigEnvironment();
 		}
 		fd_set	readfds;
@@ -70,7 +63,7 @@ int main(){
 			it = serversList.begin();
 			for (; it != serversList.end(); it++){
 				if (FD_ISSET(it->get_master_socket(), &readfds)){
-					int new_connection = it->accept_master_socket();
+					int new_connection = it->accept_masterSocket();
 					fcntl(new_connection, F_SETFL, O_NONBLOCK);
 					it->add_client(new_connection);
 				}

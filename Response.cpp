@@ -76,7 +76,7 @@ void	Response::setError(Server const &serv, Client &client) {
 		}
 		this->_body.pop_back();
 	}
-	_headers.insert(std::make_pair("Content-Length", std::to_string(_body.size())));
+	_headers.insert(std::make_pair("Content-Length", to_string(_body.size())));
 	setDate();
 	if (this->_statusCode == 405){
 		_headers.insert(std::make_pair("Allow", serv.getLocationMethods(client.getLocPos())));
@@ -138,7 +138,7 @@ void	Response::execGET(Client &client){
 	}
 	_body.pop_back();
 	std::cout << client.getPathToFile() << std::endl;
-	this->_headers.insert(std::make_pair("Content-Length", std::to_string(this->_body.size())));
+	this->_headers.insert(std::make_pair("Content-Length", to_string(this->_body.size())));
 	if (client.getMethod() == "HEAD")
 		_body.clear();
 	if (this->_toClose == true)
@@ -208,7 +208,7 @@ size_t			Response::get_respSize(void) const {
 std::string		Response::getResponse(void) {
 	std::string		ret("");
 	ret.append(this->_version);
-	ret.append(" " + std::to_string(this->_statusCode));
+	ret.append(" " + to_string(this->_statusCode));
 	ret.append(" " + this->_statusMessage);
 	ret.append("\r\n");
 	std::map<std::string, std::string>::const_iterator it = _headers.begin();
@@ -289,7 +289,7 @@ void	Response::setLastModified(std::string const &file) {
 	struct stat		st;
 
 	stat(file.c_str(), &st);
-	std::string time(std::to_string(st.st_mtimespec.tv_sec));
+	std::string time(to_string(st.st_mtimespec.tv_sec));
 	strptime(time.c_str(), "%s", &timeinfo);
 	strftime(buffer,30,"%a, %d %b %G %T %Z", &timeinfo);
 	this->_headers.insert(std::make_pair("Last-Modified", (std::string)(buffer)));
@@ -301,7 +301,7 @@ void	Response::setDate(void){
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	std::string time(std::to_string(tv.tv_sec));
+	std::string time(to_string(tv.tv_sec));
 	strptime(time.c_str(), "%s", &timeinfo);
 	strftime (buffer,30,"%a, %d %b %G %T %Z", &timeinfo);
 	this->_headers.insert(std::make_pair("Date", (std::string)(buffer)));

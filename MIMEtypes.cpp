@@ -79,7 +79,7 @@ void	initMimeTypes(void){
 	types.insert(std::make_pair(".7z", "application/x-7z-compressed"));
 }
 
-std::string		findMimeType(const std::string &ext){
+std::string const		findMimeType(const std::string &ext){
 	std::map<std::string, std::string>::iterator it;
 	if ((it = types.find(ext)) == types.end())
 		return "application/octet-stream";

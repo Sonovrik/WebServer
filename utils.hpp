@@ -6,22 +6,34 @@
 #include <map>
 #include <vector>
 
+class Server;
 
+
+// struct for locations
 typedef struct		s_location{
 	std::string		_name;
 	std::map<std::string, std::string>	_directives;
 }					location_t;
 
 
-	// socket funcs
-void	allow_mul_cons_socket(int socket);
-int		create_socket(int domain, int type, int protocol);
-void	bind_socket(int socket, sockaddr_in *addr, socklen_t addrlen);
-void	listen_socket(int master_socket, int max_connections);
-std::string		ipToString(uint32_t addr);
+// container search
+template<class T>
+bool			isInArray(T first, T last, const std::string &line){
+	size_t pos = 0;
+	for (; first != last; first++){
+		if ((pos = line.find(*first)) != std::string::npos)
+				return true;
+	}
+	return false;
+}
 
+void			trimString(std::string &line);
+
+std::string	const	ipToString(uint32_t addr);
 
 bool location_tCompare(const location_t &x, const location_t &y);
+
+std::string		to_string(long long number);
 
 // errors
 std::string	get_errorPage(int code);
@@ -29,7 +41,9 @@ std::string	get_errorPage(int code);
 
 // MIME types
 void			initMimeTypes(void);
-std::string		findMimeType(const std::string &ext);
+std::string	const	findMimeType(const std::string &ext);
 
 
+
+#include "Server.hpp"
 #endif
