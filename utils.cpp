@@ -41,6 +41,12 @@ static char			*lltoa(long long c){
 	return (list);
 }
 
+void	cleanString(std::string &str){
+	for (size_t i = 0; i < str.size(); i++){
+		str[i] = '\0';
+	}
+}
+
 void		trimString(std::string &line){
 	size_t i = 0;
 	while (line[i] == ' ' || line[i] == '\t')

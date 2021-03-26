@@ -1,7 +1,7 @@
 
 NAME_SERVER = webserv
 
-CC = clang++
+CC = clang++ 
 
 FLAGS = -Wall -Wextra -Werror
 
@@ -16,7 +16,7 @@ OBJS_SERVER = $(SRCS_SERVER:.cpp=.o)
 all: $(NAME_SERVER)
 
 $(NAME_SERVER): $(OBJS_SERVER) $(HEADERS) main.cpp
-	$(CC) -g main.cpp $(OBJS_SERVER) -o $(NAME_SERVER) 
+	$(CC) -g startServer.cpp $(OBJS_SERVER) -o $(NAME_SERVER) -O2
 
 clean:
 	rm -rf $(OBJS_CLIENT) $(OBJS_SERVER)
