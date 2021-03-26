@@ -28,6 +28,7 @@ bool			isInArray(T first, T last, const std::string &line){
 }
 
 void			trimString(std::string &line);
+void			cleanString(std::string &str);
 
 std::string	const	ipToString(uint32_t addr);
 

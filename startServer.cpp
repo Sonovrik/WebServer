@@ -45,10 +45,8 @@ static int		resetServers(fd_set *readfds, fd_set *writefds, std::vector<Server> 
 	return findMaxSD(serversList);
 }
 
-static void		readRequest(Server &serv, Client &client){
-	std::string buf(atoi(serv.get_maxBufferSize().c_str()), '\0');
+static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
 	int ret;
-	std::cout << buf.size() << std::endl;
 	if ((ret = read(client.getSd(), (void *)buf.c_str(), buf.size())) == 0){
 		client.clear();
 		serv.delete_client(client);
@@ -71,7 +69,7 @@ static void		readRequest(Server &serv, Client &client){
 }
 
 static void		sendResponse(Server &serv, Client &client){
-	if (client.getStatusCode() == 200){
+	if (client.getResponse().empty() && client.getStatusCode() == 200){
 		if (RequestConfigMatch(client, serv) == toCGI) {
 			try {
 				CGI qqq(client.getRequest(), serv);
@@ -85,16 +83,23 @@ static void		sendResponse(Server &serv, Client &client){
 			}
 		}
 	}
-	Response resp(serv, client);
-	if (resp.get_respSize() > 2048){
-		// std::string message = resp.getResponse().substr()
+	if (client.getResponse().empty()){
+		Response resp(serv, client);
+		client.setResponse(resp.getResponse());
 	}
-	send(client.getSd(), resp.getResponse().c_str(), resp.get_respSize(), 0);
-	client.clear();
-	if (client.getToClose()){
-		serv.delete_client(client);
-		close(client.getSd());
-		client.setSd(0);
+	if (client.getResponse().size() > 1024){
+		std::string str = client.getResponse().substr(0, 1024);
+		client.getResponse().erase(0, 1024);
+		send(client.getSd(), str.c_str(), str.size(), 0);
+	}
+	else{
+		send(client.getSd(), client.getResponse().c_str(), client.getResponse().size(), 0);
+		client.clear();
+		if (client.getToClose()){
+			serv.delete_client(client);
+			close(client.getSd());
+			client.setSd(0);
+		}
 	}
 }
 
@@ -106,7 +111,7 @@ static void		startServer(std::vector<Server> &serversList){
 	bool	flag = false;
 	int		ret = 0;
 	std::vector<Server>::iterator it;
-
+	std::string buf(2048, '\0');
 	timeval time;
 	time.tv_sec = 10;
 	time.tv_usec = 0;
@@ -126,7 +131,8 @@ static void		startServer(std::vector<Server> &serversList){
 					int		sd = it->get_clientsd(i + 1);
 					sd = client.getSd();
 					if (client.getFlag() != SEND && FD_ISSET(sd, &readfds)){
-						readRequest(*it, client);
+						readRequest(*it, client, buf);
+						cleanString(buf);
 						flag = true;
 						break;
 					}
@@ -149,7 +155,6 @@ static void		startServer(std::vector<Server> &serversList){
 
 int		main(){
 	std::vector<Server>	serversList;
-
 	try{
 		serversList = initServers("webserv.conf");
 		initMimeTypes();

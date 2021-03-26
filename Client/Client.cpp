@@ -7,6 +7,7 @@ Client::Client():
 	_flag(WAIT),
 	_locPos(0),
 	_where(toServer),
+	_response(""),
 	_statusCode(200) {}
 
 Client::Client(int sd):
@@ -14,6 +15,7 @@ Client::Client(int sd):
 	_flag(WAIT),
 	_locPos(0),
 	_where(toServer),
+	_response(""),
 	_statusCode(200) {}
 
 Client::~Client() {}
@@ -52,6 +54,11 @@ void	Client::setWhere(int where) {
 void	Client::setToClose(bool toClose) {
 	this->_request.setToClose(toClose);
 }
+
+void	Client::setResponse(std::string const &resp) {
+	this->_response = resp;
+}
+
 
 //////////////////////////   Setters   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -100,9 +107,14 @@ bool	Client::getToClose(void) const {
 	return this->_request.getToClose();
 }
 
-std::string const	&Client::getMethod(void) const{
+std::string	const	&Client::getMethod(void) const{
 	return this->_request.getMethod();
 }
+
+std::string		&Client::getResponse(void){
+	return	this->_response;
+}
+
 
 //////////////////////////   Getters   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -115,6 +127,7 @@ void	Client::clear(void){
 	this->_statusCode = 200;
 	this->_request.reset();
 	this->pathToFile.clear();
+	this->_response.clear();
 }
 
 //////////////////////////   Update Methods   \\\\\\\\\\\\\\\\\\\\\\\\\\

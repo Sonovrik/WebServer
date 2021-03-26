@@ -18,6 +18,8 @@ private:
 	Request	_request;
 	std::string	pathToFile;
 
+	std::string		_response;
+
 public:
 
 	// Coplin
@@ -34,6 +36,8 @@ public:
 	void 	setWhere(int where);
 	void	setToClose(bool toClose);
 	void	setLocPos(int pos);
+	void	setResponse(std::string const &resp);
+
 
 	// getters
 	std::string const	&getMethod(void) const;
@@ -45,6 +49,8 @@ public:
 	int 	getWhere() const;
 	bool	getToClose() const;
 	int		getLocPos(void) const;
+	std::string	&getResponse(void);
+
 
 	// Update Methods
 	void	clear(void);
