@@ -47,6 +47,8 @@ CGI::~CGI() {
 	if(argv) {
 		delete argv[0]; delete argv[1]; delete argv;
 	}
+	if(dir)
+		delete dir;
 }
 
 CGI::CGI(const CGI &copy) {

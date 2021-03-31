@@ -73,5 +73,8 @@ CMakeFiles/WebServer.dir/startServer.cpp.o
  /Users/kmoaning/Desktop/ToGit/startServer.cpp
  /Users/kmoaning/Desktop/ToGit/utils.hpp
 CMakeFiles/WebServer.dir/utils.cpp.o
+ /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
+ /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
+ /Users/kmoaning/Desktop/ToGit/Server.hpp
  /Users/kmoaning/Desktop/ToGit/utils.cpp
  /Users/kmoaning/Desktop/ToGit/utils.hpp

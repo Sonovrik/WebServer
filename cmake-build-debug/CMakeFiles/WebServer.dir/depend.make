@@ -72,6 +72,9 @@ CMakeFiles/WebServer.dir/startServer.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/startServer.cpp.o: ../startServer.cpp
 CMakeFiles/WebServer.dir/startServer.cpp.o: ../utils.hpp
 
+CMakeFiles/WebServer.dir/utils.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/utils.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/utils.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.cpp
 CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.hpp
 
