@@ -141,8 +141,8 @@ void				CGI::init(Request &req, Server &ser) {
 	this->argv[0] = strdup(("/" + req.getPathInfo()).c_str());
 	this->argv[1] = strdup((dir + envMap.find("REQUEST_URI")->second).c_str());  // проверка strdup
 	this->argv[2] = NULL;
-	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
-	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
+	// std::cout << "ARGV 0 " << this->argv[0] << std::endl;
+	// std::cout << "ARGV 1 " << this->argv[1] << std::endl;
 }
 
 void				CGI::creatENV() {

@@ -49,9 +49,9 @@ static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
 	int ret;
 	if ((ret = read(client.getSd(), (void *)buf.c_str(), buf.size())) == 0){
 		client.clear();
-		serv.delete_client(client);
 		close(client.getSd());
 		client.setSd(0);
+		serv.delete_client(client);
 	}
 	else{
 		client.setFlag(parseRequest(buf, client.getRequest(), serv.get_maxBodySize()));
@@ -66,6 +66,7 @@ static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
 			client.setFlag(SEND);
 		}
 	}
+	std::cout << serv.get_clientCount() << std::endl;
 }
 
 static void		sendResponse(Server &serv, Client &client){
@@ -93,12 +94,13 @@ static void		sendResponse(Server &serv, Client &client){
 		send(client.getSd(), str.c_str(), str.size(), 0);
 	}
 	else{
-		send(client.getSd(), client.getResponse().c_str(), client.getResponse().size(), 0);
+		write(client.getSd(), client.getResponse().c_str(), client.getResponse().size());
+		// send(client.getSd(), client.getResponse().c_str(), client.getResponse().size(), 0);
 		client.clear();
 		if (client.getToClose()){
-			serv.delete_client(client);
 			close(client.getSd());
 			client.setSd(0);
+			serv.delete_client(client);
 		}
 	}
 }

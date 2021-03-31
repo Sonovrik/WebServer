@@ -1,19 +1,5 @@
 #include "Response.hpp"
 
-// Connection: alive/close
-// Content-Language/Content-Length/Content-Location/Content-Type
-// Date
-// Last-Modified
-// Location <- redirection or when a new resource has been created
-// Retry-After: 120 / Fri, 07 Nov 2014 23:59:59 GMT | seconds/ HTTP date
-// Server
-// Transfer-Encoding: chunked / compress / deflate / gzip / identity
-
-// WWW-Authenticate: Indicates the authentication scheme that should be used to access the requested entity. WWW-Authenticate: Basic
-// 401 (Unauthorized) -> WWW-Authenticate
-// A server MAY generate a WWW-Authenticate header field in other response messages to indicate that supplying credentials (or different credentials) might affect the response.
-
-
 Response::Response():
 	_version("HTTP/1.1"),
 	_statusCode(200),
@@ -68,7 +54,6 @@ void	Response::setError(Server const &serv, Client &client) {
 		this->_body = get_errorPage(this->_statusCode);
 	}
 	else{
-		std::cout << serv.get_errorPath(this->_statusCode) << std::endl;
 		std::ifstream	in(serv.get_errorPath(this->_statusCode));
 		std::string		tmp("");
 		while (getline(in, tmp)){
@@ -89,9 +74,8 @@ void	Response::execPUT(Client &client) {
 	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
 	std::string fileContent("");
 
-	std::cout << client.getPathToFile() << std::endl;
 	if (file != -1) {
-        char buf[2];
+		char buf[2];
 		int ret;
 		while ((ret = read(file, buf, 1) > 0)) {
 			buf[ret] = '\0';
@@ -106,17 +90,17 @@ void	Response::execPUT(Client &client) {
 			int file = open(client.getPathToFile().c_str(), O_RDWR | O_TRUNC, 0666);
 			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
 			this->setStatusCode(200);
-        }
+		}
 	}
 	else {
-        close(file);
+		close(file);
 		int file = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666);
 		if (file != -1) {
-            write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
-            this->setStatusCode(201);
-        }
+			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
+			this->setStatusCode(201);
+		}
 		else {
-            // what should i do if there is dir with the same name?
+			// what should i do if there is dir with the same name?
 		}
 	}
 	setDate();
@@ -137,7 +121,6 @@ void	Response::execGET(Client &client){
 		this->_body.append(tmp.append("\n"));
 	}
 	_body.pop_back();
-	std::cout << client.getPathToFile() << std::endl;
 	this->_headers.insert(std::make_pair("Content-Length", to_string(this->_body.size())));
 	if (client.getMethod() == "HEAD")
 		_body.clear();
@@ -278,7 +261,6 @@ void	Response::setContentType(std::string const &pathToFile){
 		this->_headers.insert(std::make_pair("Content-Type", "text/plain"));
 	else{
 		std::string extension(file.substr(pos, file.size()));
-		std::cout << extension << std::endl;
 		this->_headers.insert(std::make_pair("Content-Type", findMimeType(extension)));
 	}
 }
