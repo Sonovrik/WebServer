@@ -54,6 +54,8 @@ void		trimString(std::string &line){
 	line.erase(0, i);
 
 	size_t len = line.length();
+	if(len == 0)
+		return ;
 	i = len - 1;
 	while (line[i] == ' ' || line[i] == '\t')
 		i--;
