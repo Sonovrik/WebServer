@@ -41,6 +41,7 @@ public:
 	void	execPUT(Client &client);
 	void	execGET(Client &client);
 	void	parseCgiFile(Client &client);
+	void 	execAfterCGI(Client &client);
 
 
 	void	set_statusMessage(std::string);
@@ -51,6 +52,7 @@ public:
 	void	setContentType(std::string const &pathToFile);
 	void	setLastModified(std::string const &file);
 	void	setDate();
+    void	setContentLength(std::string length);
 
 	// getters
 	std::string 	get_version(void) const;

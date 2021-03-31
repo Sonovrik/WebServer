@@ -54,19 +54,20 @@ static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
 		serv.delete_client(client);
 	}
 	else{
-		client.setFlag(parseRequest(buf, client.getRequest(), serv.get_maxBodySize()));
-		if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED
-		|| client.getFlag() == ERR_TOO_LARGE_BODY) {
+		client.setFlag(parseRequest(buf, client.getRequest(), atoi(serv.get_maxBodySize().c_str())));
+		if (client.getFlag() == WAIT)
+			return;
+		else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED
+					|| client.getFlag() == ERR_TOO_LARGE_BODY) {
 			if (client.getFlag() == ERR_LENGTH_REQUIRED)
 				client.setStatusCode(411);
 			if (client.getFlag() == ERR_BAD_REQUEST)
 				client.setStatusCode(400);
 			if (client.getFlag() == ERR_TOO_LARGE_BODY)
 				client.setStatusCode(413);
-			client.setFlag(SEND);
+			client.setFlag(REQUEST_END);
 		}
 	}
-	std::cout << serv.get_clientCount() << std::endl;
 }
 
 static void		sendResponse(Server &serv, Client &client){
@@ -132,13 +133,13 @@ static void		startServer(std::vector<Server> &serversList){
 					Client &client = it->get_Client(i + 1);
 					int		sd = it->get_clientsd(i + 1);
 					sd = client.getSd();
-					if (client.getFlag() != SEND && FD_ISSET(sd, &readfds)){
+					if (client.getFlag() != REQUEST_END && FD_ISSET(sd, &readfds)){
 						readRequest(*it, client, buf);
 						cleanString(buf);
 						flag = true;
 						break;
 					}
-					else if (client.getFlag() == SEND && FD_ISSET(sd, &writefds)){
+					else if (client.getFlag() == REQUEST_END && FD_ISSET(sd, &writefds)){
 						sendResponse(*it, client);
 						flag = true;
 						break;

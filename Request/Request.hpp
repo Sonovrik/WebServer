@@ -6,7 +6,7 @@
 #include <vector>
 
 #define	WAIT				0
-#define SEND				1
+#define REQUEST_END			1
 #define ERR_BAD_REQUEST		-1
 #define ERR_LENGTH_REQUIRED	-2
 #define ERR_TOO_LARGE_BODY	-3
@@ -34,21 +34,21 @@ private:
 	std::string					_buffer;
 
 public:
-	Request();
+
+    Request();
 	~Request();
 	Request(Request const &);
 	Request	&operator=(Request const &);
 
 	void	reset();
 	// parse request
-	bool	parseStartLine(std::string);
-	bool	parseBody(std::string);
-	bool	parseHeaders(std::string &);
-	bool	setHeader(std::string);
-	bool	checkHeaderName(std::string);
-	bool	checkHeaderValue(std::string);
-	bool	checkHeader(std::pair<std::string, std::string>);
-	void	trimString(std::string &);
+	bool	parseStartLine(std::string&);
+	bool	parseBody(std::string&);
+	bool	parseHeaders(std::string&);
+	bool	setHeader(std::string&);
+	bool	checkHeaderName(std::string const &) const;
+	bool	checkHeaderValue(std::string const &) const;
+	bool	checkHeader(std::pair<std::string, std::string>&);
 	bool	parseQueryString();
 
 	// setters
@@ -81,6 +81,7 @@ public:
 
 };
 
-int			parseRequest(std::string req, Request &request, std::string maxBodySize);
+int			parseRequest(std::string req, Request &request, int maxBodySize);
+void		trimString(std::string &line);
 
 #endif
