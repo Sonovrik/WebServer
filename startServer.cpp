@@ -72,6 +72,7 @@ static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
 
 static void		sendResponse(Server &serv, Client &client){
 	if (client.getResponse().empty() && client.getStatusCode() == 200){
+//		std::cout << "????" << client.getRequest().getPath() << "????" << std::endl;
 		if (RequestConfigMatch(client, serv) == toCGI) {
 			try {
 				CGI qqq(client.getRequest(), serv);
@@ -85,23 +86,34 @@ static void		sendResponse(Server &serv, Client &client){
 			}
 		}
 	}
+//	std::cout << "!!!" << client.getPathToFile() << "!!!" << std::endl;
 	if (client.getResponse().empty()){
 		Response resp(serv, client);
 		client.setResponse(resp.getResponse());
 	}
-	if (client.getResponse().size() > 1024){
-		std::string str = client.getResponse().substr(0, 1024);
-		client.getResponse().erase(0, 1024);
-		send(client.getSd(), str.c_str(), str.size(), 0);
+	if (client.getResponse().size() > 1000000){
+		std::string str = client.getResponse().substr(0, 1000000);
+		int res = send(client.getSd(), str.c_str(), str.size(), 0);
+		client.getResponse().erase(0, res);
 	}
 	else{
-		write(client.getSd(), client.getResponse().c_str(), client.getResponse().size());
-		// send(client.getSd(), client.getResponse().c_str(), client.getResponse().size(), 0);
-		client.clear();
-		if (client.getToClose()){
-			close(client.getSd());
-			client.setSd(0);
-			serv.delete_client(client);
+//		write(client.getSd(), client.getResponse().c_str(), client.getResponse().size());
+		int res = send(client.getSd(), client.getResponse().c_str(), client.getResponse().size(), 0);
+//		std::cout << client.getResponse().size() << " " << res << std::endl;
+		client.getResponse().erase(0, res);
+		if (client.getResponse().empty()) {
+			client.clear();
+			if (client.getToClose()) {
+				close(client.getSd());
+				client.setSd(0);
+				serv.delete_client(client);
+			}
+			client.clear();
+			if (client.getToClose()) {
+				close(client.getSd());
+				client.setSd(0);
+				serv.delete_client(client);
+			}
 		}
 	}
 }
@@ -114,7 +126,7 @@ static void		startServer(std::vector<Server> &serversList){
 	bool	flag = false;
 	int		ret = 0;
 	std::vector<Server>::iterator it;
-	std::string buf(2048, '\0');
+	std::string buf(100000, '\0');
 	timeval time;
 	time.tv_sec = 10;
 	time.tv_usec = 0;

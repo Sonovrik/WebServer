@@ -62,15 +62,15 @@ CMakeFiles/WebServer.dir/Server.cpp.o: ../utils.hpp
 CMakeFiles/WebServer.dir/errors.cpp.o: ../errors.cpp
 CMakeFiles/WebServer.dir/errors.cpp.o: ../utils.hpp
 
-CMakeFiles/WebServer.dir/main.cpp.o: ../CGI/CGI.hpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../CGI/RequestConfigMatch.hpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../Client/Client.hpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../ConfigParser/ConfigParser.hpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../Request/Request.hpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../Response.hpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../Server.hpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../main.cpp
-CMakeFiles/WebServer.dir/main.cpp.o: ../utils.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../CGI/CGI.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../CGI/RequestConfigMatch.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../ConfigParser/ConfigParser.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../Response.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../Server.hpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../startServer.cpp
+CMakeFiles/WebServer.dir/startServer.cpp.o: ../utils.hpp
 
 CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.cpp
 CMakeFiles/WebServer.dir/utils.cpp.o: ../utils.hpp

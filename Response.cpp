@@ -164,7 +164,6 @@ void Response::parseCgiFile(Client &client) {
 	file.close();
 	int fd = open("./cgiFile", O_TRUNC);
 	close(fd);
-	std::cout << "AAAAAAAAA" << std::endl;
 }
 
 void Response::execAfterCGI(Client &client) {

@@ -62,7 +62,7 @@ CMakeFiles/WebServer.dir/Server.cpp.o
 CMakeFiles/WebServer.dir/errors.cpp.o
  /Users/kmoaning/Desktop/ToGit/errors.cpp
  /Users/kmoaning/Desktop/ToGit/utils.hpp
-CMakeFiles/WebServer.dir/main.cpp.o
+CMakeFiles/WebServer.dir/startServer.cpp.o
  /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
  /Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp
  /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
@@ -70,7 +70,7 @@ CMakeFiles/WebServer.dir/main.cpp.o
  /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
  /Users/kmoaning/Desktop/ToGit/Response.hpp
  /Users/kmoaning/Desktop/ToGit/Server.hpp
- /Users/kmoaning/Desktop/ToGit/main.cpp
+ /Users/kmoaning/Desktop/ToGit/startServer.cpp
  /Users/kmoaning/Desktop/ToGit/utils.hpp
 CMakeFiles/WebServer.dir/utils.cpp.o
  /Users/kmoaning/Desktop/ToGit/utils.cpp

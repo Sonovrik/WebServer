@@ -338,24 +338,24 @@ bool		Request::parseBody(std::string &req) {
 					return true;
 				}
 
-			    // pos = req.find("\r\n");
-			    // if (pos == std::string::npos && req.length() != 0 && req.length() < this->_bodyLen) {
-                //     this->_body.append(req.substr(0, req.length()));
-                //     this->_bodyLen -= req.length();
-                //     req.erase();
-                // }
-				// else if (pos != std::string::npos) {
-                //     if (req.substr(0, pos).length() >= this->_bodyLen) {
-                //         this->_body.append(req.substr(0, this->_bodyLen));
-				// 		req.erase(0, pos + 2);
-				// 		this->_bodyLen = 0;
-				// 	}
-				// 	else if (req.substr(0, pos).length() < this->_bodyLen) {
-                //         this->_body.append(req.substr(0, pos));
-				// 		this->_bodyLen -= pos;
-				// 		req.erase(0, pos + 2);
-				// 	}
-				// }
+//			     pos = req.find("\r\n");
+//			     if (pos == std::string::npos && req.length() != 0 && req.length() < this->_bodyLen) {
+//                     this->_body.append(req.substr(0, req.length()));
+//                     this->_bodyLen -= req.length();
+//                     req.erase();
+//                 }
+//				 else if (pos != std::string::npos) {
+//                     if (req.substr(0, pos).length() >= this->_bodyLen) {
+//                         this->_body.append(req.substr(0, this->_bodyLen));
+//				 		req.erase(0, pos + 2);
+//				 		this->_bodyLen = 0;
+//				 	}
+//				 	else if (req.substr(0, pos).length() < this->_bodyLen) {
+//                         this->_body.append(req.substr(0, pos));
+//				 		this->_bodyLen -= pos;
+//				 		req.erase(0, pos + 2);
+//				 	}
+//				 }
 			}
 		}
 		if (req[0] != '\0') {
