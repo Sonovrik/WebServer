@@ -9,7 +9,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/WebServer.dir/Response.cpp.o"
   "CMakeFiles/WebServer.dir/Server.cpp.o"
   "CMakeFiles/WebServer.dir/errors.cpp.o"
-  "CMakeFiles/WebServer.dir/main.cpp.o"
+  "CMakeFiles/WebServer.dir/startServer.cpp.o"
   "CMakeFiles/WebServer.dir/utils.cpp.o"
   "WebServer"
   "WebServer.pdb"

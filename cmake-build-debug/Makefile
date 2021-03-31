@@ -413,32 +413,32 @@ errors.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/errors.cpp.s
 .PHONY : errors.cpp.s
 
-main.o: main.cpp.o
+startServer.o: startServer.cpp.o
 
-.PHONY : main.o
+.PHONY : startServer.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/main.cpp.o
-.PHONY : main.cpp.o
+startServer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/startServer.cpp.o
+.PHONY : startServer.cpp.o
 
-main.i: main.cpp.i
+startServer.i: startServer.cpp.i
 
-.PHONY : main.i
+.PHONY : startServer.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/main.cpp.i
-.PHONY : main.cpp.i
+startServer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/startServer.cpp.i
+.PHONY : startServer.cpp.i
 
-main.s: main.cpp.s
+startServer.s: startServer.cpp.s
 
-.PHONY : main.s
+.PHONY : startServer.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/main.cpp.s
-.PHONY : main.cpp.s
+startServer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/startServer.cpp.s
+.PHONY : startServer.cpp.s
 
 utils.o: utils.cpp.o
 
@@ -506,9 +506,9 @@ help:
 	@echo "... errors.o"
 	@echo "... errors.i"
 	@echo "... errors.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... startServer.o"
+	@echo "... startServer.i"
+	@echo "... startServer.s"
 	@echo "... utils.o"
 	@echo "... utils.i"
 	@echo "... utils.s"
