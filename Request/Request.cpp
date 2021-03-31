@@ -1,33 +1,5 @@
 #include "Request.hpp"
 
-// "ACCEPT-CHARSET"
-// "ACCEPT-LANGUAGE"
-// "ALLOW" - allowed methods
-// "AUTHORIZATION" Authorization: <type> <credentials>.  "Authorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l"  - (base64 encoded) / "Authorization: Basic username:password"
-// "CONTENT-LANGUAGE"
-// "CONTENT-LENGTH"
-// "CONTENT-LOCATION" an alternate location for the returned data
-// "CONTENT-TYPE"
-// "DATE"
-// "HOST" - the host and port number of the server to which the request is being sent. Host: <host>:<port> (host=domain name of the server, post=TCP port number on which the server is listening.)
-// "LAST-MODIFIED"
-// "LOCATION" response header indicates the URL to redirect a page to. It only provides a meaning when served with a 3xx (redirection) or 201 (created) status response.
-// "REFERER" содержит URL исходной страницы, с которой был осуществлен переход на текущую страницу Referer: <url>
-// "RETRY-AFTER"
-// "SERVER" the software used by the origin server that handled the request — that is, the server that generated the response. Server: <product>. Server: Apache/2.4.1 (Unix). <product> The name of the software or product that handled the request. Usually in a format similar to User-Agent
-// "TRANSFER-ENCODING" - <длина блока в HEX><CRLF><содержание блока><CRLF> last: 0<CRLF><CRLF>
-// "USER-AGENT" the browser sending the request
-// "WWW-AUTHENTICATE" - response header defines the authentication method that should be used to gain access to a resource; WWW-Authenticate: Basic realm="Access to the staging site", charset="UTF-8"
-// "ACCEPT"
-
-
-// ?chunked \r\n
-
-// Quality value
-// q=0.2 (0 - 1)
-// default = 1. 0 - not acceptable, 0.001 least preferred
-//  A sender of qvalue MUST NOT generate more than three digits after the decimal point.  User configuration of these values ought to be limited in the same fashion.
-
 const std::string Request::_methodsNames[] = {"GET", "HEAD",
 			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
 const int Request::_numMethods = 8;
@@ -185,8 +157,6 @@ void	Request::reset() {
 
 bool	Request::parseQueryString() {
 	size_t		pos;
-	std::string	query;
-	std::pair<std::string, std::string> node;
 
 	if ((pos = this->_path.find("?")) == std::string::npos)
 		return true;
@@ -194,11 +164,10 @@ bool	Request::parseQueryString() {
 	return true;
 }
 
-bool	Request::parseStartLine(std::string str) {
+bool	Request::parseStartLine(std::string &str) {
 	std::string	token[3];
 	size_t		pos;
 
-	// parse parts of string in tokens
 	for (int i = 0; i < 2; i++) {
 		if ((pos = str.find(' ')) == std::string::npos)
 			return false;
@@ -210,7 +179,6 @@ bool	Request::parseStartLine(std::string str) {
 	token[2] = str.substr(0, str.length());
 	if (token[2].empty())
 		return false;
-	// find methods
 	for (int i = 0; i < _numMethods; i++) {
 		if (_methodsNames[i] == token[0])
 			this->_method = token[0];
@@ -218,29 +186,15 @@ bool	Request::parseStartLine(std::string str) {
 	if (this->_method.empty())
 		return false;
 	this->_path = token[1];
-	// please add envs in this string
 	if (token[2] != "HTTP/1.1\r\n")
 		return false;
 	this->_version = token[2].substr(0, token[2].length() - 2);
-	// parse query string
 	if (!parseQueryString())
 		return false;
 	return true;
 }
 
-// clear ws from the begining and the end
-void		Request::trimString(std::string &line) {
-	int i = 0;
-	while (line[i] == ' ')
-		i++;
-	line.erase(0, i);
-	i = line.length() - 1;
-	while (line[i] == ' ')
-		i--;
-	line.erase(i + 1, line.length());
-}
-
-bool		Request::checkHeaderName(std::string name) {
+bool		Request::checkHeaderName(std::string const &name) const{
 	if (!name.length())
 		return false;
 	for (int i = 0; i < name.length(); i++) {
@@ -250,7 +204,7 @@ bool		Request::checkHeaderName(std::string name) {
 	return true;
 }
 
-bool		Request::checkHeaderValue(std::string value) {
+bool		Request::checkHeaderValue(std::string const &value) const {
 	for (int i = 0; i < value.length(); i++) {
 		if (!isascii(value[i]))
 			return false;
@@ -258,7 +212,7 @@ bool		Request::checkHeaderValue(std::string value) {
 	return true;
 }
 
-bool		Request::checkHeader(std::pair<std::string, std::string> node) {
+bool		Request::checkHeader(std::pair<std::string, std::string> &node) {
 	if (this->_headers.find(node.first) != this->_headers.end()) {
 		if (node.first == "HOST")
 			return false;
@@ -280,18 +234,17 @@ bool		Request::checkHeader(std::pair<std::string, std::string> node) {
 			return false;
 		}
 	}
-	if (node.first == "CONNECTION" && node.second.find("close") != std::string::npos) {
+	if (node.first == "CONNECTION" && node.second.find("close") != std::string::npos)
 		this->_toClose = true;
-	}
 	return true;
 }
 
-bool		Request::setHeader(std::string line) {
+bool		Request::setHeader(std::string &line) {
 	size_t		pos = 0;
-	
+	std::pair<std::string, std::string> node;
+
 	if ((pos = line.find(':')) == std::string::npos)
 		return false;
-	std::pair<std::string, std::string> node;
 	node.first = line.substr(0, pos);
 	for (int i = 0; i < node.first.length(); i++) {
 		node.first[i] = std::toupper(node.first[i]);
@@ -310,22 +263,21 @@ bool		Request::setHeader(std::string line) {
 		this->_headers.find(node.first)->second = node.second;
 	else
 		this->_headers.insert(node);
-	// std::cout << "|" << node.first << "|" << node.second << "|" << std::endl;
 	return true;
 }
 
 bool		Request::parseHeaders(std::string &req) {
 	std::string	tmp;
 	size_t		pos = 0;
-	std::string	delimenter = "\r\n";
+	std::string	delimiter = "\r\n";
 
 	if (this->_waitBody)
 		return true;
-	while ((pos = req.find(delimenter)) != std::string::npos && pos != req.length() && pos != 0) {
+	while ((pos = req.find(delimiter)) != std::string::npos && pos != req.length() && pos != 0) {
 		tmp = req.substr(0, pos);
 		if (!(setHeader(tmp)))
 			return false;
-		req.erase(0, pos + delimenter.size());
+		req.erase(0, pos + delimiter.size());
 	}
 	pos = req.find("\r\n");
 	if (pos == std::string::npos && req[0] != '\0') {
@@ -340,14 +292,14 @@ bool		Request::parseHeaders(std::string &req) {
 	else if (pos == 0) {
 		req.erase(0, 2);
 		if (this->_method != "POST" && this->_method != "PUT")
-			this->_return = SEND;
+			this->_return = REQUEST_END;
 		else
 			this->_waitBody = true;
 	}
 	return true;
 }
 
-bool		Request::parseBody(std::string req) {
+bool		Request::parseBody(std::string &req) {
 	size_t pos;
 	// wait for body
 	if (req.empty())
@@ -356,37 +308,58 @@ bool		Request::parseBody(std::string req) {
 	if (this->_headers.find("TRANSFER-ENCODING")->second.find("chunked") != std::string::npos) {
 		while ((pos = req.find("\r\n")) != std::string::npos) {
 			// parse chunk value
-			if (this->_bodyLen == 0) {
+			if (this->_bodyLen == 0 || req.substr(0, pos) == "0") {
 				try {
 					this->_bodyLen = stoul(req.substr(0, pos), NULL, 16);
 					req.erase(0, pos + 2);
 				}
 				catch (std::exception &e) {
-					this->_return = ERR_BAD_REQUEST;
-					return false;
+					// std::cerr << "STOUL EXCEPTION" << std::endl;
+                    return true;
 				}
 			}
 			// end
 			if (this->_bodyLen == 0) {
-				this->_return = SEND;
+				this->_return = REQUEST_END;
 				this->_waitBody = false;
 				return true;
 			}
 			// parse chunk
 			if (this->_bodyLen > 0) {
-				if ((pos = req.find("\r\n")) != std::string::npos) {
-					if (req.substr(0, pos).length() >= this->_bodyLen) {
-						this->_body = this->_body + req.substr(0, this->_bodyLen);
-						req.erase(0, pos + 2);
-						this->_bodyLen = 0;
-					}
-					if (req.substr(0, pos).length() < this->_bodyLen) {
-						this->_body = this->_body + req.substr(0, pos);
-						this->_bodyLen -= pos;
-						req.erase(0, pos + 2);
-					}
+			    pos = req.find("\r\n");
+				if (pos != std::string::npos && req.substr(0, pos).length() == this->_bodyLen) {
+                    this->_body.append(req.substr(0, this->_bodyLen));
+					req.erase(0, pos + 2);
+					this->_bodyLen = 0;
 				}
+				else {
+					this->_buffer = req;
+					req.erase();
+					return true;
+				}
+
+			    // pos = req.find("\r\n");
+			    // if (pos == std::string::npos && req.length() != 0 && req.length() < this->_bodyLen) {
+                //     this->_body.append(req.substr(0, req.length()));
+                //     this->_bodyLen -= req.length();
+                //     req.erase();
+                // }
+				// else if (pos != std::string::npos) {
+                //     if (req.substr(0, pos).length() >= this->_bodyLen) {
+                //         this->_body.append(req.substr(0, this->_bodyLen));
+				// 		req.erase(0, pos + 2);
+				// 		this->_bodyLen = 0;
+				// 	}
+				// 	else if (req.substr(0, pos).length() < this->_bodyLen) {
+                //         this->_body.append(req.substr(0, pos));
+				// 		this->_bodyLen -= pos;
+				// 		req.erase(0, pos + 2);
+				// 	}
+				// }
 			}
+		}
+		if (req[0] != '\0') {
+            this->_buffer = req;
 		}
 		return true;
 	}
@@ -396,17 +369,17 @@ bool		Request::parseBody(std::string req) {
 			this->_bodyLen = atoi(this->_headers.find("CONTENT-LENGTH")->second.c_str());
 		if ((pos = req.find("\r\n")) != std::string::npos) {
 			if (req.substr(0, pos).length() >= this->_bodyLen) {
-					this->_body = this->_body + req.substr(0, this->_bodyLen);
+					this->_body.append(req.substr(0, this->_bodyLen));
 					req.erase(0, pos + 2);
 					this->_bodyLen = 0;
 			}
 			if (req.substr(0, pos).length() < this->_bodyLen) {
-				this->_body = this->_body + req.substr(0, pos);
+				this->_body.append(req.substr(0, pos));
 				this->_bodyLen -= pos;
 				req.erase(0, pos + 2);
 			}
 			if (_bodyLen == 0)
-				this->_return = SEND;
+				this->_return = REQUEST_END;
 		}
 	}
 	else {
@@ -416,11 +389,12 @@ bool		Request::parseBody(std::string req) {
 	return true;
 }
 
-// return SEND / WAIT / ERR_BAD_REQUEST / ERR_LENGTH_REQUIRED
-int			parseRequest(std::string req, Request &request, std::string maxBodySize) {
+
+// return REQUEST_END / WAIT / ERR_BAD_REQUEST / ERR_LENGTH_REQUIRED
+int			parseRequest(std::string req, Request &request, int maxBodySize) {
 	size_t		pos = 0;
 
-	if (request.getBuffer() != "") {
+    if (request.getBuffer() != "") {
         pos = request.getBuffer().find('\0');
         req.insert(0, request.getBuffer().substr(0, pos));
 		request.setBuffer("");
@@ -429,28 +403,28 @@ int			parseRequest(std::string req, Request &request, std::string maxBodySize) {
 		request.setBuffer(req);
 		return request.getReturn();
 	}
-	// else if (pos == 0)
-	// 	return request.getReturn();
-	// std::cout << "|" << req << "|" << std::endl;
+//	 std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
 		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));
-		if (request.parseStartLine(tmp) == false) {
+		if (!request.parseStartLine(tmp)) {
 			request.setReturn(ERR_BAD_REQUEST);
 			std::cout << "start line problem" << std::endl;
 			return request.getReturn();
 		}
 		req.erase(0, pos + 2);
 	}
-	if (request.getWaitBody() == false && request.parseHeaders(req) == false) {
+	if (!request.getWaitBody() && !request.parseHeaders(req)) {
 		std::cout << "header problem" << std::endl;
-		return ERR_BAD_REQUEST;
+		request.setReturn(ERR_BAD_REQUEST);
+		return request.getReturn();
 	}
-	if ((request.getMethod() == "POST" || request.getMethod() == "PUT") && request.getWaitBody() == true) {
-		if (request.parseBody(req) == false)
+	if ((request.getMethod() == "POST" || request.getMethod() == "PUT") && request.getWaitBody()) {
+		if (!request.parseBody(req))
 			return request.getReturn();
-		else if (request.getBody().length() > atoi(maxBodySize.c_str())) {
+		else if (request.getBody().length() > maxBodySize) {
 		    request.setReturn(ERR_TOO_LARGE_BODY);
+		    std::cerr << "tooo large" << std::endl;
             return request.getReturn();
         }
 	}

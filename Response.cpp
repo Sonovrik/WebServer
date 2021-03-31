@@ -71,11 +71,11 @@ void	Response::setError(Server const &serv, Client &client) {
 void	Response::execPUT(Client &client) {
 	struct stat st;
 	std::string tmp("");
-	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
 	std::string fileContent("");
+	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
 
 	if (file != -1) {
-		char buf[2];
+        char buf[2];
 		int ret;
 		while ((ret = read(file, buf, 1) > 0)) {
 			buf[ret] = '\0';
@@ -90,17 +90,17 @@ void	Response::execPUT(Client &client) {
 			int file = open(client.getPathToFile().c_str(), O_RDWR | O_TRUNC, 0666);
 			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
 			this->setStatusCode(200);
-		}
+        }
 	}
 	else {
-		close(file);
+        close(file);
 		int file = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666);
 		if (file != -1) {
-			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
-			this->setStatusCode(201);
-		}
+            write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
+            this->setStatusCode(201);
+        }
 		else {
-			// what should i do if there is dir with the same name?
+            // what should i do if there is dir with the same name?
 		}
 	}
 	setDate();
@@ -109,6 +109,7 @@ void	Response::execPUT(Client &client) {
 	else
 		_headers.insert(std::make_pair("Connection", "alive"));
 	setContentLocation(client.getPathToFile().c_str(), "./");
+	setContentLength("0");
 	close(file);
 }
 
@@ -138,7 +139,6 @@ void	Response::execGET(Client &client){
 void Response::parseCgiFile(Client &client) {
 	std::ifstream file("./cgiFile", std::ifstream::in);
 	std::string line("");
-
 	if (file.is_open()) {
 		while (getline(file, line)) {
 			if (line.find("Status:") != std::string::npos) {
@@ -159,11 +159,27 @@ void Response::parseCgiFile(Client &client) {
 			this->_body.append(line);
 	}
 	else {
-		std::cerr << "CGI, WHERE FILE ????" << std::endl;
+		// std::cerr << "CGI, WHERE FILE ????" << std::endl;
 	}
 	file.close();
 	int fd = open("./cgiFile", O_TRUNC);
 	close(fd);
+	std::cout << "AAAAAAAAA" << std::endl;
+}
+
+void Response::execAfterCGI(Client &client) {
+	this->_headers.insert(std::make_pair("Content-Length", std::to_string(this->_body.size())));
+	if (client.getMethod() == "HEAD")
+		_body.clear();
+	if (this->_toClose == true)
+		_headers.insert(std::make_pair("Connection", "close"));
+	else
+		_headers.insert(std::make_pair("Connection", "alive"));
+
+	setDate();
+	setLastModified(client.getPathToFile());
+	setContentType(client.getPathToFile());
+	_headers.insert(std::make_pair("Content-Language", "en"));
 }
 
 Response::Response(Server const &serv, Client &client):
@@ -175,8 +191,10 @@ Response::Response(Server const &serv, Client &client):
 	_toClose(client.getToClose()) {
 		if (this->_statusCode  >= 400)
 			setError(serv, client);
-		else if (client.getWhere() == toCGI)
+		else if (client.getWhere() == toCGI){
 			parseCgiFile(client);
+			execAfterCGI(client);
+		}
 		else if (client.getMethod() == "GET" || client.getMethod() == "HEAD")
 			execGET(client);
 		else if (client.getMethod() == "PUT")
@@ -201,7 +219,7 @@ std::string		Response::getResponse(void) {
 	ret.append("\r\n");
 	if (!_body.empty()){
 		ret.append(this->_body);
-		ret.append("\r\n");
+		// ret.append("\r\n");
 	}
 	this->_respSize = ret.size();
 	return ret;
@@ -263,6 +281,10 @@ void	Response::setContentType(std::string const &pathToFile){
 		std::string extension(file.substr(pos, file.size()));
 		this->_headers.insert(std::make_pair("Content-Type", findMimeType(extension)));
 	}
+}
+
+void	Response::setContentLength(std::string length) {
+    this->_headers.insert((std::make_pair("Content-Length", length)));
 }
 
 void	Response::setLastModified(std::string const &file) {

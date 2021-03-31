@@ -35,7 +35,9 @@ size_t	countChar(const std::string& str, char c) {
 int	compareLocation(std::string &uri, location_t loc, std::string &res) {
 	std::string name = loc._name;
 	int len = name.length();
-	if(uri.compare(0, len, name) == 0) {
+	if (len > 1)
+		len -= 1;
+	if(name.compare(0, len, uri.substr(0,len)) == 0) {
 		res = name;
 		uri.erase(0, len);
 		return 1;
@@ -89,7 +91,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 	struct stat info;
 	std::string tmp = ser.get_root() + '/';
 	if (!ser.get_locations()[loc]._directives.find("root")->second.empty())
-		tmp = tmp + ser.get_locations()[loc]._directives.find("root")->second + '/' + uri;
+		tmp = tmp + ser.get_locations()[loc]._directives.find("root")->second + uri;
 	size_t count = countChar(tmp, '/');
 	size_t pos = tmp.find('/');
 	if(pos == std::string::npos)
@@ -126,15 +128,15 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		path = ret.c_str();
 		// req.setPathInfo(tmp);
 		if (stat(path, &info) != 0) {
-            if (S_ISDIR(info.st_mode))
+            if (req.getMethod() != "PUT" && req.getMethod() != "POST")
                 throw std::runtime_error("404");
 		}
-		if (S_ISDIR(info.st_mode)) {
-			ret = ret + '/';
-			checkIndex(ret,ser.get_locations()[loc]);
-//			throw std::runtime_error("404");
+		else {
+            if (S_ISDIR(info.st_mode)) {
+                ret = ret + '/';
+                checkIndex(ret,ser.get_locations()[loc]);
+            }
 		}
-
 	}
 		; // проверить если файл без пути интерпритатора
 	return (ret);
@@ -182,7 +184,7 @@ void	checkBodySize(Server &ser, int locIndex, Request &req) {
 	std::string maxBody;
 	maxBody = ser.get_locations()[locIndex]._directives.find("max_body_size")->second;
 	if (!maxBody.empty()) {
-		double len = strtod(maxBody.c_str(), NULL);
+		size_t len = atoi(maxBody.c_str());
 		if (req.getBody().size() > len)
 			throw std::runtime_error("413"); // "Payload Too Large. code: 413 "
 	}
@@ -263,7 +265,6 @@ int RequestConfigMatch(Client &client, Server &ser) {
 		getLocation(uri, ser, loc);
 		pathToScript = getPath(uri, loc, req, ser);
 		req.setPath(pathToScript);
-		client.setLocPos(loc);
 		client.setPathToFile(pathToScript);
 		checkConf(ser, loc, req, client);
 	}
