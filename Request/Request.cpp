@@ -431,7 +431,7 @@ int			parseRequest(std::string req, Request &request, std::string maxBodySize) {
 	}
 	// else if (pos == 0)
 	// 	return request.getReturn();
-	std::cout << "|" << req << "|" << std::endl;
+	// std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
 		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));
@@ -453,7 +453,6 @@ int			parseRequest(std::string req, Request &request, std::string maxBodySize) {
 		    request.setReturn(ERR_TOO_LARGE_BODY);
             return request.getReturn();
         }
-		// std::cout << "BODY: |" << request.getBody() << "|" << std::endl;
 	}
 	return request.getReturn();
 }
