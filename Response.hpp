@@ -62,7 +62,7 @@ public:
 	std::string		get_body(void) const;
 	size_t			get_respSize(void) const;
 
-	std::string		getResponse(void);
+	std::string		createResponse(void);
 };
 
 

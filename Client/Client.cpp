@@ -1,9 +1,10 @@
 #include "Client.hpp"
+#include <unistd.h>
 
 //////////////////////////   Coplin   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
 Client::Client():
-	_sd(0),
+	_sd(-1),
 	_flag(WAIT),
 	_locPos(0),
 	_where(toServer),
@@ -18,7 +19,9 @@ Client::Client(int sd):
 	_response(""),
 	_statusCode(200) {}
 
-Client::~Client() {}
+Client::~Client() {
+	clear();
+}
 
 bool operator==(const Client &c1, const Client &c2){
 	if (&c1 == &c2)

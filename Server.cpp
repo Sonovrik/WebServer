@@ -112,7 +112,7 @@ void	Server::add_errorPage(const std::pair<int, std::string> &page){
 size_t		Server::delete_client(size_t index){
 	if (index >= this->_clients.size())
 		return -1;
-	this->_clients.erase(this->_clients.begin() + index -1);
+	this->_clients.erase(this->_clients.begin() + index - 1);
 	return this->_clients.size();
 }
 
@@ -260,10 +260,11 @@ std::string const	&Server::getEnvValue(std::string const	&key) const{
 }
 
 std::string const	Server::get_errorPath(int code) const{
+	if (code < 0)
+		return "";
 	std::map<int, std::string>::const_iterator it = this->_errorPages.begin();
-	if ((it = this->_errorPages.find(code)) != this->_errorPages.end()){
+	if ((it = this->_errorPages.find(code)) != this->_errorPages.end())
 		return it->second;
-	}
 	return "";
 }
 
@@ -325,6 +326,11 @@ int			Server::get_maxSd(void) const{
 std::string const	&Server::get_maxBufferSize(void) const{
 	return this->_maxBufferSize;
 }
+
+std::map<int, std::string>	&Server::get_ErrorPaths(void){
+	return this->_errorPages;
+}
+
 
 //////////////////////////   Getters   \\\\\\\\\\\\\\\\\\\\\\\\\\
 

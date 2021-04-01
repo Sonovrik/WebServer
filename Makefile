@@ -16,7 +16,7 @@ OBJS_SERVER = $(SRCS_SERVER:.cpp=.o)
 all: $(NAME_SERVER)
 
 $(NAME_SERVER): $(OBJS_SERVER) $(HEADERS) main.cpp
-	$(CC) -g startServer.cpp $(OBJS_SERVER) -o $(NAME_SERVER) -O2
+	$(CC) -g startServer.cpp $(OBJS_SERVER) -o $(NAME_SERVER)
 
 clean:
 	rm -rf $(OBJS_CLIENT) $(OBJS_SERVER)

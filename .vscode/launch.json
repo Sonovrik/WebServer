@@ -8,7 +8,7 @@
 			"type": "lldb",
 			"request": "launch",
 			"name": "Debug",
-			"program": "/Users/lmidori/Desktop/web_server/webserv",
+			"program": "/Users/lmidori/Desktop/web_server/a.out",
 			"args": [],
 			"cwd": "/Users/lmidori/Desktop/web_server"
 		}

@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <map>
 #include <vector>
+#include <fstream>
 
 class Server;
 
@@ -23,15 +24,15 @@ bool			isInArray(T first, T last, const std::string &line){
 	return false;
 }
 
-
+std::string		getFileText(std::string const &path);
 void			trimString(std::string &line);
 void			cleanString(std::string &str);
 std::string	const	ipToString(uint32_t addr);
 bool location_tCompare(const location_t &x, const location_t &y);
 std::string		to_string(long long number);
-std::string	get_errorPage(int code);
 void			initMimeTypes(void);
 std::string	const	findMimeType(const std::string &ext);
+void	initErrors(std::vector<Server> &serverList);
 
 #include "Server.hpp"
 
