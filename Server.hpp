@@ -93,6 +93,8 @@ public:
 	std::vector<location_t>	get_locations(void) const;
 	std::string const	&getLocationMethods(int pos) const;
 	std::string const	&get_maxBufferSize(void) const;
+	std::map<int, std::string>	&get_ErrorPaths(void);
+
 
 	// getters for sockets
 	int			get_maxSd(void) const;

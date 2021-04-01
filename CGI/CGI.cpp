@@ -201,8 +201,8 @@ void				CGI::exec() {
 			status = WEXITSTATUS(status);
 		}
 		std::cout << "status: " << status << std::endl;
-//		if(status != 0)
-//			throw std::runtime_error("500");
+		if(status != 0)
+			throw std::runtime_error("500");
 		close(fdF);
 		close(fd[0]);
 	}

@@ -234,13 +234,14 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			serv.set_maxBufferSize(this->_tokens[index].back());
 			break;
 		case 5:
-			serv.add_errorPage(std::make_pair(atoi((*(this->_tokens[index].begin() + 1)).c_str()), this->_tokens[index].back()));
-			std::string page = this->_tokens[index].back();
-			if (page.rfind('.') == std::string::npos || 
-				(std::string)&(page.c_str()[page.rfind('.')]) != ".html")
+			std::string	path = this->_tokens[index].back();
+			if (stat(path.c_str(), &st) == -1)
 				return false;
-			if (stat(page.c_str(), &st) == -1)
+			if (path.rfind('.') == std::string::npos || 
+				(std::string)&(path.c_str()[path.rfind('.')]) != ".html")
 				return false;
+			std::string page = getFileText(path);
+			serv.add_errorPage(std::make_pair(atoi((*(this->_tokens[index].begin() + 1)).c_str()), page));
 			break;
 	}
 	return true;

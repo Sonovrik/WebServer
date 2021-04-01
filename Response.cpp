@@ -50,17 +50,7 @@ void	Response::setError(Server const &serv, Client &client) {
 
 	_headers.insert(std::make_pair("Content-Language", "en"));
 	_headers.insert(std::make_pair("Content-Type", "text/html"));
-	if (serv.get_errorPath(this->_statusCode).empty()){
-		this->_body = get_errorPage(this->_statusCode);
-	}
-	else{
-		std::ifstream	in(serv.get_errorPath(this->_statusCode));
-		std::string		tmp("");
-		while (getline(in, tmp)){
-			this->_body.append(tmp + "\n");
-		}
-		this->_body.pop_back();
-	}
+	this->_body = serv.get_errorPath(this->_statusCode);
 	_headers.insert(std::make_pair("Content-Length", to_string(_body.size())));
 	setDate();
 	if (this->_statusCode == 405){
@@ -205,7 +195,7 @@ size_t			Response::get_respSize(void) const {
 	return _respSize;
 }
 
-std::string		Response::getResponse(void) {
+std::string		Response::createResponse(void) {
 	std::string		ret("");
 	ret.append(this->_version);
 	ret.append(" " + to_string(this->_statusCode));
@@ -218,7 +208,6 @@ std::string		Response::getResponse(void) {
 	ret.append("\r\n");
 	if (!_body.empty()){
 		ret.append(this->_body);
-		// ret.append("\r\n");
 	}
 	this->_respSize = ret.size();
 	return ret;

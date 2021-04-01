@@ -47,6 +47,18 @@ void	cleanString(std::string &str){
 	}
 }
 
+std::string		getFileText(std::string const &path){
+	std::ifstream	in(path);
+	std::string	tmp("");
+	std::string	text("");
+	while (getline(in, tmp)){
+		text.append(tmp + '\n');
+	}
+	text.pop_back();
+	return text;
+}
+
+
 void		trimString(std::string &line){
 	size_t i = 0;
 	while (line[i] == ' ' || line[i] == '\t')

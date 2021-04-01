@@ -48,9 +48,7 @@ static int		resetServers(fd_set *readfds, fd_set *writefds, std::vector<Server> 
 static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
 	int ret;
 	if ((ret = read(client.getSd(), (void *)buf.c_str(), buf.size())) == 0){
-		client.clear();
 		close(client.getSd());
-		client.setSd(0);
 		serv.delete_client(client);
 	}
 	else{
@@ -72,7 +70,6 @@ static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
 
 static void		sendResponse(Server &serv, Client &client){
 	if (client.getResponse().empty() && client.getStatusCode() == 200){
-//		std::cout << "????" << client.getRequest().getPath() << "????" << std::endl;
 		if (RequestConfigMatch(client, serv) == toCGI) {
 			try {
 				CGI qqq(client.getRequest(), serv);
@@ -86,34 +83,26 @@ static void		sendResponse(Server &serv, Client &client){
 			}
 		}
 	}
-//	std::cout << "!!!" << client.getPathToFile() << "!!!" << std::endl;
 	if (client.getResponse().empty()){
 		Response resp(serv, client);
-		client.setResponse(resp.getResponse());
+		client.setResponse(resp.createResponse());
 	}
+
 	if (client.getResponse().size() > 1000000){
 		std::string str = client.getResponse().substr(0, 1000000);
 		int res = send(client.getSd(), str.c_str(), str.size(), 0);
 		client.getResponse().erase(0, res);
 	}
 	else{
-//		write(client.getSd(), client.getResponse().c_str(), client.getResponse().size());
 		int res = send(client.getSd(), client.getResponse().c_str(), client.getResponse().size(), 0);
-//		std::cout << client.getResponse().size() << " " << res << std::endl;
 		client.getResponse().erase(0, res);
 		if (client.getResponse().empty()) {
-			client.clear();
 			if (client.getToClose()) {
 				close(client.getSd());
-				client.setSd(0);
 				serv.delete_client(client);
 			}
-			client.clear();
-			if (client.getToClose()) {
-				close(client.getSd());
-				client.setSd(0);
-				serv.delete_client(client);
-			}
+			else
+				client.clear();
 		}
 	}
 }
@@ -172,11 +161,12 @@ int		main(){
 	std::vector<Server>	serversList;
 	try{
 		serversList = initServers("webserv.conf");
+		initErrors(serversList);
 		initMimeTypes();
 		startServer(serversList);
 	}
 	catch (std::exception &e){
-		std::cerr << e.what() << std::endl;
+		std::cerr << e.what() << "asd" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 }
