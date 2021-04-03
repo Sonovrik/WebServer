@@ -159,6 +159,8 @@ void				CGI::creatENV() {
 	for (int i = 0; it != envMap.end(); it++, i++) {
 		tmp = it->first + "=" + it->second;
 		env[i] = strdup(tmp.c_str()); // проверка маллокав
+		if(!env[i])
+			throw std::runtime_error("500");
 	}
 	env[envMap.size()] = NULL;
 //	int i = 0;

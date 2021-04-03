@@ -89,7 +89,7 @@ void	checkIndex(std::string &ret, location_t &location) {
 
 std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
 	struct stat info;
-	std::string tmp = ser.get_root() + '/';
+	std::string tmp = ser.get_root() + '/'; // убрать когда обьединимся с Деном
 	if (!ser.get_locations()[loc]._directives.find("root")->second.empty())
 		tmp = tmp + ser.get_locations()[loc]._directives.find("root")->second + uri;
 	size_t count = countChar(tmp, '/');
@@ -128,17 +128,17 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		path = ret.c_str();
 		// req.setPathInfo(tmp);
 		if (stat(path, &info) != 0) {
-            if (req.getMethod() != "PUT" && req.getMethod() != "POST")
-                throw std::runtime_error("404");
+			if (req.getMethod() != "PUT" && req.getMethod() != "POST")
+				throw std::runtime_error("404");
 		}
 		else {
-            if (S_ISDIR(info.st_mode)) {
-                ret = ret + '/';
-                checkIndex(ret,ser.get_locations()[loc]);
-            }
+			if (S_ISDIR(info.st_mode)) {
+				ret = ret + '/';
+				checkIndex(ret,ser.get_locations()[loc]);
+			}
 		}
 	}
-		; // проверить если файл без пути интерпритатора
+	; // проверить если файл без пути интерпритатора
 	return (ret);
 }
 
@@ -159,7 +159,7 @@ int	checkHost(int pos, std::string &uri, Server &ser) {
 	size_t colon;
 	if(pos != 1) {
 		host.assign(uri, 0, pos);
-		if(host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port())) {
+		if(host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port()) && ) {
 			if((colon = host.find(':')) != std::string::npos) {
 				hostName.assign(host, 0, colon);
 				port = host.substr(colon + 1);
@@ -171,10 +171,11 @@ int	checkHost(int pos, std::string &uri, Server &ser) {
 			uri.erase(0, host.length());
 		}
 		else {
-			colon = host.find(':');
-			hostName.assign(host, 0, colon);
-			port = host.substr(colon + 1);
-			uri.erase(0, host.length());
+			if ((colon = host.find(':') != std::string::npos)) {
+				hostName.assign(host, 0, colon);
+				port = host.substr(colon + 1);
+				uri.erase(0, host.length());
+			}
 		}
 	}
 	return 0;
@@ -233,7 +234,7 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 //				if (req.getMethod() == "GET" || req.getMethod() == "HEAD")
 //					throw std::runtime_error("400");
 //				else
-					throw std::runtime_error("405");
+				throw std::runtime_error("405");
 			}
 		}
 	}
@@ -261,7 +262,7 @@ int RequestConfigMatch(Client &client, Server &ser) {
 				checkHost(pos, uri, ser);
 		}
 		else
-				; //сразу путь без схемы и хоста
+			; //сразу путь без схемы и хоста
 		getLocation(uri, ser, loc);
 		pathToScript = getPath(uri, loc, req, ser);
 		req.setPath(pathToScript);
