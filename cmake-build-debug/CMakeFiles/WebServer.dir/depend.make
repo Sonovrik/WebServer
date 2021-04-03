@@ -40,7 +40,10 @@ CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../Request/Request.hpp
 CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o: ../utils.hpp
 
+CMakeFiles/WebServer.dir/MIMEtypes.cpp.o: ../Client/Client.hpp
 CMakeFiles/WebServer.dir/MIMEtypes.cpp.o: ../MIMEtypes.cpp
+CMakeFiles/WebServer.dir/MIMEtypes.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/MIMEtypes.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/MIMEtypes.cpp.o: ../utils.hpp
 
 CMakeFiles/WebServer.dir/Request/Request.cpp.o: ../Request/Request.cpp
@@ -59,6 +62,9 @@ CMakeFiles/WebServer.dir/Server.cpp.o: ../Server.cpp
 CMakeFiles/WebServer.dir/Server.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/Server.cpp.o: ../utils.hpp
 
+CMakeFiles/WebServer.dir/errors.cpp.o: ../Client/Client.hpp
+CMakeFiles/WebServer.dir/errors.cpp.o: ../Request/Request.hpp
+CMakeFiles/WebServer.dir/errors.cpp.o: ../Server.hpp
 CMakeFiles/WebServer.dir/errors.cpp.o: ../errors.cpp
 CMakeFiles/WebServer.dir/errors.cpp.o: ../utils.hpp
 

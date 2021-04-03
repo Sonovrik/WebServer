@@ -5,3 +5,4 @@ a.out.dSYM
 *.o
 webserv
 webserv.dSYM
+.DS_Store

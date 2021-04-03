@@ -6,13 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/Users/kmoaning/Desktop/ToGit/Client/Client.hpp
-../Request/Request.hpp
-/Users/kmoaning/Desktop/ToGit/Request/Request.hpp
-iostream
--
+/Users/lbagg/Desktop/WebServer/Request/Request.cpp
+Request.hpp
+/Users/lbagg/Desktop/WebServer/Request/Request.hpp
 
-/Users/kmoaning/Desktop/ToGit/Request/Request.hpp
+/Users/lbagg/Desktop/WebServer/Request/Request.hpp
 iostream
 -
 string
@@ -21,48 +19,4 @@ map
 -
 vector
 -
-
-/Users/kmoaning/Desktop/ToGit/Server.hpp
-map
--
-iostream
--
-sys/socket.h
--
-netinet/in.h
--
-arpa/inet.h
--
-vector
--
-algorithm
--
-array
--
-fcntl.h
--
-sys/time.h
--
-utils.hpp
-/Users/kmoaning/Desktop/ToGit/utils.hpp
-./Client/Client.hpp
-/Users/kmoaning/Desktop/ToGit/Client/Client.hpp
-
-/Users/kmoaning/Desktop/ToGit/utils.cpp
-utils.hpp
-/Users/kmoaning/Desktop/ToGit/utils.hpp
-
-/Users/kmoaning/Desktop/ToGit/utils.hpp
-iostream
--
-arpa/inet.h
--
-sys/socket.h
--
-map
--
-vector
--
-Server.hpp
-/Users/kmoaning/Desktop/ToGit/Server.hpp
 
