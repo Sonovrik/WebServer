@@ -63,7 +63,7 @@ std::string	getLocation(std::string &uri, Server &ser, int &pos) {
 	return res;
 }
 
-void	checkIndex(std::string &ret, location_t &location) {
+void	checkIndex(std::string &ret,Server const &serv, location_t &location) {
 	struct stat info;
 	std::string tmp;
 	std::string str = location._directives.find("index")->second;
@@ -77,8 +77,10 @@ void	checkIndex(std::string &ret, location_t &location) {
 				break;
 		}
 		if(i == size) {									// не нашла index
-			if (location._directives.find("autoindex")->second == "off")
+			if (location._directives.find("autoindex")->second == "off"){
+				getListing(ret, serv, location);
 				;										// листинг директорий
+			}
 			else
 				throw std::runtime_error("404");		//"Index Not Found, code: 403");
 		}
@@ -114,7 +116,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 	}
 	size_t last = ret.length() - 1;
 	if (ret[last] == '/' && tmp.length() == 0) {			//папка, checkIndex
-		checkIndex(ret, ser.get_locations()[loc]);
+		checkIndex(ret, ser, ser.get_locations()[loc]);
 	}
 	else if(ret[last] == '/' && tmp.length() != 0) {		//точно файл, проверить его наличие
 		ret.erase(ret.length() - 1, 1);
@@ -134,7 +136,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		else {
             if (S_ISDIR(info.st_mode)) {
                 ret = ret + '/';
-                checkIndex(ret,ser.get_locations()[loc]);
+                checkIndex(ret, ser, ser.get_locations()[loc]);
             }
 		}
 	}

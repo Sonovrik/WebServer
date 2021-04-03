@@ -7,9 +7,9 @@ static const std::array<std::string, 2> blocks = {"server", "location"};
 static const std::array<std::string, 6> directives = {"server_name", "listen",
 												"root", "error_page", "max_body_size", "max_buffer_size"};
 
-static const std::array<std::string, 8> localDirectives = {"index", "root", "method",
+static const std::array<std::string, 9> localDirectives = {"index", "root", "method",
 												"max_body_size", "autoindex", "cgi_extensions",
-												"cgi_path", "upload_storage"};
+												"cgi_path", "upload_storage", "return"};
 
 //////////////////////////   Constants   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -169,6 +169,11 @@ bool	ConfigParser::fullTokens(void){
 	return true;
 }
 
+bool	ConfigParser::fullLocation(location_t &location){
+	return true;
+}
+
+
 bool	ConfigParser::getLocation(size_t &index, location_t &location){
 	location._name = *(this->_tokens[index].begin() + 1);
 	while (this->_tokens[++index].back() != "}"){
@@ -184,6 +189,9 @@ bool	ConfigParser::getLocation(size_t &index, location_t &location){
 			return false;
 		location._directives.insert(p);
 	}
+
+	// fillLocation
+
 	return true;
 }
 
@@ -217,7 +225,7 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			break;
 		case 3:
 			val = atoi(this->_tokens[index].back().c_str());
-			if (val < 8000)
+			if (val < 1000 || val > 1000000000)
 				return false;
 			serv.set_maxBodySize(this->_tokens[index].back());
 			break;
@@ -229,7 +237,7 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			break;
 		case 6:
 			val = atoi(this->_tokens[index].back().c_str());
-			if (val < 1000 || val > 1000000)
+			if (val < 1000 || val > 1000000000)
 				return false;
 			serv.set_maxBufferSize(this->_tokens[index].back());
 			break;
