@@ -4,18 +4,18 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/lbagg/Desktop/WebServer/CGI/CGI.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/CGI/RequestConfigMatch.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/CGI/mainCGI.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/Client/Client.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/Client/Client.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/ConfigParser/ConfigParser.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/MIMEtypes.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/MIMEtypes.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/Request/Request.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/Request/Request.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/Response.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/Response.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/Server.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/Server.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/errors.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/errors.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/startServer.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/startServer.cpp.o"
-  "/Users/lbagg/Desktop/WebServer/utils.cpp" "/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles/WebServer.dir/utils.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/RequestConfigMatch.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/mainCGI.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/Client/Client.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/Client/Client.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/ConfigParser/ConfigParser.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/MIMEtypes.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/MIMEtypes.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/Request/Request.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/Request/Request.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/Response.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/Response.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/Server.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/Server.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/errors.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/errors.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/startServer.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/startServer.cpp.o"
+  "/Users/kmoaning/Desktop/ToGit/utils.cpp" "/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles/WebServer.dir/utils.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

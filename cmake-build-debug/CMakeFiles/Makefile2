@@ -64,10 +64,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/lbagg/Desktop/WebServer
+CMAKE_SOURCE_DIR = /Users/kmoaning/Desktop/ToGit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/lbagg/Desktop/WebServer/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/kmoaning/Desktop/ToGit/cmake-build-debug
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -94,14 +94,14 @@ clean: CMakeFiles/WebServer.dir/clean
 CMakeFiles/WebServer.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WebServer.dir/build.make CMakeFiles/WebServer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13 "Built target WebServer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13 "Built target WebServer"
 .PHONY : CMakeFiles/WebServer.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/WebServer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles 13
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/WebServer.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lbagg/Desktop/WebServer/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/kmoaning/Desktop/ToGit/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/WebServer.dir/rule
 
 # Convenience name for target.

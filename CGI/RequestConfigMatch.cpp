@@ -53,8 +53,6 @@ std::string	getLocation(std::string &uri, Server &ser, int &pos) {
 	while (i < count) {
 		if (compareLocation(uri, tmp[i], res))
 			break;
-		if (compareLocation(uri, tmp[i], res))
-			break;
 		i++;
 	}
 	if (i == count)
@@ -94,8 +92,6 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		tmp = tmp + ser.get_locations()[loc]._directives.find("root")->second + uri;
 	size_t count = countChar(tmp, '/');
 	size_t pos = tmp.find('/');
-	if(pos == std::string::npos)
-		; //error?? не будет
 	std::string ret = tmp.substr(0, pos + 1);
 	tmp.erase(0, pos + 1);
 	const char *path = ret.c_str();
@@ -124,9 +120,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 			throw std::runtime_error("404");				//"paht not found. code: 404 Not Found";
 	}
 	else{
-		// ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
-		// req.setPathInfo(tmp);
 		if (stat(path, &info) != 0) {
 			if (req.getMethod() != "PUT" && req.getMethod() != "POST")
 				throw std::runtime_error("404");
@@ -138,18 +132,17 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 			}
 		}
 	}
-	; // проверить если файл без пути интерпритатора
 	return (ret);
 }
 
 void	compareHostName(const std::string& hostName, const std::string& ip, const std::string& servName) {
 	if(hostName != ip && hostName != servName)
-		throw std::runtime_error("400"); //"error! Server name does not match configuration! code: ????";
+		throw std::runtime_error("400");
 }
 
 void	comparePort(const std::string& port, const std::string& servPort) {
 	if(port != servPort)
-		throw std::runtime_error("400"); //"error! Port does not match configuration! code: ????";
+		throw std::runtime_error("400");
 }
 
 int	checkHost(int pos, std::string &uri, Server &ser) {
@@ -159,7 +152,7 @@ int	checkHost(int pos, std::string &uri, Server &ser) {
 	size_t colon;
 	if(pos != 1) {
 		host.assign(uri, 0, pos);
-		if(host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port()) && ) {
+		if(host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port())) {
 			if((colon = host.find(':')) != std::string::npos) {
 				hostName.assign(host, 0, colon);
 				port = host.substr(colon + 1);
@@ -193,53 +186,47 @@ void	checkBodySize(Server &ser, int locIndex, Request &req) {
 
 bool	getWhere(std::map<std::string, std::string> dir, Request &req) {
 	std::string extReq;
-	const std::string& pathReq = req.getPathInfo();
-	std::string extsConf = dir.find("cgi_extensions")->second;
-	std::string pathConf = dir.find("cgi_path")->second;
-	std::vector<std::string> extConfArr = splitString(extsConf);
-	size_t extCount = extConfArr.size();
-	const std::string& tmp = req.getPath();
+	std::vector<std::string> extConfArr = splitString(dir.find("cgi_extensions")->second);
 	size_t pos;
-	if((pos = tmp.rfind('.')) != std::string::npos)
-		extReq = tmp.substr(pos);					//вместе с точкой
+	if((pos = req.getPath().rfind('.')) != std::string::npos)
+		extReq = req.getPath().substr(pos);					//вместе с точкой
 	else
 		extReq = "";
 	size_t i;
-	for (i = 0; i < extCount; ++i) {
+	for (i = 0; i < extConfArr.size(); ++i) {
 		if (extReq == extConfArr[i])
 			break;
 	}
-	if (i == extCount)
+	if (i == extConfArr.size())
 		return false;
-	if(pathReq != pathConf)
+	if(req.getPathInfo() != dir.find("cgi_path")->second)
 		return false;
 	const std::string& method = req.getMethod();
 	if(method == "GET" || method == "HEAD" || method == "POST")
-		return true; // true == cgi == 1 in Where
+		return true; // true == cgi in Where
 	return false;
 }
 
 void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 	if(ser.get_locations()[locIndex]._directives.find("method") != ser.get_locations()[locIndex]._directives.end()) {
-		std::string method = ser.get_locations()[locIndex]._directives.find("method")->second;
-		if (!method.empty()) {
-			std::vector<std::string> methods = splitString(method);
-			size_t size = methods.size();
-			size_t i;
-			for (i = 0; i < size; ++i) {
-				if(methods[i] == req.getMethod())
-					break;
-			}
-			if(i == size) {
-//				if (req.getMethod() == "GET" || req.getMethod() == "HEAD")
-//					throw std::runtime_error("400");
-//				else
-				throw std::runtime_error("405");
-			}
+		std::vector<std::string> methods = splitString(ser.get_locations()[locIndex]._directives.find("method")->second);
+		size_t size = methods.size();
+		size_t i;
+		for (i = 0; i < size; ++i) {
+			if(methods[i] == req.getMethod())
+				break;
 		}
+		if(i == size)
+			throw std::runtime_error("405");
 	}
 	checkBodySize(ser, locIndex, req);
-	getWhere(ser.get_locations()[locIndex]._directives, req) == true ? client.setWhere(toCGI) : client.setWhere(toServer);
+	if ( getWhere(ser.get_locations()[locIndex]._directives, req))
+		client.setWhere(toCGI);
+	else {
+		if (req.getMethod() == "POST")
+			throw std::runtime_error("500");
+		client.setWhere(toServer);
+	}
 }
 
 int RequestConfigMatch(Client &client, Server &ser) {
@@ -251,7 +238,6 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	if((pos = uri.rfind('?')) != std::string::npos)
 		uri.erase(pos);
 	pos = 0;
-//	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
 	try {
 		if((pos = uri.rfind('?')) != std::string::npos)
 			uri.erase(pos);

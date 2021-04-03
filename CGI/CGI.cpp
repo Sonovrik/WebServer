@@ -209,3 +209,6 @@ void				CGI::exec() {
 		close(fd[0]);
 	}
 }
+
+
+//	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi
