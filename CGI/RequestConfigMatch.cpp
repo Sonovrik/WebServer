@@ -32,6 +32,34 @@ size_t	countChar(const std::string& str, char c) {
 	return count;
 }
 
+std::string			b64decode(const void* data, const size_t len)
+{
+	unsigned char* p = (unsigned char*)data;
+	int pad = len > 0 && (len % 4 || p[len - 1] == '=');
+	const size_t L = ((len + 3) / 4 - pad) * 4;
+	std::string str(L / 4 * 3 + pad, '\0');
+
+	for (size_t i = 0, j = 0; i < L; i += 4)
+	{
+		int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 | B64index[p[i + 2]] << 6 | B64index[p[i + 3]];
+		str[j++] = n >> 16;
+		str[j++] = n >> 8 & 0xFF;
+		str[j++] = n & 0xFF;
+	}
+	if (pad)
+	{
+		int n = B64index[p[L]] << 18 | B64index[p[L + 1]] << 12;
+		str[str.size() - 1] = n >> 16;
+
+		if (len > L + 2 && p[L + 2] != '=')
+		{
+			n |= B64index[p[L + 2]] << 6;
+			str.push_back(n >> 8 & 0xFF);
+		}
+	}
+	return str;
+}
+
 int	compareLocation(std::string &uri, location_t loc, std::string &res) {
 	std::string name = loc._name;
 	int len = name.length();
@@ -61,7 +89,14 @@ std::string	getLocation(std::string &uri, Server &ser, int &pos) {
 	return res;
 }
 
-void	checkIndex(std::string &ret, location_t &location) {
+void	autoIndex(std::string &ret, Server const &serv, location_t &location) {
+	if (location._directives.find("autoindex")->second == "off")
+		;//getListing(ret, serv, location);										// листинг директорий
+	else
+		throw std::runtime_error("404");		//"Index Not Found, code: 403");
+}
+
+void	checkIndex(std::string &ret, Server const &serv, location_t &location) {
 	struct stat info;
 	std::string tmp;
 	std::string str = location._directives.find("index")->second;
@@ -74,15 +109,14 @@ void	checkIndex(std::string &ret, location_t &location) {
 			if(stat(tmp.c_str() , &info) == 0)
 				break;
 		}
-		if(i == size) {									// не нашла index
-			if (location._directives.find("autoindex")->second == "off")
-				;										// листинг директорий
-			else
-				throw std::runtime_error("404");		//"Index Not Found, code: 403");
+		if(i == size) {									// не нашла index files
+			autoIndex(ret, serv, location);
 		}
 		else											// нашла индекс, добавила его к директории
 			ret = tmp;
 	}
+	else												// нет index в location
+		autoIndex(ret, serv, location);
 }
 
 std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
@@ -110,7 +144,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 	}
 	size_t last = ret.length() - 1;
 	if (ret[last] == '/' && tmp.length() == 0) {			//папка, checkIndex
-		checkIndex(ret, ser.get_locations()[loc]);
+		checkIndex(ret, ser, ser.get_locations()[loc]);
 	}
 	else if(ret[last] == '/' && tmp.length() != 0) {		//точно файл, проверить его наличие
 		ret.erase(ret.length() - 1, 1);
@@ -128,7 +162,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		else {
 			if (S_ISDIR(info.st_mode)) {
 				ret = ret + '/';
-				checkIndex(ret,ser.get_locations()[loc]);
+				checkIndex(ret, ser, ser.get_locations()[loc]);
 			}
 		}
 	}
@@ -152,7 +186,7 @@ int	checkHost(int pos, std::string &uri, Server &ser) {
 	size_t colon;
 	if(pos != 1) {
 		host.assign(uri, 0, pos);
-		if(host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port())) {
+		if(host != ser.get_serverName() && host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port())) {
 			if((colon = host.find(':')) != std::string::npos) {
 				hostName.assign(host, 0, colon);
 				port = host.substr(colon + 1);
@@ -207,6 +241,29 @@ bool	getWhere(std::map<std::string, std::string> dir, Request &req) {
 	return false;
 }
 
+bool checkAutorization(Request &req, int locIndex, Server &ser) {
+//	if(ser.get_locations()[locIndex]._directives.find("autent") != ser.get_locations()[locIndex]._directives.end()) {
+//		if(req.getHeaders().find("AUTHORIZATION") != req.getHeaders().end() && !req.getHeaders().find("AUTHORIZATION")->second.empty()) {
+//			std::string tmp = req.getHeaders().find("AUTHORIZATION")->second;
+//			size_t pos = tmp.find(' ');
+//			if(pos != std::string::npos) {
+//				std::string authTipe = tmp.substr(0, pos);  //?? default Basic, сравнить с конфигом
+//				std::string tmpFoIdent = tmp.substr(pos + 1);
+//				tmpFoIdent = b64decode(tmpFoIdent.c_str(), tmpFoIdent.size());
+//				if((pos = tmpFoIdent.find(':')) != std::string::npos) {
+////					this->envMap["REMOTE_USER"] = tmpFoIdent.substr(0, pos); // сравнить имя и пароль с конфигом
+////					this->envMap["REMOTE_IDENT"] = tmpFoIdent.substr(pos + 1);
+//					return true;
+//				}
+//				return false;
+//			}
+//			return false;
+//		}
+//		return false;
+//	}
+	return true;
+}
+
 void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 	if(ser.get_locations()[locIndex]._directives.find("method") != ser.get_locations()[locIndex]._directives.end()) {
 		std::vector<std::string> methods = splitString(ser.get_locations()[locIndex]._directives.find("method")->second);
@@ -220,6 +277,8 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 			throw std::runtime_error("405");
 	}
 	checkBodySize(ser, locIndex, req);
+	if (!checkAutorization(req, locIndex, ser))
+		throw std::runtime_error("401"); //401 Unauthorized
 	if ( getWhere(ser.get_locations()[locIndex]._directives, req))
 		client.setWhere(toCGI);
 	else {

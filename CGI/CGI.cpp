@@ -66,7 +66,7 @@ void				CGI::setResponseBody(const std::string &responseBody) {
 	ResponseBody = responseBody;
 }
 
-std::string			b64decode(const void* data, const size_t len)
+std::string			b64decod(const void* data, const size_t len)
 {
 	unsigned char* p = (unsigned char*)data;
 	int pad = len > 0 && (len % 4 || p[len - 1] == '=');
@@ -102,7 +102,7 @@ void				CGI::setAuthorization(Request &req) {
 		if(pos != std::string::npos) {
 			this->envMap["AUTH_TYPE"] = tmp.substr(0, pos);  //?? default Basic,
 			std::string tmpFoIdent = tmp.substr(pos + 1);
-			tmpFoIdent = b64decode(tmpFoIdent.c_str(), tmpFoIdent.size());
+			tmpFoIdent = b64decod(tmpFoIdent.c_str(), tmpFoIdent.size());
 			if((pos = tmpFoIdent.find(':')) != std::string::npos) {
 				this->envMap["REMOTE_USER"] = tmpFoIdent.substr(0, pos);
 				this->envMap["REMOTE_IDENT"] = tmpFoIdent.substr(pos + 1);

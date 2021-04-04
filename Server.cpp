@@ -93,8 +93,8 @@ void		Server::fullBasicDirectives(void){
 			it->_directives.insert(std::make_pair<std::string, std::string>("cgi_path", "/usr/bin/php"));
 		if (it->_directives.find("upload_storage") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("upload_storage", "/storage"));
-		if (it->_directives.find("index") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("index", "index.php index.html"));
+//		if (it->_directives.find("index") == it->_directives.end())
+//			it->_directives.insert(std::make_pair<std::string, std::string>("index", "index.php index.html"));
 	}
 }
 
