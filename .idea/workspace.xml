@@ -11,18 +11,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e55a48a9-e58a-4859-ab84-bdf326a86245" name="Default Changelist" comment="">
+    <list default="true" id="e55a48a9-e58a-4859-ab84-bdf326a86245" name="Default Changelist" comment="&quot;second&quot;">
+      <change afterPath="$PROJECT_DIR$/.htpasswd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CGI/CGI.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/CGI/CGI.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CGI/RequestConfigMatch.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/CGI/RequestConfigMatch.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CGI/RequestConfigMatch.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/CGI/RequestConfigMatch.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Server.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/server.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/server.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/WebServer" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/WebServer" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webserv.conf" beforeDir="false" afterPath="$PROJECT_DIR$/webserv.conf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +42,13 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -65,8 +65,17 @@
       <workItem from="1617464452520" duration="4541000" />
       <workItem from="1617479527849" duration="295000" />
       <workItem from="1617539011338" duration="4505000" />
-      <workItem from="1617548714755" duration="163000" />
+      <workItem from="1617548714755" duration="193000" />
+      <workItem from="1617879087294" duration="2101000" />
     </task>
+    <task id="LOCAL-00001" summary="&quot;second&quot;">
+      <created>1617549078989</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1617549078989</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -98,7 +107,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="&quot;first&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;first&quot;" />
+    <MESSAGE value="&quot;second&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;second&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -242,25 +242,25 @@ bool	getWhere(std::map<std::string, std::string> dir, Request &req) {
 }
 
 bool checkAutorization(Request &req, int locIndex, Server &ser) {
-//	if(ser.get_locations()[locIndex]._directives.find("autent") != ser.get_locations()[locIndex]._directives.end()) {
-//		if(req.getHeaders().find("AUTHORIZATION") != req.getHeaders().end() && !req.getHeaders().find("AUTHORIZATION")->second.empty()) {
-//			std::string tmp = req.getHeaders().find("AUTHORIZATION")->second;
-//			size_t pos = tmp.find(' ');
-//			if(pos != std::string::npos) {
-//				std::string authTipe = tmp.substr(0, pos);  //?? default Basic, сравнить с конфигом
-//				std::string tmpFoIdent = tmp.substr(pos + 1);
-//				tmpFoIdent = b64decode(tmpFoIdent.c_str(), tmpFoIdent.size());
-//				if((pos = tmpFoIdent.find(':')) != std::string::npos) {
-////					this->envMap["REMOTE_USER"] = tmpFoIdent.substr(0, pos); // сравнить имя и пароль с конфигом
-////					this->envMap["REMOTE_IDENT"] = tmpFoIdent.substr(pos + 1);
-//					return true;
-//				}
-//				return false;
-//			}
-//			return false;
-//		}
-//		return false;
-//	}
+	if(ser.get_locations()[locIndex]._directives.find("auth_basic") != ser.get_locations()[locIndex]._directives.end()) {
+		if(req.getHeaders().find("AUTHORIZATION") != req.getHeaders().end() && !req.getHeaders().find("AUTHORIZATION")->second.empty()) {
+			std::string tmp = req.getHeaders().find("AUTHORIZATION")->second;
+			size_t pos = tmp.find(' ');
+			if(pos != std::string::npos) {
+				std::string authTipe = tmp.substr(0, pos); //?? default Basic, сравнить с конфигом
+				std::string tmpFoIdent = tmp.substr(pos + 1);
+				tmpFoIdent = b64decode(tmpFoIdent.c_str(), tmpFoIdent.size());
+				if((pos = tmpFoIdent.find(':')) != std::string::npos) {
+					std::string user = tmpFoIdent.substr(0, pos); // сравнить имя и пароль с конфигом
+					std::string pas = tmpFoIdent.substr(pos + 1);
+					return true;
+				}
+				return false;
+			}
+			return false;
+		}
+		return false;
+	}
 	return true;
 }
 
