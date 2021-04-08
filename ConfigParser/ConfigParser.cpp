@@ -122,6 +122,26 @@ bool	ConfigParser::checkURIS(std::vector<location_t>	&locations) const{
 	return true;
 }
 
+bool			ConfigParser::checkLocations(std::vector<location_t>	&locations) const{
+	struct stat st;
+	if (!checkURIS(locations))
+		return false;
+	std::map<std::string, std::string>::const_iterator it2;
+	std::vector<location_t>::const_iterator it = locations.begin();
+	for (; it != locations.end(); it++){
+		if (it->_directives.find("auth_basic") == it->_directives.end()
+			&& it->_directives.find("auth_basic_user_file") == it->_directives.end())
+			return true;
+		if (it->_directives.find("auth_basic") != it->_directives.end()
+			&& it->_directives.find("auth_basic_user_file") != it->_directives.end()
+			&& stat(it->_directives.find("auth_basic_user_file")->second.c_str(), &st) != -1)
+			return true;
+		break;
+	}
+	return false;
+}
+
+
 //////////////////////////   Checkers   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -276,7 +296,7 @@ bool	ConfigParser::fullServers(void){
 					return false;
 		}
 		j++;
-		if (!checkURIS(locations))
+		if (!checkLocations(locations))
 			return false;
 		serv.set_locations(locations);
 		serv.fullBasicDirectives();

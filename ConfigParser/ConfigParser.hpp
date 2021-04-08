@@ -26,6 +26,7 @@ private:
 	bool			checkBlocks(void);
 	bool			checkMainDirectives(void) const;
 	bool			checkURIS(std::vector<location_t>	&locations) const;
+	bool			checkLocations(std::vector<location_t>	&locations) const;
 
 	bool			fullTokens(void);
 	bool			fullServers(void);
