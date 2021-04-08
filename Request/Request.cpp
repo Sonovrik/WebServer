@@ -295,7 +295,8 @@ bool		Request::parseHeaders(std::string &req) {
 		// this->_buffer = req;
 		if ((pos = req.find('\0')) == std::string::npos)
 			this->_buffer = req;
-		this->_buffer = req.substr(0, pos);
+		else
+			this->_buffer = req.substr(0, pos);
 		req.erase();
 	}
 	// if end and no host
@@ -328,11 +329,13 @@ bool		Request::parseBody(std::string &req) {
 					req.erase(0, pos + 2);
 				}
 				catch (std::exception &e) {
+					// std::cout << "STOUL EXCEPTion" << std::endl;	// NEW
                     return true;
 				}
 			}
 			// end
 			if (this->_bodyLen == 0) {
+				// std::cout << "{" << req << "}" << std::endl;		// NEW
 				this->_return = REQUEST_END;
 				this->_waitBody = false;
 				return true;
@@ -340,7 +343,7 @@ bool		Request::parseBody(std::string &req) {
 			// parse chunk
 			if (this->_bodyLen > 0) {
 			    pos = req.find("\r\n");
-				if (pos != std::string::npos && req.substr(0, pos).length() == this->_bodyLen) {
+				if (pos != std::string::npos && req.substr(0, pos).length() == this->_bodyLen ) {
                     this->_body.append(req.substr(0, pos));
 					req.erase(0, pos + 2);
 					this->_bodyLen = 0;
@@ -431,6 +434,7 @@ int			parseRequest(std::string req, Request &request, int maxBodySize) {
 	size_t		pos = 0;
 
     if (request.getBuffer() != "") {
+		//new
 		req.insert(0, request.getBuffer());
 		// prev
 		// pos = request.getBuffer().find('\0');
@@ -441,7 +445,6 @@ int			parseRequest(std::string req, Request &request, int maxBodySize) {
 		// new
         if ((pos = req.find('\0')) == std::string::npos)
 			request.setBuffer(req);
-			// pos = req.length();
 		else
 			request.setBuffer(req.substr(0, pos));
 		req.erase();
