@@ -75,26 +75,31 @@ void		Server::fullBasicDirectives(void){
 	if (this->_root.empty())
 		this->_root = ".";
 	if (this->_maxBodySize.empty())
-		this->_maxBodySize = "10000";
+		this->_maxBodySize = "100000000";
 
 	std::vector<location_t>::iterator it =this->_locations.begin();
 	for (; it <this->_locations.end(); it++){
 		if (it->_directives.find("root") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("root", ""));
+			it->_directives.insert(std::make_pair<std::string, std::string>("root", this->_root + '/'));
+		else{
+			std::string tmp(this->_root + '/' + (*(it->_directives.find("root"))).second);
+			it->_directives.erase("root");
+			it->_directives.insert(std::make_pair<std::string, std::string>("root", tmp));
+		}
 		if (it->_directives.find("max_body_size") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("max_body_size",this->_maxBodySize));
 		if (it->_directives.find("method") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("method", "GET HEAD PUT POST"));
 		if (it->_directives.find("autoindex") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("autoindex", "on"));
+			it->_directives.insert(std::make_pair<std::string, std::string>("autoindex", "off"));
 		if (it->_directives.find("cgi_extensions") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("cgi_extensions", ".php"));
+			it->_directives.insert(std::make_pair<std::string, std::string>("cgi_extensions", ".bla .php .py"));
 		if (it->_directives.find("cgi_path") == it->_directives.end())
-			it->_directives.insert(std::make_pair<std::string, std::string>("cgi_path", "/usr/bin/php"));
+			it->_directives.insert(std::make_pair<std::string, std::string>("cgi_path", ""));
 		if (it->_directives.find("upload_storage") == it->_directives.end())
 			it->_directives.insert(std::make_pair<std::string, std::string>("upload_storage", "/storage"));
-//		if (it->_directives.find("index") == it->_directives.end())
-//			it->_directives.insert(std::make_pair<std::string, std::string>("index", "index.php index.html"));
+		// if (it->_directives.find("index") == it->_directives.end())
+		// 	it->_directives.insert(std::make_pair<std::string, std::string>("index", "index.php index.html"));
 	}
 }
 

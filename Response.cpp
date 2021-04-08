@@ -10,6 +10,8 @@ Response::Response():
 
 std::string	Response::setStatusMessage(int code){
 	switch(code){
+		case 201: return "Created";
+		case 301: return "Moved Permanently";
 		case 400: return "Bad Request";
 		case 401: return "Payment Required";
 		case 403: return "Forbidden";
@@ -20,7 +22,7 @@ std::string	Response::setStatusMessage(int code){
 		case 409: return "Conflict";
 		case 410: return "Gone";
 		case 411: return "Length Required";
-		case 413: return"Payload Too Large";
+		case 413: return "Payload Too Large";
 		case 414: return "URI Too Long";
 		case 415: return "Unsupported Media Type";
 		case 417: return "Expectation Failed";
@@ -65,7 +67,7 @@ void	Response::execPUT(Client &client) {
 	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
 
 	if (file != -1) {
-        char buf[2];
+		char buf[2];
 		int ret;
 		while ((ret = read(file, buf, 1) > 0)) {
 			buf[ret] = '\0';
@@ -188,7 +190,6 @@ Response::Response(Server const &serv, Client &client):
 			execGET(client);
 		else if (client.getMethod() == "PUT")
 			execPUT(client);
-
 }
 
 size_t			Response::get_respSize(void) const {
@@ -295,7 +296,7 @@ void	Response::setDate(void){
 	gettimeofday(&tv, NULL);
 	std::string time(to_string(tv.tv_sec));
 	strptime(time.c_str(), "%s", &timeinfo);
-	strftime (buffer,30,"%a, %d %b %G %T %Z", &timeinfo);
+	strftime(buffer,30,"%a, %d %b %G %T %Z", &timeinfo);
 	this->_headers.insert(std::make_pair("Date", (std::string)(buffer)));
 }
 

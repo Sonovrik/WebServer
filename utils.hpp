@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <dirent.h>
 
 class Server;
 
@@ -33,6 +34,8 @@ std::string		to_string(long long number);
 void			initMimeTypes(void);
 std::string	const	findMimeType(const std::string &ext);
 void	initErrors(std::vector<Server> &serverList);
+std::string		getListing(std::string const &path, Server const &serv, location_t const &loc);
+
 
 #include "Server.hpp"
 

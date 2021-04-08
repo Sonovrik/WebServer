@@ -26,12 +26,14 @@ private:
 	bool			checkBlocks(void);
 	bool			checkMainDirectives(void) const;
 	bool			checkURIS(std::vector<location_t>	&locations) const;
+	bool			checkLocations(std::vector<location_t>	&locations) const;
 
 	bool			fullTokens(void);
 	bool			fullServers(void);
+	bool			fullLocation(location_t &location);
 
 	bool			pushLocation(void);
-	bool			pushDirective(Server	&serv, size_t index);
+	bool			pushDirective(Server &serv, size_t index);
 
 	bool						getLocation(size_t &index, location_t &location);
 	std::vector<std::string>	getTokens(std::string str);

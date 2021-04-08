@@ -111,6 +111,15 @@ void	checkIndex(std::string &ret, Server const &serv, location_t &location) {
 		}
 		if(i == size) {									// не нашла index files
 			autoIndex(ret, serv, location);
+//=======
+//		if(i == size) {									// не нашла index
+//			if (location._directives.find("autoindex")->second == "off"){
+//				getListing(ret, serv, location);
+//				;										// листинг директорий
+//			}
+//			else
+//				throw std::runtime_error("404");		//"Index Not Found, code: 403");
+//>>>>>>> 9736fb4704b5d0732e316873b7095c04f305ca55
 		}
 		else											// нашла индекс, добавила его к директории
 			ret = tmp;

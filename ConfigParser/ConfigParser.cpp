@@ -7,9 +7,10 @@ static const std::array<std::string, 2> blocks = {"server", "location"};
 static const std::array<std::string, 6> directives = {"server_name", "listen",
 												"root", "error_page", "max_body_size", "max_buffer_size"};
 
-static const std::array<std::string, 8> localDirectives = {"index", "root", "method",
+static const std::array<std::string, 11> localDirectives = {"index", "root", "method",
 												"max_body_size", "autoindex", "cgi_extensions",
-												"cgi_path", "upload_storage"};
+												"cgi_path", "upload_storage", "return", "auth_basic",
+												"auth_basic_user_file"};
 
 //////////////////////////   Constants   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -121,6 +122,26 @@ bool	ConfigParser::checkURIS(std::vector<location_t>	&locations) const{
 	return true;
 }
 
+bool			ConfigParser::checkLocations(std::vector<location_t>	&locations) const{
+	struct stat st;
+	if (!checkURIS(locations))
+		return false;
+	std::map<std::string, std::string>::const_iterator it2;
+	std::vector<location_t>::const_iterator it = locations.begin();
+	for (; it != locations.end(); it++){
+		if (it->_directives.find("auth_basic") == it->_directives.end()
+			&& it->_directives.find("auth_basic_user_file") == it->_directives.end())
+			return true;
+		if (it->_directives.find("auth_basic") != it->_directives.end()
+			&& it->_directives.find("auth_basic_user_file") != it->_directives.end()
+			&& stat(it->_directives.find("auth_basic_user_file")->second.c_str(), &st) != -1)
+			return true;
+		break;
+	}
+	return false;
+}
+
+
 //////////////////////////   Checkers   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -162,12 +183,19 @@ bool	ConfigParser::fullTokens(void){
 
 	while (it != this->_lines.end()){
 		this->_tokens[i] = getTokens(*it);
+		if (this->_tokens[i].front() != "}" && this->_tokens[i].size() < 2)
+			return false;
 		i++;
 		it++;
 	}
 	this->_countLines = i;
 	return true;
 }
+
+bool	ConfigParser::fullLocation(location_t &location){
+	return true;
+}
+
 
 bool	ConfigParser::getLocation(size_t &index, location_t &location){
 	location._name = *(this->_tokens[index].begin() + 1);
@@ -184,6 +212,9 @@ bool	ConfigParser::getLocation(size_t &index, location_t &location){
 			return false;
 		location._directives.insert(p);
 	}
+
+	// fillLocation
+
 	return true;
 }
 
@@ -217,7 +248,7 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			break;
 		case 3:
 			val = atoi(this->_tokens[index].back().c_str());
-			if (val < 8000)
+			if (val < 1000 || val > 1000000000)
 				return false;
 			serv.set_maxBodySize(this->_tokens[index].back());
 			break;
@@ -229,7 +260,7 @@ bool	ConfigParser::pushDirective(Server	&serv, size_t index){
 			break;
 		case 6:
 			val = atoi(this->_tokens[index].back().c_str());
-			if (val < 1000 || val > 1000000)
+			if (val < 1000 || val > 1000000000)
 				return false;
 			serv.set_maxBufferSize(this->_tokens[index].back());
 			break;
@@ -265,7 +296,7 @@ bool	ConfigParser::fullServers(void){
 					return false;
 		}
 		j++;
-		if (!checkURIS(locations))
+		if (!checkLocations(locations))
 			return false;
 		serv.set_locations(locations);
 		serv.fullBasicDirectives();

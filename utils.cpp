@@ -107,3 +107,47 @@ std::string const		ipToString(uint32_t addr){
 	ret.append(to_string(addr >> 24));
 	return ret;
 }
+
+std::string		createListingPage(std::vector<std::string> &files, Server const &serv,
+										location_t const &loc, std::string path){
+	std::string page;
+
+	size_t pos = path.find(loc._directives.find("root")->second);
+	path.erase(0, pos + loc._directives.find("root")->second.size() + 1);
+	page.append("<html><head><title>Directory Listing</title></head>"
+					"<body align=\"left\" style=\"font-size: 24px\">");
+	for (int i = 0; i < files.size(); i++){
+		page.append("<a href=\"http://");
+		page.append(serv.get_ip() + ":" + serv.get_port() + loc._name + path + files[i]);
+		page.append("\" target=\"CONTENT\">");
+		page.append(to_string(i));
+		page.append(files[i]);
+		page.append("</a><br>");
+	}
+
+
+	page.append("</body></html>");
+	return "";
+}
+
+std::string		getListing(std::string const &path, Server const &serv, location_t const &loc){
+	DIR *dir;
+	struct dirent *diread;
+	std::vector<std::string> files;
+
+	if ((dir = opendir(path.c_str())) != nullptr) {
+		while ((diread = readdir(dir)) != nullptr) {
+			files.push_back(diread->d_name);
+		}
+		closedir (dir);
+		for (int i = 0; i < files.size(); i++) {
+			std::cout << files[i] << " ";
+			if (i % 3 == 0)
+				std::cout << std::endl;
+		}
+		std::cout << files.size() << std::endl;
+	}
+	createListingPage(files, serv, loc, path);
+	return "EXIT_SUCCESS";
+
+}
