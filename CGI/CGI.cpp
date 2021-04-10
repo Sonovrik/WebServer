@@ -5,29 +5,18 @@
 
 #include "CGI.hpp"
 
-static const int B64index[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 63, 62, 62, 63, 52, 53, 54, 55,
-	56, 57, 58, 59, 60, 61, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3,  4, 5, 6,
-	7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,  0,
-	0, 0, 0, 63, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-	41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51 };
-
 CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""), ResponseBody("") {
-	std::string envKey[] = {"AUTH_TYPE", "CONTENT_LENGTH",
-	"CONTENT_TYPE", "GATEWAY_INTERFACE", "PATH_INFO",
-	"PATH_TRANSLATED","QUERY_STRING", "REMOTE_ADDR",
-	"REMOTE_IDENT", "REMOTE_USER", "REQUEST_METHOD",
-	"REQUEST_URI", "SCRIPT_NAME", "SERVER_NAME",
-	"SERVER_PORT", "SERVER_PROTOCOL", "SERVER_SOFTWARE"};
+	std::string envKey[] = {"AUTH_TYPE", "CONTENT_LENGTH", "CONTENT_TYPE", "GATEWAY_INTERFACE", "PATH_INFO",
+	"PATH_TRANSLATED","QUERY_STRING", "REMOTE_ADDR", "REMOTE_IDENT", "REMOTE_USER", "REQUEST_METHOD",
+	"REQUEST_URI", "SCRIPT_NAME", "SERVER_NAME", "SERVER_PORT", "SERVER_PROTOCOL", "SERVER_SOFTWARE"};
 	for (int i = 0; i < envCount ; ++i) {
 		this->envMap[envKey[i]];
 	}
 	std::map<std::string, std::string> tmp = req.getHeaders();
 	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
 		std::string a = it->first;
-		if(a.find("-") != std::string::npos)
-			a.replace(a.find("-"), 1, "_");
+		if(a.find('-') != std::string::npos)
+			a.replace(a.find('-'), 1, "_");
 		std::transform(a.begin(), a.end(), a.begin(), toupper);
 		envMap["HTTP_" + a] = it->second;
 		envCount++;
@@ -66,34 +55,6 @@ void				CGI::setResponseBody(const std::string &responseBody) {
 	ResponseBody = responseBody;
 }
 
-std::string			b64decod(const void* data, const size_t len)
-{
-	unsigned char* p = (unsigned char*)data;
-	int pad = len > 0 && (len % 4 || p[len - 1] == '=');
-	const size_t L = ((len + 3) / 4 - pad) * 4;
-	std::string str(L / 4 * 3 + pad, '\0');
-
-	for (size_t i = 0, j = 0; i < L; i += 4)
-	{
-		int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 | B64index[p[i + 2]] << 6 | B64index[p[i + 3]];
-		str[j++] = n >> 16;
-		str[j++] = n >> 8 & 0xFF;
-		str[j++] = n & 0xFF;
-	}
-	if (pad)
-	{
-		int n = B64index[p[L]] << 18 | B64index[p[L + 1]] << 12;
-		str[str.size() - 1] = n >> 16;
-
-		if (len > L + 2 && p[L + 2] != '=')
-		{
-			n |= B64index[p[L + 2]] << 6;
-			str.push_back(n >> 8 & 0xFF);
-		}
-	}
-	return str;
-}
-
 void				CGI::setAuthorization(Request &req) {
 	if(req.getHeaders().find("AUTHORIZATION") != req.getHeaders().end() &&
 					!req.getHeaders().find("AUTHORIZATION")->second.empty()) {
@@ -102,7 +63,7 @@ void				CGI::setAuthorization(Request &req) {
 		if(pos != std::string::npos) {
 			this->envMap["AUTH_TYPE"] = tmp.substr(0, pos);  //?? default Basic,
 			std::string tmpFoIdent = tmp.substr(pos + 1);
-			tmpFoIdent = b64decod(tmpFoIdent.c_str(), tmpFoIdent.size());
+			tmpFoIdent = b64decode(tmpFoIdent.c_str(), tmpFoIdent.size());
 			if((pos = tmpFoIdent.find(':')) != std::string::npos) {
 				this->envMap["REMOTE_USER"] = tmpFoIdent.substr(0, pos);
 				this->envMap["REMOTE_IDENT"] = tmpFoIdent.substr(pos + 1);
@@ -140,7 +101,7 @@ void				CGI::init(Request &req, Server &ser) {
 		this->envMap["CONTENT_TYPE"] = "";
 	this->envMap["PATH_TRANSLATED"] = this->envMap["PATH_INFO"][0] == '/' ?
 		std::string(dir) + this->envMap["PATH_INFO"] : std::string(dir) + "/" + this->envMap["PATH_INFO"];
-	this->RequestBody = req.getBody();
+//	this->RequestBody = req.getBody();
 	PathInfo = "/" + req.getPathInfo();
 	req.setPathInfo(dir +  PathInfo);
 	this->argv = new char *[3];
@@ -171,7 +132,7 @@ void				CGI::creatENV() {
 //	}
 }
 
-void				CGI::exec() {
+void				CGI::exec(Request &req) {
 	pid_t pid;
 	int ex;
 	int fdF = open("./cgiFile", O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXO | S_IRWXG);
@@ -195,7 +156,7 @@ void				CGI::exec() {
 	}
 	else { // родитель
 		close(fd[0]);
-		write(fd[1], RequestBody.c_str(), RequestBody.length());
+		write(fd[1], req.getBody().c_str(), req.getBody().length());
 		close(fd[1]);
 		std::cout << "Waiting..." << std::endl;
 		waitpid(pid, &status, 0);
@@ -203,9 +164,9 @@ void				CGI::exec() {
 			status = WEXITSTATUS(status);
 		}
 		std::cout << "status: " << status << std::endl;
-		if(status != 0)
-			throw std::runtime_error("500");
-		close(fdF);
+//		if(status != 0)
+//			throw std::runtime_error("500");
+		close(fdF); // положить в клиента не закрывая
 		close(fd[0]);
 	}
 }

@@ -4,8 +4,6 @@
 
 #include "RequestConfigMatch.hpp"
 
-
-
 void	setErrorCode(const std::string& str, Client &client) {
 	client.setStatusCode( atoi(str.c_str()));
 	std::cerr << "error : " << str << std::endl;
@@ -60,12 +58,18 @@ std::string			b64decode(const void* data, const size_t len)
 	return str;
 }
 
-int	compareLocation(std::string &uri, location_t loc, std::string &res) {
+int	compareLocation(std::string &uri, location_t &loc, std::string &res) {
 	std::string name = loc._name;
 	int len = name.length();
 	if (len > 1)
 		len -= 1;
 	if(name.compare(0, len, uri.substr(0,len)) == 0) {
+		res = name;
+		if (len > 1)
+			uri.erase(0, len);
+		return 1;
+	}
+	else if (std::regex_match(uri.substr(0,len), std::regex(name))) {
 		res = name;
 		uri.erase(0, len);
 		return 1;
@@ -89,14 +93,15 @@ std::string	getLocation(std::string &uri, Server &ser, int &pos) {
 	return res;
 }
 
-void	autoIndex(std::string &ret, Server const &serv, location_t &location) {
-	if (location._directives.find("autoindex")->second == "off")
-		;//getListing(ret, serv, location);										// листинг директорий
+int	autoIndex(std::string &ret, Server const &serv, const location_t &location) {
+	if (location._directives.find("autoindex")->second == "on")
+		return 1;
+//		getListing(ret, serv, location);										// листинг директорий
 	else
 		throw std::runtime_error("404");		//"Index Not Found, code: 403");
 }
 
-void	checkIndex(std::string &ret, Server const &serv, location_t &location) {
+int	checkIndex(std::string &ret, Server const &serv, const location_t &location) {
 	struct stat info;
 	std::string tmp;
 	std::string str = location._directives.find("index")->second;
@@ -109,30 +114,23 @@ void	checkIndex(std::string &ret, Server const &serv, location_t &location) {
 			if(stat(tmp.c_str() , &info) == 0)
 				break;
 		}
+		ret = tmp;
 		if(i == size) {									// не нашла index files
-			autoIndex(ret, serv, location);
-//=======
-//		if(i == size) {									// не нашла index
-//			if (location._directives.find("autoindex")->second == "off"){
-//				getListing(ret, serv, location);
-//				;										// листинг директорий
-//			}
-//			else
-//				throw std::runtime_error("404");		//"Index Not Found, code: 403");
-//>>>>>>> 9736fb4704b5d0732e316873b7095c04f305ca55
+			ret = tmp;
+			return (autoIndex(ret, serv, location));
 		}
 		else											// нашла индекс, добавила его к директории
 			ret = tmp;
 	}
 	else												// нет index в location
-		autoIndex(ret, serv, location);
+		return (autoIndex(ret, serv, location));
+	return 0;
 }
 
 std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
 	struct stat info;
-	std::string tmp = ser.get_root() + '/'; // убрать когда обьединимся с Деном
-	if (!ser.get_locations()[loc]._directives.find("root")->second.empty())
-		tmp = tmp + ser.get_locations()[loc]._directives.find("root")->second + uri;
+	std::string tmp;
+	tmp = ser.get_locations()[loc]._directives.find("root")->second + uri;
 	size_t count = countChar(tmp, '/');
 	size_t pos = tmp.find('/');
 	std::string ret = tmp.substr(0, pos + 1);
@@ -153,16 +151,17 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 	}
 	size_t last = ret.length() - 1;
 	if (ret[last] == '/' && tmp.length() == 0) {			//папка, checkIndex
-		checkIndex(ret, ser, ser.get_locations()[loc]);
-	}
-	else if(ret[last] == '/' && tmp.length() != 0) {		//точно файл, проверить его наличие
+		if (checkIndex(ret, ser, ser.get_locations()[loc])) {
+			req.setPath(ret);
+			throw std::runtime_error("243");
+		}
+	} else if(ret[last] == '/' && tmp.length() != 0) {		//точно файл, проверить его наличие
 		ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
 		req.setPathInfo(tmp);
 		if (stat(path, &info) != 0)
 			throw std::runtime_error("404");				//"paht not found. code: 404 Not Found";
-	}
-	else{
+	} else {
 		path = ret.c_str();
 		if (stat(path, &info) != 0) {
 			if (req.getMethod() != "PUT" && req.getMethod() != "POST")
@@ -171,10 +170,15 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		else {
 			if (S_ISDIR(info.st_mode)) {
 				ret = ret + '/';
-				checkIndex(ret, ser, ser.get_locations()[loc]);
+				if (checkIndex(ret, ser, ser.get_locations()[loc])) {
+					req.setPath(ret);
+					throw std::runtime_error("243");
+				}
+
 			}
 		}
 	}
+	req.setPath(ret);
 	return (ret);
 }
 
@@ -193,25 +197,23 @@ int	checkHost(int pos, std::string &uri, Server &ser) {
 	std::string host;
 	std::string hostName;
 	size_t colon;
-	if(pos != 1) {
-		host.assign(uri, 0, pos);
-		if(host != ser.get_serverName() && host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port())) {
-			if((colon = host.find(':')) != std::string::npos) {
-				hostName.assign(host, 0, colon);
-				port = host.substr(colon + 1);
-				compareHostName(hostName, ser.get_ip(), ser.get_serverName());
-				comparePort(port, ser.get_port());
-			}
-			else
-				compareHostName(host, ser.get_ip(), ser.get_serverName());
-			uri.erase(0, host.length());
+	host.assign(uri, 0, pos);
+	if(host != ser.get_serverName() && host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port())) {
+		if((colon = host.find(':')) != std::string::npos) {
+			hostName.assign(host, 0, colon);
+			port = host.substr(colon + 1);
+			compareHostName(hostName, ser.get_ip(), ser.get_serverName());
+			comparePort(port, ser.get_port());
 		}
-		else {
-			if ((colon = host.find(':') != std::string::npos)) {
-				hostName.assign(host, 0, colon);
-				port = host.substr(colon + 1);
-				uri.erase(0, host.length());
-			}
+		else
+			compareHostName(host, ser.get_ip(), ser.get_serverName());
+		uri.erase(0, host.length());
+	}
+	else {
+		if ((colon = host.find(':') != std::string::npos)) {
+			hostName.assign(host, 0, colon);
+			port = host.substr(colon + 1);
+			uri.erase(0, host.length());
 		}
 	}
 	return 0;
@@ -223,7 +225,7 @@ void	checkBodySize(Server &ser, int locIndex, Request &req) {
 	if (!maxBody.empty()) {
 		size_t len = atoi(maxBody.c_str());
 		if (req.getBody().size() > len)
-			throw std::runtime_error("413"); // "Payload Too Large. code: 413 "
+			throw std::runtime_error("413");
 	}
 }
 
@@ -232,9 +234,7 @@ bool	getWhere(std::map<std::string, std::string> dir, Request &req) {
 	std::vector<std::string> extConfArr = splitString(dir.find("cgi_extensions")->second);
 	size_t pos;
 	if((pos = req.getPath().rfind('.')) != std::string::npos)
-		extReq = req.getPath().substr(pos);					//вместе с точкой
-	else
-		extReq = "";
+		extReq = req.getPath().substr(pos);
 	size_t i;
 	for (i = 0; i < extConfArr.size(); ++i) {
 		if (extReq == extConfArr[i])
@@ -249,26 +249,49 @@ bool	getWhere(std::map<std::string, std::string> dir, Request &req) {
 		return true; // true == cgi in Where
 	return false;
 }
-
-bool checkAutorization(Request &req, int locIndex, Server &ser) {
-	if(ser.get_locations()[locIndex]._directives.find("auth_basic") != ser.get_locations()[locIndex]._directives.end()) {
-		if(req.getHeaders().find("AUTHORIZATION") != req.getHeaders().end() && !req.getHeaders().find("AUTHORIZATION")->second.empty()) {
-			std::string tmp = req.getHeaders().find("AUTHORIZATION")->second;
-			size_t pos = tmp.find(' ');
+bool passUser(std::string user, std::string pas, const std::string &path) {
+	std::string line;
+	std::ifstream file(path);
+	if (!file.is_open())
+		throw std::runtime_error("500");
+	while (getline(file, line)){
+		trimString(line);
+		if (!line.empty()) { // find user, match pass, if ok file.close(), return true.
+			size_t pos = line.find(':');
 			if(pos != std::string::npos) {
-				std::string authTipe = tmp.substr(0, pos); //?? default Basic, сравнить с конфигом
-				std::string tmpFoIdent = tmp.substr(pos + 1);
-				tmpFoIdent = b64decode(tmpFoIdent.c_str(), tmpFoIdent.size());
-				if((pos = tmpFoIdent.find(':')) != std::string::npos) {
-					std::string user = tmpFoIdent.substr(0, pos); // сравнить имя и пароль с конфигом
-					std::string pas = tmpFoIdent.substr(pos + 1);
+				if (line.substr(0, pos) == user && line.substr(pos + 1) == pas) {
+					file.close();
 					return true;
 				}
-				return false;
 			}
-			return false;
 		}
-		return false;
+	}
+	file.close();
+	return false;
+}
+
+bool checkAutorization(Request &req, int locIndex, Server &ser) {
+	std::map<std::string, std::string> map =  ser.get_locations()[locIndex]._directives;
+	std::string path;
+	if(map.find("auth_basic") != map.end()) {
+		if(req.getHeaders().find("AUTHORIZATION") == req.getHeaders().end() || req.getHeaders().find("AUTHORIZATION")->second.empty())
+			return false;
+		size_t pos = req.getHeaders().find("AUTHORIZATION")->second.rfind(' ');
+		if(pos == std::string::npos)
+			return false;
+		std::string authTipe = req.getHeaders().find("AUTHORIZATION")->second.substr(0, pos); //default Basic
+		if(authTipe != "Basic")
+			return false;
+		std::string tmpFoIdent = req.getHeaders().find("AUTHORIZATION")->second.substr(pos + 1);
+		tmpFoIdent = b64decode(tmpFoIdent.c_str(), tmpFoIdent.size());
+		if((pos = tmpFoIdent.find(':')) == std::string::npos)
+			return false;
+		if(map.find("auth_basic_user_file") != map.end()) {
+			path = map.find("auth_basic_user_file")->second;// сравнить имя и пароль с конфигом, дешифратор "YnVsaW5hOk15TWVnYUJlc3RQYXNz" => bulina:MyMegaBestPass;
+			return passUser(tmpFoIdent.substr(0, pos), tmpFoIdent.substr(pos + 1), path);
+		}
+		else
+			throw std::runtime_error("500");
 	}
 	return true;
 }
@@ -287,8 +310,8 @@ void	checkConf(Server &ser, int locIndex, Request &req, Client &client) {
 	}
 	checkBodySize(ser, locIndex, req);
 	if (!checkAutorization(req, locIndex, ser))
-		throw std::runtime_error("401"); //401 Unauthorized
-	if ( getWhere(ser.get_locations()[locIndex]._directives, req))
+		throw std::runtime_error("401");
+	if (getWhere(ser.get_locations()[locIndex]._directives, req))
 		client.setWhere(toCGI);
 	else {
 		if (req.getMethod() == "POST")
@@ -303,27 +326,23 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	std::string pathToScript;
 	int loc = -1;
 	size_t pos;
-	if((pos = uri.rfind('?')) != std::string::npos)
-		uri.erase(pos);
-	pos = 0;
 	try {
 		if((pos = uri.rfind('?')) != std::string::npos)
 			uri.erase(pos);
 		pos = 0;
 		if(uri.compare(0, 7, "http://") == 0) {
-			uri.erase(0, 7); //delete http:
+			uri.erase(0, 7);
 			if((pos = uri.find('/')) != std::string::npos)
 				checkHost(pos, uri, ser);
 		}
-		else
-			; //сразу путь без схемы и хоста
 		getLocation(uri, ser, loc);
+		client.setLocPos(loc);
 		pathToScript = getPath(uri, loc, req, ser);
-		req.setPath(pathToScript);
 		client.setPathToFile(pathToScript);
 		checkConf(ser, loc, req, client);
 	}
 	catch (std::exception &exception) {
+		client.setPathToFile(req.getPath());
 		setErrorCode(exception.what(), client);
 		return -1;
 	}

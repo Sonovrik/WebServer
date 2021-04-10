@@ -4,6 +4,7 @@
 #include "Response.hpp"
 #include "CGI/CGI.hpp"
 #include "CGI/RequestConfigMatch.hpp"
+#include <signal.h>
 
 static int		findMaxSD(std::vector<Server> &servers){
 	std::vector<Server>::iterator it = servers.begin();
@@ -45,11 +46,15 @@ static int		resetServers(fd_set *readfds, fd_set *writefds, std::vector<Server> 
 	return findMaxSD(serversList);
 }
 
-static void		readRequest(Server	&serv, Client	&client, std::string	&buf){
+static void		readRequest(Server	&serv, Client	&client, std::string &buf){
 	int ret;
-	if ((ret = read(client.getSd(), (void *)buf.c_str(), buf.size())) == 0){
+	if ((ret = read(client.getSd(), (void *)buf.c_str(), 100000)) == 0){
 		close(client.getSd());
 		serv.delete_client(client);
+	}
+	if (ret == -1){
+		client.setStatusCode(500);
+		client.setFlag(REQUEST_END);
 	}
 	else{
 		client.setFlag(parseRequest(buf, client.getRequest(), atoi(serv.get_maxBodySize().c_str())));
@@ -75,7 +80,7 @@ static void		sendResponse(Server &serv, Client &client){
 				CGI qqq(client.getRequest(), serv);
 				qqq.init(client.getRequest(), serv);
 				qqq.creatENV();
-				qqq.exec();
+				qqq.exec(client.getRequest());
 			}
 			catch (std::exception &exception) {
 				std::cout << "ggggg" << exception.what() << std::endl;
@@ -87,7 +92,6 @@ static void		sendResponse(Server &serv, Client &client){
 		Response resp(serv, client);
 		client.setResponse(resp.createResponse());
 	}
-
 	if (client.getResponse().size() > 1000000){
 		std::string str = client.getResponse().substr(0, 1000000);
 		int res = send(client.getSd(), str.c_str(), str.size(), 0);
@@ -159,6 +163,7 @@ static void		startServer(std::vector<Server> &serversList){
 
 int		main(){
 	std::vector<Server>	serversList;
+	sigignore(SIGPIPE);
 	try{
 		serversList = initServers("webserv.conf");
 		initErrors(serversList);

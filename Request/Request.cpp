@@ -1,20 +1,21 @@
 #include "Request.hpp"
 
 const std::string Request::_methodsNames[] = {"GET", "HEAD",
-			"POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
+											  "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"};
 const int Request::_numMethods = 8;
 
 Request::Request():
-	_method(""),
-	_path(""),
-	_version(""),
-	_body(""),
-	_queryString(""),
-	_pathInfo("cgi_tester"),
-	_return(WAIT),
-	_toClose(false),
-	_bodyLen(0),
-	_waitBody(false) {}
+		_method(""),
+		_path(""),
+		_version(""),
+		_body(""),
+		_queryString(""),
+		_pathInfo("cgi_tester"),
+		_return(WAIT),
+		_toClose(false),
+		_bodyLen(0),
+		_waitBody(false),
+		_buffer("") {}
 
 Request::~Request(){}
 
@@ -35,6 +36,7 @@ Request &Request::operator=(Request const &other) {
 		this->_return = other._return;
 		this->_bodyLen = other._bodyLen;
 		this->_waitBody = other._waitBody;
+		this->_buffer = other._buffer;
 	}
 	return *this;
 }
@@ -74,7 +76,7 @@ void	Request::setToClose(int toClose) {
 
 void	Request::setQueryString(int queryString) {
 	this->_queryString = queryString;
-}	
+}
 
 void	Request::setBodyLen(int bodyLen) {
 	this->_bodyLen = bodyLen;
@@ -169,7 +171,7 @@ bool	Request::parseStartLine(std::string &str) {
 	size_t		pos;
 
 //	std::cout << "[" << str << "]" << std::endl;
- 	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 2; i++) {
 		if ((pos = str.find(' ')) == std::string::npos)
 			return false;
 		if (pos == 0)
@@ -190,8 +192,7 @@ bool	Request::parseStartLine(std::string &str) {
 	if (token[2] != "HTTP/1.1\r\n")
 		return false;
 	this->_version = token[2].substr(0, token[2].length() - 2);
-	if (!parseQueryString())
-		return false;
+	parseQueryString();
 	return true;
 }
 
@@ -221,8 +222,8 @@ bool		Request::checkHeader(std::pair<std::string, std::string> &node) {
 			return false;
 	}
 	if ((this->_headers.find("TRANSFER-ENCODING") != this->_headers.end()
-		&& node.first == "CONTENT-LENGTH") || (this->_headers.find("CONTENT-LENGTH") != this->_headers.end()
-		&& node.first == "TRANSFER-ENCODING"))
+		 && node.first == "CONTENT-LENGTH") || (this->_headers.find("CONTENT-LENGTH") != this->_headers.end()
+												&& node.first == "TRANSFER-ENCODING"))
 		return false;
 	if (node.first == "CONTENT-LENGTH") {
 		// content-length >= 0
@@ -249,8 +250,8 @@ bool		Request::setHeader(std::string &line) {
 	node.first = line.substr(0, pos);
 	for (int i = 0; i < node.first.length(); i++)
 		node.first[i] = std::toupper(node.first[i]);
-	 if (!checkHeaderName(node.first))
-	 	return false;
+	if (!checkHeaderName(node.first))
+		return false;
 	line.erase(0, pos + 1);
 	trimString(line);
 	node.second = line;
@@ -281,14 +282,13 @@ bool		Request::parseHeaders(std::string &req) {
 	}
 	pos = req.find("\r\n");
 	if (pos == std::string::npos && req[0] != '\0') {
-		// prev
-		// this->_buffer = req;
 		if ((pos = req.find('\0')) == std::string::npos)
-			pos = req.length();
-		this->_buffer = req.substr(0, pos);
+			this->_buffer = req;
+		else
+			this->_buffer = req.substr(0, pos);
 		req.erase();
 	}
-	// if end and no host
+		// if end and no host
 	else if (pos != std::string::npos && this->_headers.find("HOST") == this->_headers.end()) {
 		this->_toClose = true;
 		return false;
@@ -318,7 +318,7 @@ bool		Request::parseBody(std::string &req) {
 					req.erase(0, pos + 2);
 				}
 				catch (std::exception &e) {
-                    return true;
+					return true;
 				}
 			}
 			// end
@@ -329,50 +329,28 @@ bool		Request::parseBody(std::string &req) {
 			}
 			// parse chunk
 			if (this->_bodyLen > 0) {
-			    pos = req.find("\r\n");
-				if (pos != std::string::npos && req.substr(0, pos).length() == this->_bodyLen) {
-                    this->_body.append(req.substr(0, this->_bodyLen));
+				pos = req.find("\r\n");
+				if (pos != std::string::npos && req.substr(0, pos).length() == this->_bodyLen ) {
+					this->_body.append(req.substr(0, pos));
 					req.erase(0, pos + 2);
 					this->_bodyLen = 0;
 				}
 				else {
-					// new
 					if ((pos = req.find('\0')) == std::string::npos)
-						pos = req.length();
-					this->_buffer = req.substr(0, pos);
-					// prev
-					// this->_buffer = req;
+						this->_buffer = req;
+					else
+						this->_buffer = req.substr(0, pos);
 					req.erase();
 					return true;
 				}
-//				 prev
-//			     pos = req.find("\r\n");
-//			     if (pos == std::string::npos && req.length() != 0 && req.length() < this->_bodyLen) {
-//                     this->_body.append(req.substr(0, req.length()));
-//                     this->_bodyLen -= req.length();
-//                     req.erase();
-//                 }
-//				 else if (pos != std::string::npos) {
-//                     if (req.substr(0, pos).length() >= this->_bodyLen) {
-//                         this->_body.append(req.substr(0, this->_bodyLen));
-//				 		req.erase(0, pos + 2);
-//				 		this->_bodyLen = 0;
-//				 	}
-//				 	else if (req.substr(0, pos).length() < this->_bodyLen) {
-//                         this->_body.append(req.substr(0, pos));
-//				 		this->_bodyLen -= pos;
-//				 		req.erase(0, pos + 2);
-//				 	}
-//				 }
 			}
 		}
 		if (req[0] != '\0') {
-			// prev
-            // this->_buffer = req;
-			// new
+
 			if ((pos = req.find('\0')) == std::string::npos)
-				pos = req.length();
-			this->_buffer = req.substr(0, pos);
+				this->_buffer = req;
+			else
+				this->_buffer = req.substr(0, pos);
 			req.erase();
 		}
 		return true;
@@ -383,9 +361,9 @@ bool		Request::parseBody(std::string &req) {
 			this->_bodyLen = atoi(this->_headers.find("CONTENT-LENGTH")->second.c_str());
 		if ((pos = req.find("\r\n")) != std::string::npos) {
 			if (req.substr(0, pos).length() >= this->_bodyLen) {
-					this->_body.append(req.substr(0, this->_bodyLen));
-					req.erase(0, pos + 2);
-					this->_bodyLen = 0;
+				this->_body.append(req.substr(0, this->_bodyLen));
+				req.erase(0, pos + 2);
+				this->_bodyLen = 0;
 			}
 			if (req.substr(0, pos).length() < this->_bodyLen) {
 				this->_body.append(req.substr(0, pos));
@@ -407,24 +385,18 @@ bool		Request::parseBody(std::string &req) {
 int			parseRequest(std::string req, Request &request, int maxBodySize) {
 	size_t		pos = 0;
 
-    if (request.getBuffer() != "") {
+	if (request.getBuffer() != "") {
 		req.insert(0, request.getBuffer());
-		// prev
-		// pos = request.getBuffer().find('\0');
-        // req.insert(0, request.getBuffer().substr(0, pos));
 		request.setBuffer("");
 	}
 	if ((pos = req.find("\r\n")) == std::string::npos) {
-		// new
-        if ((pos = req.find('\0')) == std::string::npos)
-			pos = req.length();
-		request.setBuffer(req.substr(0, pos));
+		if ((pos = req.find('\0')) == std::string::npos)
+			request.setBuffer(req);
+		else
+			request.setBuffer(req.substr(0, pos));
 		req.erase();
-		// prev
-		// request.setBuffer(req);
 		return request.getReturn();
 	}
-	//  std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
 		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));
@@ -444,10 +416,10 @@ int			parseRequest(std::string req, Request &request, int maxBodySize) {
 		if (!request.parseBody(req))
 			return request.getReturn();
 		else if (request.getBody().length() > maxBodySize) {
-		    request.setReturn(ERR_TOO_LARGE_BODY);
-		    std::cerr << "tooo large" << std::endl;
-            return request.getReturn();
-        }
+			request.setReturn(ERR_TOO_LARGE_BODY);
+			std::cerr << "tooo large" << std::endl;
+			return request.getReturn();
+		}
 	}
 	return request.getReturn();
 }

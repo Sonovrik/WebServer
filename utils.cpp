@@ -120,14 +120,12 @@ std::string		createListingPage(std::vector<std::string> &files, Server const &se
 		page.append("<a href=\"http://");
 		page.append(serv.get_ip() + ":" + serv.get_port() + loc._name + path + files[i]);
 		page.append("\" target=\"CONTENT\">");
-		page.append(to_string(i));
+		page.append(to_string(i) + ".	");
 		page.append(files[i]);
 		page.append("</a><br>");
 	}
-
-
 	page.append("</body></html>");
-	return "";
+	return page;
 }
 
 std::string		getListing(std::string const &path, Server const &serv, location_t const &loc){
@@ -147,7 +145,5 @@ std::string		getListing(std::string const &path, Server const &serv, location_t 
 		}
 		std::cout << files.size() << std::endl;
 	}
-	createListingPage(files, serv, loc, path);
-	return "EXIT_SUCCESS";
-
+	return createListingPage(files, serv, loc, path);
 }

@@ -61,49 +61,101 @@ void	Response::setError(Server const &serv, Client &client) {
 }
 
 void	Response::execPUT(Client &client) {
+	int ret;
+	int fd;
 	struct stat st;
-	std::string tmp("");
-	std::string fileContent("");
-	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
-
-	if (file != -1) {
-		char buf[2];
-		int ret;
-		while ((ret = read(file, buf, 1) > 0)) {
-			buf[ret] = '\0';
-			fileContent.append(std::string(buf));
+	if (stat(client.getPathToFile().c_str(), &st) != -1){
+		if (S_ISREG(st.st_mode)){
+			std::string fileContent("");
+			std::string buf(10240, '\0');
+			if ((fd = open(client.getPathToFile().c_str(), O_RDWR, 0666)) == -1){
+				this->setStatusCode(500);
+				return;
+			}
+			while ((ret = read(fd, (void *)buf.c_str(), buf.size())) > 0){
+				fileContent.append(buf.substr(0, ret));
+				cleanString(buf);
+			}
+			if (fileContent == client.getRequest().getBody())
+				this->setStatusCode(204);
+			else{
+				std::string str = client.getRequest().getBody();
+				while ((ret = write(fd, str.c_str(), str.size())) > 0)
+					str.erase(0, ret);
+				this->setStatusCode(200);
+			}
 		}
-		if (fileContent == client.getRequest().getBody()) {
-			this->setStatusCode(200);
-			setLastModified(client.getPathToFile().c_str());
-		}
-		else {
-			close(file);
-			int file = open(client.getPathToFile().c_str(), O_RDWR | O_TRUNC, 0666);
-			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
-			this->setStatusCode(200);
-        }
-	}
-	else {
-        close(file);
-		int file = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666);
-		if (file != -1) {
-            write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
-            this->setStatusCode(201);
-        }
-		else {
-            // what should i do if there is dir with the same name?
+		else{
+			client.setStatusCode(403);
+			return;
 		}
 	}
+	else{
+		if ((fd = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666)) == -1){
+			this->setStatusCode(500);
+			return;
+		}
+		std::string str = client.getRequest().getBody();
+		while ((ret = write(fd, str.c_str(), str.size())) > 0)
+			str.erase(0, ret);
+		this->setStatusCode(201);
+	}
+	close(fd);
 	setDate();
+	setLastModified(client.getPathToFile());
+	setContentLocation(client.getPathToFile(), "./"); // ???
 	if (this->_toClose == true)
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
 		_headers.insert(std::make_pair("Connection", "alive"));
-	setContentLocation(client.getPathToFile().c_str(), "./");
 	setContentLength("0");
-	close(file);
+	return;
 }
+
+//void	Response::execPUT(Client &client) {
+//	struct stat st;
+//	std::string tmp("");
+//	std::string fileContent("");
+//	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
+//
+//	if (file != -1) {
+//		char buf[2];
+//		int ret;
+//		while ((ret = read(file, buf, 1) > 0)) {
+//			buf[ret] = '\0';
+//			fileContent.append(std::string(buf));
+//		}
+//		if (fileContent == client.getRequest().getBody()) {
+//			this->setStatusCode(200);
+//			setLastModified(client.getPathToFile().c_str());
+//		}
+//		else {
+//			close(file);
+//			int file = open(client.getPathToFile().c_str(), O_RDWR | O_TRUNC, 0666);
+//			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
+//			this->setStatusCode(200);
+//        }
+//	}
+//	else {
+//        close(file);
+//		int file = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666);
+//		if (file != -1) {
+//            write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
+//            this->setStatusCode(201);
+//        }
+//		else {
+//            // what should i do if there is dir with the same name?
+//		}
+//	}
+//	setDate();
+//	if (this->_toClose == true)
+//		_headers.insert(std::make_pair("Connection", "close"));
+//	else
+//		_headers.insert(std::make_pair("Connection", "alive"));
+//	setContentLocation(client.getPathToFile().c_str(), "./");
+//	setContentLength("0");
+//	close(file);
+//}
 
 void	Response::execGET(Client &client){
 	std::ifstream	file(client.getPathToFile());
@@ -173,6 +225,21 @@ void Response::execAfterCGI(Client &client) {
 	_headers.insert(std::make_pair("Content-Language", "en"));
 }
 
+void			Response::execListing(Server const &serv, Client &client){
+	std::string		tmp("");
+	this->_body = getListing(client.getPathToFile(), serv, serv.get_locations()[client.getLocPos()]);
+	this->_headers.insert(std::make_pair("Content-Length", to_string(this->_body.size())));
+	if (client.getMethod() == "HEAD")
+		_body.clear();
+	if (this->_toClose == true)
+		_headers.insert(std::make_pair("Connection", "close"));
+	else
+		_headers.insert(std::make_pair("Connection", "alive"));
+	setDate();
+	_headers.insert(std::make_pair("Content-Language", "en"));
+}
+
+
 Response::Response(Server const &serv, Client &client):
 	_version(serv.getEnvValue("SERVER_PROTOCOL")),
 	_statusCode(client.getStatusCode()),
@@ -180,16 +247,23 @@ Response::Response(Server const &serv, Client &client):
 	_statusMessage(setStatusMessage(client.getStatusCode())),
 	_body(""),
 	_toClose(client.getToClose()) {
-		if (this->_statusCode  >= 400)
+		if (client.getStatusCode() >= 400)
 			setError(serv, client);
-		else if (client.getWhere() == toCGI){
-			parseCgiFile(client);
-			execAfterCGI(client);
+		else if (client.getStatusCode() == 243) {
+			execListing(serv, client);
 		}
-		else if (client.getMethod() == "GET" || client.getMethod() == "HEAD")
-			execGET(client);
-		else if (client.getMethod() == "PUT")
-			execPUT(client);
+		else{
+			if (client.getWhere() == toCGI){
+				parseCgiFile(client);
+				execAfterCGI(client);
+			}
+			else if (client.getMethod() == "GET" || client.getMethod() == "HEAD")
+				execGET(client);
+			else if (client.getMethod() == "PUT")
+				execPUT(client);
+			if (client.getStatusCode() >= 400)
+				setError(serv, client);
+		}
 }
 
 size_t			Response::get_respSize(void) const {

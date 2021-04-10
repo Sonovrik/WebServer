@@ -90,7 +90,7 @@ public:
 	std::string const	&get_root(void) const;
 	std::string const	&get_maxBodySize(void) const;
 	std::string const	get_errorPath(int code) const;
-	std::vector<location_t>	get_locations(void) const;
+	std::vector<location_t> const	&get_locations(void) const;
 	std::string const	&getLocationMethods(int pos) const;
 	std::string const	&get_maxBufferSize(void) const;
 	std::map<int, std::string>	&get_ErrorPaths(void);

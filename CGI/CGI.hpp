@@ -15,6 +15,7 @@
 #include "../Request/Request.hpp"
 #include "../Server.hpp"
 #include "../ConfigParser/ConfigParser.hpp"
+#include "RequestConfigMatch.hpp"
 
 
 #define STDIN 0
@@ -41,7 +42,7 @@ public:
 	void	init(Request &req, Server &ser);
 	void	setAuthorization(Request &req);
 	void	creatENV();
-	void	exec();
+	void	exec(Request &req);
 	const	std::string &getResponseBody() const;
 	void	setResponseBody(const std::string &responseBody);
 

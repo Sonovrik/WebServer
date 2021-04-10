@@ -42,6 +42,7 @@ public:
 	void	execGET(Client &client);
 	void	parseCgiFile(Client &client);
 	void 	execAfterCGI(Client &client);
+	void	execListing(Server const &serv, Client &client);
 
 
 	void	set_statusMessage(std::string);

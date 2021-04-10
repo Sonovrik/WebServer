@@ -11,11 +11,43 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e55a48a9-e58a-4859-ab84-bdf326a86245" name="Default Changelist" comment="&quot;second&quot;">
-      <change afterPath="$PROJECT_DIR$/.htpasswd" afterDir="false" />
+    <list default="true" id="e55a48a9-e58a-4859-ab84-bdf326a86245" name="Default Changelist" comment="&quot;before pull newBranch&quot;">
+      <change beforePath="$PROJECT_DIR$/.htpasswd" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CGI/CGI.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/CGI/CGI.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CGI/CGI.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/CGI/CGI.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CGI/RequestConfigMatch.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/CGI/RequestConfigMatch.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CGI/RequestConfigMatch.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/CGI/RequestConfigMatch.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Request/Request.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Request/Request.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Response.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Response.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Response.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Response.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Server.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Server.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CGI/CGI.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/server.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/WebServer.dir/server.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/WebServer" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/WebServer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/.htpasswd" beforeDir="false" afterPath="$PROJECT_DIR$/conf/.htpasswd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/html/YoupiBanane/youpi.bla" beforeDir="false" afterPath="$PROJECT_DIR$/html/YoupiBanane/youpi.bla" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/html/directory" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/html/file_should_exist_after" beforeDir="false" afterPath="$PROJECT_DIR$/html/file_should_exist_after" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/startServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/startServer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/utils.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webserv.conf" beforeDir="false" afterPath="$PROJECT_DIR$/webserv.conf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +58,16 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view />
+      </state>
+    </system>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -37,13 +79,21 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
+    <property name="cidr.known.project.marker" value="true" />
+    <property name="cmake.loaded.for.project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -66,7 +116,13 @@
       <workItem from="1617479527849" duration="295000" />
       <workItem from="1617539011338" duration="4505000" />
       <workItem from="1617548714755" duration="193000" />
-      <workItem from="1617879087294" duration="2101000" />
+      <workItem from="1617879087294" duration="5424000" />
+      <workItem from="1617893920511" duration="8829000" />
+      <workItem from="1617910473408" duration="147000" />
+      <workItem from="1617969607512" duration="5493000" />
+      <workItem from="1617983123389" duration="10970000" />
+      <workItem from="1617999381189" duration="15000" />
+      <workItem from="1618055956766" duration="20809000" />
     </task>
     <task id="LOCAL-00001" summary="&quot;second&quot;">
       <created>1617549078989</created>
@@ -75,7 +131,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617549078989</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="&quot;before pull newBranch&quot;">
+      <created>1617886983260</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1617886983260</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -108,7 +171,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="&quot;first&quot;" />
     <MESSAGE value="&quot;second&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;second&quot;" />
+    <MESSAGE value="&quot;before pull newBranch&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;before pull newBranch&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -116,6 +180,16 @@
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/utils.cpp</url>
           <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/CGI/RequestConfigMatch.cpp</url>
+          <line>337</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/CGI/RequestConfigMatch.cpp</url>
+          <line>152</line>
+          <option name="timeStamp" value="43" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

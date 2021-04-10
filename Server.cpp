@@ -309,7 +309,7 @@ sockaddr_in const	&Server::get_sockaddress(void) const{
 	return this->_addr;
 }
 
-std::vector<location_t>	Server::get_locations(void) const{
+std::vector<location_t> const &Server::get_locations(void) const{
 	return this->_locations;
 }
 
