@@ -197,7 +197,7 @@ bool	Request::parseStartLine(std::string &str) {
 }
 
 bool		Request::checkHeaderName(std::string const &name) const{
-	if (!name.length())
+	if (name.empty())
 		return false;
 	for (int i = 0; i < name.length(); i++) {
 		if (!(name[i] >= 33 && name[i] <= 126))
@@ -346,7 +346,6 @@ bool		Request::parseBody(std::string &req) {
 			}
 		}
 		if (req[0] != '\0') {
-
 			if ((pos = req.find('\0')) == std::string::npos)
 				this->_buffer = req;
 			else
