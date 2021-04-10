@@ -14,7 +14,8 @@ Request::Request():
 	_return(WAIT),
 	_toClose(false),
 	_bodyLen(0),
-	_waitBody(false) {}
+	_waitBody(false),
+	_buffer("") {}
 
 Request::~Request(){}
 
@@ -35,6 +36,7 @@ Request &Request::operator=(Request const &other) {
 		this->_return = other._return;
 		this->_bodyLen = other._bodyLen;
 		this->_waitBody = other._waitBody;
+		this->_buffer = other._buffer;
 	}
 	return *this;
 }
@@ -170,38 +172,27 @@ bool	Request::parseStartLine(std::string &str) {
 
 //	std::cout << "[" << str << "]" << std::endl;
  	for (int i = 0; i < 2; i++) {
-		if ((pos = str.find(' ')) == std::string::npos) {
-			// std::cout << "{" << str << "}";
+		if ((pos = str.find(' ')) == std::string::npos)
 			return false;
-		}
-		if (pos == 0) {
-			// std::cout << "{" << str << "}";
+		if (pos == 0)
 			return false;
-		}
 		token[i] = str.substr(0, pos);
 		str.erase(0, pos + 1);
 	}
 	token[2] = str.substr(0, str.length());
-	if (token[2].empty()) {
-		// std::cout << "{" << token[2] << "}3";
+	if (token[2].empty())
 		return false;
-	}
 	for (int i = 0; i < _numMethods; i++) {
 		if (_methodsNames[i] == token[0])
 			this->_method = token[0];
 	}
-	if (this->_method.empty()) {
-		// std::cout << "{" << this->_method << "}1";
+	if (this->_method.empty())
 		return false;
-	}
 	this->_path = token[1];
-	if (token[2] != "HTTP/1.1\r\n") {
-		// std::cout << "{"  << token[2] << "}3";
+	if (token[2] != "HTTP/1.1\r\n")
 		return false;
-	}
 	this->_version = token[2].substr(0, token[2].length() - 2);
-	if (!parseQueryString())
-		return false;
+	parseQueryString();
 	return true;
 }
 
@@ -291,8 +282,6 @@ bool		Request::parseHeaders(std::string &req) {
 	}
 	pos = req.find("\r\n");
 	if (pos == std::string::npos && req[0] != '\0') {
-		// prev
-		// this->_buffer = req;
 		if ((pos = req.find('\0')) == std::string::npos)
 			this->_buffer = req;
 		else
@@ -329,13 +318,11 @@ bool		Request::parseBody(std::string &req) {
 					req.erase(0, pos + 2);
 				}
 				catch (std::exception &e) {
-					// std::cout << "STOUL EXCEPTion" << std::endl;	// NEW
                     return true;
 				}
 			}
 			// end
 			if (this->_bodyLen == 0) {
-				// std::cout << "{" << req << "}" << std::endl;		// NEW
 				this->_return = REQUEST_END;
 				this->_waitBody = false;
 				return true;
@@ -349,54 +336,19 @@ bool		Request::parseBody(std::string &req) {
 					this->_bodyLen = 0;
 				}
 				else {
-					// new
 					if ((pos = req.find('\0')) == std::string::npos)
 						this->_buffer = req;
-						// pos = req.length();
 					else
 						this->_buffer = req.substr(0, pos);
-					// prev
-					// this->_buffer = req;
 					req.erase();
 					return true;
 				}
-//				 prev
-//			     pos = req.find("\r\n");
-//			     if (pos == std::string::npos && req.length() != 0 && req.length() < this->_bodyLen) {
-//                     this->_body.append(req.substr(0, req.length()));
-//                     this->_bodyLen -= req.length();
-//                     req.erase();
-//                 }
-				//  else 
-				// if (pos != std::string::npos) {
-                //     if (req.substr(0, pos).length() >= this->_bodyLen) {
-                //         this->_body.append(req.substr(0, this->_bodyLen));
-				//  		req.erase(0, pos + 2);
-				//  		this->_bodyLen = 0;
-				//  	}
-				//  	else if (req.substr(0, pos).length() < this->_bodyLen) {
-                //         this->_body.append(req.substr(0, pos));
-				//  		this->_bodyLen -= pos;
-				//  		req.erase(0, pos + 2);
-				//  	}
-				//  }
-				//  else {
-				// 	 if ((pos = req.find('\0')) == std::string::npos)
-				// 		this->_buffer = req;
-				// 	else
-				// 		this->_buffer = req.substr(0, pos);
-				// 	req.erase();
-				// 	return true;
-				//  }
 			}
 		}
 		if (req[0] != '\0') {
-			// prev
-            // this->_buffer = req;
-			// new
+
 			if ((pos = req.find('\0')) == std::string::npos)
 				this->_buffer = req;
-				// pos = req.length();
 			else
 				this->_buffer = req.substr(0, pos);
 			req.erase();
@@ -434,25 +386,17 @@ int			parseRequest(std::string req, Request &request, int maxBodySize) {
 	size_t		pos = 0;
 
     if (request.getBuffer() != "") {
-		//new
 		req.insert(0, request.getBuffer());
-		// prev
-		// pos = request.getBuffer().find('\0');
-        // req.insert(0, request.getBuffer().substr(0, pos));
 		request.setBuffer("");
 	}
 	if ((pos = req.find("\r\n")) == std::string::npos) {
-		// new
         if ((pos = req.find('\0')) == std::string::npos)
 			request.setBuffer(req);
 		else
 			request.setBuffer(req.substr(0, pos));
 		req.erase();
-		// prev
-		// request.setBuffer(req);
 		return request.getReturn();
 	}
-	//  std::cout << "|" << req << "|" << std::endl;
 	if (request.getMethod() == "") {
 		pos = req.find("\r\n");
 		std::string	tmp(req.substr(0, pos + 2));
