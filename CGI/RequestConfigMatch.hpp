@@ -20,9 +20,9 @@ static const int B64index[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
 size_t						countChar(const std::string& str, char c);
 std::vector<std::string>	splitString(std::string method);
-int							compareLocation(std::string &uri, location_t &loc, std::string &res);
-std::string					getLocation(std::string &uri, Server &ser, int &pos);
-void						checkIndex(std::string &ret, Server const &serv, location_t &location);
+int	compareLocation(std::string &uri, location_t &loc);
+void	getLocation(std::string &uri, Server &ser, int &pos);
+int	checkIndex(std::string &ret, Server const &serv, const location_t &location);
 std::string					getPath(std::string &uri, int &loc, Request &req, const Server &ser);
 void						compareHostName(const std::string& hostName, const std::string& ip, const std::string& servName);
 void						comparePort(const std::string& port, const std::string& servPort);

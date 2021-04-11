@@ -83,7 +83,7 @@ static void		sendResponse(Server &serv, Client &client){
 				qqq.exec(client.getRequest());
 			}
 			catch (std::exception &exception) {
-				std::cout << "ggggg" << exception.what() << std::endl;
+//				std::cout << "ggggg" << exception.what() << std::endl;
 				setErrorCode(exception.what(), client);
 			}
 		}

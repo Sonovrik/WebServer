@@ -6,7 +6,7 @@
 
 void	setErrorCode(const std::string& str, Client &client) {
 	client.setStatusCode( atoi(str.c_str()));
-	std::cerr << "error : " << str << std::endl;
+//	std::cerr << "error : " << str << std::endl;
 }
 
 std::vector<std::string>	splitString(std::string str) {
@@ -24,7 +24,7 @@ size_t	countChar(const std::string& str, char c) {
 	size_t len = str.length();
 	size_t count = 0;
 	for (size_t i = 0; i < len; ++i) {
-		if (str[i] == '/')
+		if (str[i] == c)
 			count++;
 	}
 	return count;
@@ -37,20 +37,16 @@ std::string			b64decode(const void* data, const size_t len)
 	const size_t L = ((len + 3) / 4 - pad) * 4;
 	std::string str(L / 4 * 3 + pad, '\0');
 
-	for (size_t i = 0, j = 0; i < L; i += 4)
-	{
+	for (size_t i = 0, j = 0; i < L; i += 4) {
 		int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 | B64index[p[i + 2]] << 6 | B64index[p[i + 3]];
 		str[j++] = n >> 16;
 		str[j++] = n >> 8 & 0xFF;
 		str[j++] = n & 0xFF;
 	}
-	if (pad)
-	{
+	if (pad) {
 		int n = B64index[p[L]] << 18 | B64index[p[L + 1]] << 12;
 		str[str.size() - 1] = n >> 16;
-
-		if (len > L + 2 && p[L + 2] != '=')
-		{
+		if (len > L + 2 && p[L + 2] != '=') {
 			n |= B64index[p[L + 2]] << 6;
 			str.push_back(n >> 8 & 0xFF);
 		}
@@ -58,45 +54,40 @@ std::string			b64decode(const void* data, const size_t len)
 	return str;
 }
 
-int	compareLocation(std::string &uri, location_t &loc, std::string &res) {
+int	compareLocation(std::string &uri, location_t &loc) {
 	std::string name = loc._name;
-	int len = name.length();
-	if (len > 1)
+	size_t len = name.length();
+	if (len > 1 && name[len - 1] == '/')
 		len -= 1;
 	if(name.compare(0, len, uri.substr(0,len)) == 0) {
-		res = name;
 		if (len > 1)
 			uri.erase(0, len);
 		return 1;
 	}
 	else if (std::regex_match(uri.substr(0,len), std::regex(name))) {
-		res = name;
 		uri.erase(0, len);
 		return 1;
 	}
 	return 0;
 }
 
-std::string	getLocation(std::string &uri, Server &ser, int &pos) {
-	std::string res;
+void	getLocation(std::string &uri, Server &ser, int &pos) {
 	std::vector<location_t> tmp = ser.get_locations();
 	size_t count = tmp.size();
-	size_t i = 0;
+	int i = 0;
 	while (i < count) {
-		if (compareLocation(uri, tmp[i], res))
+		if (compareLocation(uri, tmp[i]))
 			break;
 		i++;
 	}
 	if (i == count)
 		throw std::runtime_error("404");
 	pos = i;
-	return res;
 }
 
 int	autoIndex(std::string &ret, Server const &serv, const location_t &location) {
 	if (location._directives.find("autoindex")->second == "on")
 		return 1;
-//		getListing(ret, serv, location);										// листинг директорий
 	else
 		throw std::runtime_error("404");		//"Index Not Found, code: 403");
 }
@@ -115,16 +106,10 @@ int	checkIndex(std::string &ret, Server const &serv, const location_t &location)
 				break;
 		}
 		ret = tmp;
-		if(i == size) {									// не нашла index files
-			ret = tmp;
-			return (autoIndex(ret, serv, location));
-		}
-		else											// нашла индекс, добавила его к директории
-			ret = tmp;
+		if(i != size)
+			return 0;
 	}
-	else												// нет index в location
-		return (autoIndex(ret, serv, location));
-	return 0;
+	return (autoIndex(ret, serv, location));
 }
 
 std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
@@ -174,7 +159,6 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 					req.setPath(ret);
 					throw std::runtime_error("243");
 				}
-
 			}
 		}
 	}
@@ -192,7 +176,7 @@ void	comparePort(const std::string& port, const std::string& servPort) {
 		throw std::runtime_error("400");
 }
 
-int	checkHost(int pos, std::string &uri, Server &ser) {
+int	checkHost(size_t pos, std::string &uri, Server &ser) {
 	std::string port;
 	std::string host;
 	std::string hostName;
@@ -249,14 +233,14 @@ bool	getWhere(std::map<std::string, std::string> dir, Request &req) {
 		return true; // true == cgi in Where
 	return false;
 }
-bool passUser(std::string user, std::string pas, const std::string &path) {
+bool passUser(const std::string& user, const std::string& pas, const std::string &path) {
 	std::string line;
 	std::ifstream file(path);
 	if (!file.is_open())
 		throw std::runtime_error("500");
 	while (getline(file, line)){
 		trimString(line);
-		if (!line.empty()) { // find user, match pass, if ok file.close(), return true.
+		if (!line.empty()) {
 			size_t pos = line.find(':');
 			if(pos != std::string::npos) {
 				if (line.substr(0, pos) == user && line.substr(pos + 1) == pas) {
@@ -279,7 +263,7 @@ bool checkAutorization(Request &req, int locIndex, Server &ser) {
 		size_t pos = req.getHeaders().find("AUTHORIZATION")->second.rfind(' ');
 		if(pos == std::string::npos)
 			return false;
-		std::string authTipe = req.getHeaders().find("AUTHORIZATION")->second.substr(0, pos); //default Basic
+		std::string authTipe = req.getHeaders().find("AUTHORIZATION")->second.substr(0, pos);
 		if(authTipe != "Basic")
 			return false;
 		std::string tmpFoIdent = req.getHeaders().find("AUTHORIZATION")->second.substr(pos + 1);
@@ -287,7 +271,7 @@ bool checkAutorization(Request &req, int locIndex, Server &ser) {
 		if((pos = tmpFoIdent.find(':')) == std::string::npos)
 			return false;
 		if(map.find("auth_basic_user_file") != map.end()) {
-			path = map.find("auth_basic_user_file")->second;// сравнить имя и пароль с конфигом, дешифратор "YnVsaW5hOk15TWVnYUJlc3RQYXNz" => bulina:MyMegaBestPass;
+			path = map.find("auth_basic_user_file")->second;
 			return passUser(tmpFoIdent.substr(0, pos), tmpFoIdent.substr(pos + 1), path);
 		}
 		else

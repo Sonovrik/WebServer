@@ -1,1 +1,4 @@
-kjnkf
+<?php
+    echo "Hello TOXIGEN!!!!!";
+    exit;
+?>

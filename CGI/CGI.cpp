@@ -5,7 +5,7 @@
 
 #include "CGI.hpp"
 
-CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""), ResponseBody("") {
+CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16) {
 	std::string envKey[] = {"AUTH_TYPE", "CONTENT_LENGTH", "CONTENT_TYPE", "GATEWAY_INTERFACE", "PATH_INFO",
 	"PATH_TRANSLATED","QUERY_STRING", "REMOTE_ADDR", "REMOTE_IDENT", "REMOTE_USER", "REQUEST_METHOD",
 	"REQUEST_URI", "SCRIPT_NAME", "SERVER_NAME", "SERVER_PORT", "SERVER_PROTOCOL", "SERVER_SOFTWARE"};
@@ -23,7 +23,7 @@ CGI::CGI(Request &req, Server &ser): env (NULL), envCount (16), RequestBody(""),
 	}
 	dir = getcwd(NULL, 0);
 	if (dir == NULL)
-		throw std::runtime_error("500"); //("error getcwd. 500 Internal Server Error");
+		throw std::runtime_error("500");
 }
 
 CGI::~CGI() {
@@ -45,14 +45,6 @@ CGI::CGI(const CGI &copy) {
 
 CGI					&CGI::operator=(const CGI &copy) {
 	return *this;
-}
-
-const std::string	&CGI::getResponseBody() const {
-	return ResponseBody;
-}
-
-void				CGI::setResponseBody(const std::string &responseBody) {
-	ResponseBody = responseBody;
 }
 
 void				CGI::setAuthorization(Request &req) {
@@ -101,7 +93,6 @@ void				CGI::init(Request &req, Server &ser) {
 		this->envMap["CONTENT_TYPE"] = "";
 	this->envMap["PATH_TRANSLATED"] = this->envMap["PATH_INFO"][0] == '/' ?
 		std::string(dir) + this->envMap["PATH_INFO"] : std::string(dir) + "/" + this->envMap["PATH_INFO"];
-//	this->RequestBody = req.getBody();
 	PathInfo = "/" + req.getPathInfo();
 	req.setPathInfo(dir +  PathInfo);
 	this->argv = new char *[3];
@@ -158,15 +149,13 @@ void				CGI::exec(Request &req) {
 		close(fd[0]);
 		write(fd[1], req.getBody().c_str(), req.getBody().length());
 		close(fd[1]);
-		std::cout << "Waiting..." << std::endl;
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status)) {
 			status = WEXITSTATUS(status);
 		}
-		std::cout << "status: " << status << std::endl;
-//		if(status != 0)
-//			throw std::runtime_error("500");
-		close(fdF); // положить в клиента не закрывая
+		if(status != 0)
+			throw std::runtime_error("500");
+		close(fdF);
 		close(fd[0]);
 	}
 }

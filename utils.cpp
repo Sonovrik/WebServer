@@ -116,7 +116,7 @@ std::string		createListingPage(std::vector<std::string> &files, Server const &se
 	path.erase(0, pos + loc._directives.find("root")->second.size() + 1);
 	page.append("<html><head><title>Directory Listing</title></head>"
 					"<body align=\"left\" style=\"font-size: 24px\">");
-	for (int i = 0; i < files.size(); i++){
+	for (int i = 1; i < files.size(); i++){
 		page.append("<a href=\"http://");
 		page.append(serv.get_ip() + ":" + serv.get_port() + loc._name + path + files[i]);
 		page.append("\" target=\"CONTENT\">");
@@ -139,11 +139,11 @@ std::string		getListing(std::string const &path, Server const &serv, location_t 
 		}
 		closedir (dir);
 		for (int i = 0; i < files.size(); i++) {
-			std::cout << files[i] << " ";
+//			std::cout << files[i] << " ";
 			if (i % 3 == 0)
 				std::cout << std::endl;
 		}
-		std::cout << files.size() << std::endl;
+//		std::cout << files.size() << std::endl;
 	}
 	return createListingPage(files, serv, loc, path);
 }

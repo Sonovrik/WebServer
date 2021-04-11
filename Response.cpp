@@ -202,9 +202,6 @@ void Response::parseCgiFile(Client &client) {
 		while (getline(file, line))
 			this->_body.append(line);
 	}
-	else {
-		// std::cerr << "CGI, WHERE FILE ????" << std::endl;
-	}
 	file.close();
 	int fd = open("./cgiFile", O_TRUNC);
 	close(fd);

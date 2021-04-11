@@ -27,8 +27,6 @@ private:
 	char								**argv;
 	char								*dir;
 	int									envCount;
-	std::string							RequestBody;
-	std::string							ResponseBody;
 	std::map<std::string, std::string>	envMap;
 	std::string							PathInfo;
 	int									fd[2];
@@ -43,8 +41,6 @@ public:
 	void	setAuthorization(Request &req);
 	void	creatENV();
 	void	exec(Request &req);
-	const	std::string &getResponseBody() const;
-	void	setResponseBody(const std::string &responseBody);
 
 };
 
