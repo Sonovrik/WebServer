@@ -7,3 +7,5 @@ webserv
 webserv.dSYM
 .DS_Store
 .idea
+.DS_Store
+cmake-build-debug

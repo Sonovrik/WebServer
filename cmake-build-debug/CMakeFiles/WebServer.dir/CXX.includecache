@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
+CGI.hpp
+/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
+
 /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
 map
 -
@@ -45,6 +49,10 @@ CGI.hpp
 /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 regex
 -
+
+/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp
+RequestConfigMatch.hpp
+/Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp
 
 /Users/kmoaning/Desktop/ToGit/Client/Client.cpp
 Client.hpp
@@ -86,7 +94,7 @@ utils.hpp
 
 /Users/kmoaning/Desktop/ToGit/Request/Request.cpp
 Request.hpp
-/Users/kmoaning/Desktop/ToGit/Request/Request.hpp
+/Users/lbagg/Desktop/WebServer/Request/Request.hpp
 
 /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
 iostream
@@ -123,6 +131,10 @@ sys/stat.h
 -
 fcntl.h
 -
+
+/Users/kmoaning/Desktop/ToGit/Server.cpp
+Server.hpp
+/Users/kmoaning/Desktop/ToGit/Server.hpp
 
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 map
