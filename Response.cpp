@@ -64,17 +64,19 @@ void	Response::execPUT(Client &client) {
 	int ret;
 	int fd;
 	struct stat st;
+	char buf[10240];
 	if (stat(client.getPathToFile().c_str(), &st) != -1){
 		if (S_ISREG(st.st_mode)){
 			std::string fileContent("");
-			std::string buf(10240, '\0');
+//			std::string buf(1004000, '\0');
 			if ((fd = open(client.getPathToFile().c_str(), O_RDWR, 0666)) == -1){
 				this->setStatusCode(500);
 				return;
 			}
-			while ((ret = read(fd, (void *)buf.c_str(), buf.size())) > 0){
-				fileContent.append(buf.substr(0, ret));
-				cleanString(buf);
+			while ((ret = read(fd, (void *)buf, (10240 - 1))) > 0){
+				buf[ret] = '\0';
+				fileContent.append(buf);
+//				cleanString(buf);
 			}
 			if (fileContent == client.getRequest().getBody())
 				this->setStatusCode(204);
@@ -119,9 +121,9 @@ void	Response::execPUT(Client &client) {
 //	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
 //
 //	if (file != -1) {
-//		char buf[2];
+//		char buf[100000];
 //		int ret;
-//		while ((ret = read(file, buf, 1) > 0)) {
+//		while ((ret = read(file, buf, (100000 - 1)) > 0)) {
 //			buf[ret] = '\0';
 //			fileContent.append(std::string(buf));
 //		}
@@ -181,31 +183,69 @@ void	Response::execGET(Client &client){
 }
 
 void Response::parseCgiFile(Client &client) {
-	std::ifstream file("./cgiFile", std::ifstream::in);
-	std::string line("");
-	if (file.is_open()) {
-		while (getline(file, line)) {
-			if (line.find("Status:") != std::string::npos) {
-				this->setStatusCode(atoi(line.substr(8, 3).c_str()));
-			}
-			else {
-				if (line == "\r")
-					break;
-				size_t pos = line.find(':');
-				std::pair<std::string, std::string> node;
-				node.first = line.substr(0, pos);
-				line.erase(0, pos + 2);
-				node.second = line.substr(0, (line.length() - 1));
-				this->_headers.insert(node);
-			}
-		}
-		while (getline(file, line))
-			this->_body.append(line);
+	int ret;
+	int fd;
+	char buf[10240];
+	if ((fd = open("./cgiFile", O_RDWR, 0666)) == -1){
+		this->setStatusCode(500);
+		return;
 	}
-	file.close();
-	int fd = open("./cgiFile", O_TRUNC);
+	std::string line("");
+	while ((ret = read(fd, (void *)buf, (10240 - 1))) > 0){
+		buf[ret] = '\0';
+		line.append(buf);
+	}
+	size_t poss;
+	if (( poss = line.find("Status:")) != std::string::npos) {
+		if(poss == 0) {
+			this->setStatusCode(atoi(line.substr(8, 3).c_str()));
+			if((poss = line.find("\r")) != std::string::npos)
+				line.erase(0, poss + 2);
+		}
+	}
+	while ((poss = line.find(':')) != std::string::npos) {
+		std::pair<std::string, std::string> node;
+		node.first = line.substr(0, poss);
+		line.erase(0, poss + 2);
+		if((poss = line.find("\r\n")) != std::string::npos) {
+			node.second = line.substr(0, poss);
+			line.erase(0, poss + 4);
+			this->_headers.insert(node);
+		}
+	}
+	this->_body.append(line);
+	close(fd);
+	fd = open("./cgiFile", O_TRUNC);
 	close(fd);
 }
+
+//void Response::parseCgiFile(Client &client) {
+//	std::ifstream file("./cgiFile", std::ifstream::in);
+//
+//	std::string line("");
+//	if (file.is_open()) {
+//		while (getline(file, line)) {
+//			if (line.find("Status:") != std::string::npos) {
+//				this->setStatusCode(atoi(line.substr(8, 3).c_str()));
+//			}
+//			else {
+//				if (line == "\r")
+//					break;
+//				size_t pos = line.find(':');
+//				std::pair<std::string, std::string> node;
+//				node.first = line.substr(0, pos);
+//				line.erase(0, pos + 2);
+//				node.second = line.substr(0, (line.length() - 1));
+//				this->_headers.insert(node);
+//			}
+//		}
+//		while (getline(file, line))
+//			this->_body.append(line);
+//	}
+//	file.close();
+//	int fd = open("./cgiFile", O_TRUNC);
+//	close(fd);
+//}
 
 void Response::execAfterCGI(Client &client) {
 	this->_headers.insert(std::make_pair("Content-Length", std::to_string(this->_body.size())));
@@ -215,7 +255,6 @@ void Response::execAfterCGI(Client &client) {
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
 		_headers.insert(std::make_pair("Connection", "alive"));
-
 	setDate();
 	setLastModified(client.getPathToFile());
 	setContentType(client.getPathToFile());

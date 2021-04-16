@@ -170,7 +170,6 @@ bool	Request::parseStartLine(std::string &str) {
 	std::string	token[3];
 	size_t		pos;
 
-//	std::cout << "[" << str << "]" << std::endl;
 	for (int i = 0; i < 2; i++) {
 		if ((pos = str.find(' ')) == std::string::npos)
 			return false;
