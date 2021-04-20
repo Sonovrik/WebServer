@@ -281,10 +281,7 @@ bool		Request::parseHeaders(std::string &req) {
 	}
 	pos = req.find("\r\n");
 	if (pos == std::string::npos && req[0] != '\0') {
-		if ((pos = req.find('\0')) == std::string::npos)
-			this->_buffer = req;
-		else
-			this->_buffer = req.substr(0, pos);
+		this->_buffer = req;
 		req.erase();
 	}
 		// if end and no host
@@ -311,6 +308,12 @@ bool		Request::parseBody(std::string &req) {
 	if (this->_headers.find("TRANSFER-ENCODING")->second.find("chunked") != std::string::npos) {
 		while ((pos = req.find("\r\n")) != std::string::npos) {
 			// parse chunk value
+			if (req.substr(0, pos) == "0") {
+				if (req.find("\r\n\r\n") == std::string::npos) {
+					this->_buffer = req;
+					return true ;
+				}
+			}
 			if (this->_bodyLen == 0 || req.substr(0, pos) == "0") {
 				try {
 					this->_bodyLen = stoul(req.substr(0, pos), NULL, 16);
@@ -335,21 +338,14 @@ bool		Request::parseBody(std::string &req) {
 					this->_bodyLen = 0;
 				}
 				else {
-					if ((pos = req.find('\0')) == std::string::npos)
-						this->_buffer = req;
-					else
-						this->_buffer = req.substr(0, pos);
+					this->_buffer = req;
 					req.erase();
 					return true;
 				}
 			}
 		}
 		if (req[0] != '\0') {
-
-			if ((pos = req.find('\0')) == std::string::npos)
-				this->_buffer = req;
-			else
-				this->_buffer = req.substr(0, pos);
+			this->_buffer = req;
 			req.erase();
 		}
 		return true;
@@ -389,10 +385,7 @@ int			parseRequest(std::string req, Request &request, int maxBodySize) {
 		request.setBuffer("");
 	}
 	if ((pos = req.find("\r\n")) == std::string::npos) {
-		if ((pos = req.find('\0')) == std::string::npos)
-			request.setBuffer(req);
-		else
-			request.setBuffer(req.substr(0, pos));
+		request.setBuffer(req);
 		req.erase();
 		return request.getReturn();
 	}

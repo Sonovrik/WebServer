@@ -26,21 +26,21 @@ private:
 	char								**env;
 	char								**argv;
 	char								*dir;
-	int									envCount;
+	size_t								envCount;
 	std::map<std::string, std::string>	envMap;
 	std::string							PathInfo;
 	int									fd[2];
+	std::string							body;
 	CGI(){};
 public:
 	CGI(Request &req, Server &ser);
 	~CGI();
-	CGI(const CGI &copy);
-	CGI& operator= (CGI const &copy);
 
 	void	init(Request &req, Server &ser);
 	void	setAuthorization(Request &req);
 	void	creatENV();
-	void	exec(Request &req);
+	void	exec(Request &req, Server &ser);
+	void	mallocError(int count);
 
 };
 

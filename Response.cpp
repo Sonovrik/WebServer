@@ -1,12 +1,12 @@
 #include "Response.hpp"
 
 Response::Response():
-	_version("HTTP/1.1"),
-	_statusCode(200),
-	_respSize(0),
-	_statusMessage("ОК"),
-	_body(""),
-	_toClose(false){}
+		_version("HTTP/1.1"),
+		_statusCode(200),
+		_respSize(0),
+		_statusMessage("ОК"),
+		_body(""),
+		_toClose(false){}
 
 std::string	Response::setStatusMessage(int code){
 	switch(code){
@@ -175,7 +175,7 @@ void	Response::execGET(Client &client){
 		_headers.insert(std::make_pair("Connection", "close"));
 	else
 		_headers.insert(std::make_pair("Connection", "alive"));
-	
+
 	setDate();
 	setLastModified(client.getPathToFile());
 	setContentType(client.getPathToFile());
@@ -277,29 +277,29 @@ void			Response::execListing(Server const &serv, Client &client){
 
 
 Response::Response(Server const &serv, Client &client):
-	_version(serv.getEnvValue("SERVER_PROTOCOL")),
-	_statusCode(client.getStatusCode()),
-	_respSize(0),
-	_statusMessage(setStatusMessage(client.getStatusCode())),
-	_body(""),
-	_toClose(client.getToClose()) {
+		_version(serv.getEnvValue("SERVER_PROTOCOL")),
+		_statusCode(client.getStatusCode()),
+		_respSize(0),
+		_statusMessage(setStatusMessage(client.getStatusCode())),
+		_body(""),
+		_toClose(client.getToClose()) {
+	if (client.getStatusCode() >= 400)
+		setError(serv, client);
+	else if (client.getStatusCode() == 243) {
+		execListing(serv, client);
+	}
+	else{
+		if (client.getWhere() == toCGI){
+			parseCgiFile(client);
+			execAfterCGI(client);
+		}
+		else if (client.getMethod() == "GET" || client.getMethod() == "HEAD")
+			execGET(client);
+		else if (client.getMethod() == "PUT")
+			execPUT(client);
 		if (client.getStatusCode() >= 400)
 			setError(serv, client);
-		else if (client.getStatusCode() == 243) {
-			execListing(serv, client);
-		}
-		else{
-			if (client.getWhere() == toCGI){
-				parseCgiFile(client);
-				execAfterCGI(client);
-			}
-			else if (client.getMethod() == "GET" || client.getMethod() == "HEAD")
-				execGET(client);
-			else if (client.getMethod() == "PUT")
-				execPUT(client);
-			if (client.getStatusCode() >= 400)
-				setError(serv, client);
-		}
+	}
 }
 
 size_t			Response::get_respSize(void) const {
@@ -383,7 +383,7 @@ void	Response::setContentType(std::string const &pathToFile){
 }
 
 void	Response::setContentLength(std::string length) {
-    this->_headers.insert((std::make_pair("Content-Length", length)));
+	this->_headers.insert((std::make_pair("Content-Length", length)));
 }
 
 void	Response::setLastModified(std::string const &file) {
@@ -430,5 +430,3 @@ std::map<std::string,std::string>		&Response::get_headers(void) {
 std::string		Response::get_body(void) const {
 	return _body;
 }
-
-

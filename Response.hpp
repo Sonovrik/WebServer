@@ -37,7 +37,7 @@ public:
 	void	setStatusCode(int);
 	std::string	setStatusMessage(int);
 
-	
+
 	void	execPUT(Client &client);
 	void	execGET(Client &client);
 	void	parseCgiFile(Client &client);
