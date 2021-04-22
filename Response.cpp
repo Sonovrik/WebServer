@@ -13,7 +13,7 @@ std::string	Response::setStatusMessage(int code){
 		case 201: return "Created";
 		case 301: return "Moved Permanently";
 		case 400: return "Bad Request";
-		case 401: return "Payment Required";
+		case 401: return "Unauthorized";
 		case 403: return "Forbidden";
 		case 404: return "Not Found";
 		case 405: return "Method Not Allowed";
@@ -68,7 +68,6 @@ void	Response::execPUT(Client &client) {
 	if (stat(client.getPathToFile().c_str(), &st) != -1){
 		if (S_ISREG(st.st_mode)){
 			std::string fileContent("");
-//			std::string buf(1004000, '\0');
 			if ((fd = open(client.getPathToFile().c_str(), O_RDWR, 0666)) == -1){
 				this->setStatusCode(500);
 				return;
@@ -76,14 +75,17 @@ void	Response::execPUT(Client &client) {
 			while ((ret = read(fd, (void *)buf, (10240 - 1))) > 0){
 				buf[ret] = '\0';
 				fileContent.append(buf);
-//				cleanString(buf);
 			}
+			if(ret == -1)
+				throw std::runtime_error("500");
 			if (fileContent == client.getRequest().getBody())
 				this->setStatusCode(204);
 			else{
 				std::string str = client.getRequest().getBody();
 				while ((ret = write(fd, str.c_str(), str.size())) > 0)
 					str.erase(0, ret);
+				if(ret == -1)
+					throw std::runtime_error("500");
 				this->setStatusCode(200);
 			}
 		}
@@ -100,6 +102,8 @@ void	Response::execPUT(Client &client) {
 		std::string str = client.getRequest().getBody();
 		while ((ret = write(fd, str.c_str(), str.size())) > 0)
 			str.erase(0, ret);
+		if(ret == -1)
+			throw std::runtime_error("500");
 		this->setStatusCode(201);
 	}
 	close(fd);
@@ -113,51 +117,6 @@ void	Response::execPUT(Client &client) {
 	setContentLength("0");
 	return;
 }
-
-//void	Response::execPUT(Client &client) {
-//	struct stat st;
-//	std::string tmp("");
-//	std::string fileContent("");
-//	int file = open(client.getPathToFile().c_str(), O_RDWR, 0666);
-//
-//	if (file != -1) {
-//		char buf[100000];
-//		int ret;
-//		while ((ret = read(file, buf, (100000 - 1)) > 0)) {
-//			buf[ret] = '\0';
-//			fileContent.append(std::string(buf));
-//		}
-//		if (fileContent == client.getRequest().getBody()) {
-//			this->setStatusCode(200);
-//			setLastModified(client.getPathToFile().c_str());
-//		}
-//		else {
-//			close(file);
-//			int file = open(client.getPathToFile().c_str(), O_RDWR | O_TRUNC, 0666);
-//			write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
-//			this->setStatusCode(200);
-//        }
-//	}
-//	else {
-//        close(file);
-//		int file = open(client.getPathToFile().c_str(), O_RDWR | O_CREAT, 0666);
-//		if (file != -1) {
-//            write(file, client.getRequest().getBody().c_str(), client.getRequest().getBody().length());
-//            this->setStatusCode(201);
-//        }
-//		else {
-//            // what should i do if there is dir with the same name?
-//		}
-//	}
-//	setDate();
-//	if (this->_toClose == true)
-//		_headers.insert(std::make_pair("Connection", "close"));
-//	else
-//		_headers.insert(std::make_pair("Connection", "alive"));
-//	setContentLocation(client.getPathToFile().c_str(), "./");
-//	setContentLength("0");
-//	close(file);
-//}
 
 void	Response::execGET(Client &client){
 	std::ifstream	file(client.getPathToFile());
@@ -195,6 +154,8 @@ void Response::parseCgiFile(Client &client) {
 		buf[ret] = '\0';
 		line.append(buf);
 	}
+	if(ret == -1)
+		throw std::runtime_error("500");
 	size_t poss;
 	if (( poss = line.find("Status:")) != std::string::npos) {
 		if(poss == 0) {
@@ -215,37 +176,8 @@ void Response::parseCgiFile(Client &client) {
 	}
 	this->_body.append(line);
 	close(fd);
-	fd = open("./cgiFile", O_TRUNC);
-	close(fd);
+	unlink("./cgiFile");
 }
-
-//void Response::parseCgiFile(Client &client) {
-//	std::ifstream file("./cgiFile", std::ifstream::in);
-//
-//	std::string line("");
-//	if (file.is_open()) {
-//		while (getline(file, line)) {
-//			if (line.find("Status:") != std::string::npos) {
-//				this->setStatusCode(atoi(line.substr(8, 3).c_str()));
-//			}
-//			else {
-//				if (line == "\r")
-//					break;
-//				size_t pos = line.find(':');
-//				std::pair<std::string, std::string> node;
-//				node.first = line.substr(0, pos);
-//				line.erase(0, pos + 2);
-//				node.second = line.substr(0, (line.length() - 1));
-//				this->_headers.insert(node);
-//			}
-//		}
-//		while (getline(file, line))
-//			this->_body.append(line);
-//	}
-//	file.close();
-//	int fd = open("./cgiFile", O_TRUNC);
-//	close(fd);
-//}
 
 void Response::execAfterCGI(Client &client) {
 	this->_headers.insert(std::make_pair("Content-Length", std::to_string(this->_body.size())));
@@ -274,7 +206,6 @@ void			Response::execListing(Server const &serv, Client &client){
 	setDate();
 	_headers.insert(std::make_pair("Content-Language", "en"));
 }
-
 
 Response::Response(Server const &serv, Client &client):
 		_version(serv.getEnvValue("SERVER_PROTOCOL")),
@@ -369,7 +300,6 @@ void	Response::setContentLocation(std::string const &pathToFile, std::string con
 	this->_headers.insert(std::make_pair("Content-Location", tmp));
 
 }
-
 
 void	Response::setContentType(std::string const &pathToFile){
 	std::string file(pathToFile.substr(pathToFile.rfind('/'), pathToFile.size()));

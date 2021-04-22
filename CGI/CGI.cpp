@@ -94,12 +94,14 @@ void		CGI::init(Request &req, Server &ser) {
 		this->envMap["CONTENT_TYPE"] = "";
 	this->envMap["PATH_TRANSLATED"] = this->envMap["PATH_INFO"][0] == '/' ?
 		std::string(dir) + this->envMap["PATH_INFO"] : std::string(dir) + "/" + this->envMap["PATH_INFO"];
-	PathInfo = "/" + req.getPathInfo();
-	req.setPathInfo(dir +  PathInfo);
+	PathInfo = req.getPathInfo();
+	if(req.getPathInfo().compare(0, 1,"."))
+		PathInfo = "/" + req.getPathInfo();
+	req.getPathInfo() == "cgi_tester" ? req.setPathInfo(dir + PathInfo) : req.setPathInfo(PathInfo);
 	this->argv = new char *[3];
 	if(!(this->argv[0] = strdup(req.getPathInfo().c_str())))
 		throw std::runtime_error("500");
-	if(!(this->argv[1] = strdup((dir + envMap.find("REQUEST_URI")->second).c_str())))
+	if(!(this->argv[1] = strdup((std::string(dir) + pathCgi).c_str())))
 		throw std::runtime_error("500");
 	this->argv[2] = NULL;
 }
@@ -108,6 +110,9 @@ void		CGI::creatENV() {
 	std::string	tmp;
 
 	envCount = envMap.size();
+	if(PathInfo != "/cgi_tester") {
+		return ;
+	}
 	env = new char *[envCount + 1];
 	std::map <std::string, std::string>:: iterator it = envMap.begin();
 	for (int i = 0; it != envMap.end(); it++, i++) {
@@ -120,7 +125,7 @@ void		CGI::creatENV() {
 
 void		CGI::exec(Request &req, Server &ser) {
 	pid_t	pid;
-	size_t	ret;
+	ssize_t	ret;
 	int		fdF;
 	int		status;
 
@@ -144,6 +149,8 @@ void		CGI::exec(Request &req, Server &ser) {
 		close(fd[0]);
 		while ((ret = write(fd[1], body.c_str(), body.size())) > 0)
 			body.erase(0, ret);
+		if(ret == -1)
+			throw std::runtime_error("500");
 		close(fd[1]);
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))

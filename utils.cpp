@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-static	int		num(int c)
+static	int		num(long long c)
 {
 	int		count;
 
@@ -138,12 +138,6 @@ std::string		getListing(std::string const &path, Server const &serv, location_t 
 			files.push_back(diread->d_name);
 		}
 		closedir (dir);
-		for (int i = 0; i < files.size(); i++) {
-//			std::cout << files[i] << " ";
-			if (i % 3 == 0)
-				std::cout << std::endl;
-		}
-//		std::cout << files.size() << std::endl;
 	}
 	return createListingPage(files, serv, loc, path);
 }

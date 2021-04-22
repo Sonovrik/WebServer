@@ -97,20 +97,22 @@ int	autoIndex(std::string &ret, Server const &serv, const location_t &location) 
 int	checkIndex(std::string &ret, Server const &serv, const location_t &location) {
 	struct stat info;
 	std::string tmp;
-	std::string str = location._directives.find("index")->second;
 	size_t i;
 
-	if (!str.empty()) {
-		std::vector<std::string> index = splitString(str);
-		size_t size = index.size();
-		for (i = 0; i < size; ++i) {
-			tmp = ret + index[i];
-			if(stat(tmp.c_str() , &info) == 0)
-				break;
+	if(location._directives.find("index") != location._directives.end()) {
+		std::string str = location._directives.find("index")->second;
+		if (!str.empty()) {
+			std::vector<std::string> index = splitString(str);
+			size_t size = index.size();
+			for (i = 0; i < size; ++i) {
+				tmp = ret + index[i];
+				if(stat(tmp.c_str() , &info) == 0)
+					break;
+			}
+			ret = tmp;
+			if(i != size)
+				return 0;
 		}
-		ret = tmp;
-		if(i != size)
-			return 0;
 	}
 	return (autoIndex(ret, serv, location));
 }
@@ -139,17 +141,13 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		break;
 	}
 //	if (S_ISREG(info.st_mode))
-	if (ret[ret.length() - 1] == '/' && tmp.length() == 0) {			//папка, checkIndex
-		if (checkIndex(ret, ser, ser.get_locations()[loc])) {
-			req.setPath(ret);
-			throw std::runtime_error("243");
-		}
-	} else if(ret[ret.length() - 1] == '/' && tmp.length() != 0) {		//точно файл, проверить его наличие
-		ret.erase(ret.length() - 1, 1);
+	if(tmp.length() != 0) {
+		if (ret[ret.length() - 1] == '/')
+			ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
 		req.setPathInfo(tmp);
 		if (stat(path, &info) != 0)
-			throw std::runtime_error("404");				//"paht not found. code: 404 Not Found";
+			throw std::runtime_error("404");
 	} else {
 		path = ret.c_str();
 		if (stat(path, &info) != 0) {
@@ -219,7 +217,7 @@ bool	getWhere(std::map<std::string, std::string> const &dir, Request &req) {
 		return false;
 	const std::string& method = req.getMethod();
 	if(method == "GET" || method == "HEAD" || method == "POST")
-		return true; // true == cgi
+		return true;
 	return false;
 }
 bool passUser(const std::string& user, const std::string& pas, const std::string &path) {
@@ -227,7 +225,7 @@ bool passUser(const std::string& user, const std::string& pas, const std::string
 	std::string	line;
 	int			fd;
 	char		buf[10240];
-	size_t		pos;
+	ssize_t		pos;
 
 	if ((fd = open(path.c_str(), O_RDWR, S_IRWXU | S_IRWXO | S_IRWXG)) == -1)
 		throw std::runtime_error("500");
@@ -235,18 +233,22 @@ bool passUser(const std::string& user, const std::string& pas, const std::string
 		buf[pos] = '\0';
 		file.append(buf);
 	}
+	if(pos == -1)
+		throw std::runtime_error("500");
 	while (!file.empty()) {
 		if ((pos = file.find('\n')) != std::string::npos) {
 			line = file.substr(0, pos);
 			file.erase(0, pos + 1);
-			trimString(line);
-			if (line.empty())
-				continue;
-			if ((pos = line.find(':')) != std::string::npos) {
-				if (line.substr(0, pos) == user && line.substr(pos + 1) == pas) {
-					close(fd);
-					return true;
-				}
+		}
+		else {
+			line = file;
+			file.erase(0);
+		}
+		trimString(line);
+		if ((pos = line.find(':')) != std::string::npos) {
+			if (line.substr(0, pos) == user && line.substr(pos + 1) == pas) {
+				close(fd);
+				return true;
 			}
 		}
 	}
@@ -279,11 +281,17 @@ bool checkAutorization(Request &req, int &locIndex, Server &ser) {
 	return true;
 }
 
-void	checkConf(Server &ser, int &locIndex, Request &req, Client &client) {
+int checkMethods(Server &ser, int &locIndex, Request &req) {
 	if(ser.get_locations()[locIndex]._directives.find("method") != ser.get_locations()[locIndex]._directives.end()) {
 		if(ser.get_locations()[locIndex]._directives.find("method")->second.find(req.getMethod()) == std::string::npos)
-			throw std::runtime_error("405");
+			return 0;
 	}
+	return 1;
+}
+
+void	checkConf(Server &ser, int &locIndex, Request &req, Client &client) {
+	if(!checkMethods(ser, locIndex, req))
+			throw std::runtime_error("405");
 	checkBodySize(ser, locIndex, req);
 	if (!checkAutorization(req, locIndex, ser))
 		throw std::runtime_error("401");
@@ -319,6 +327,12 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	catch (std::exception &exception) {
 		client.setPathToFile(req.getPath());
 		setErrorCode(exception.what(), client);
+		if(client.getStatusCode() == 243) {
+			if (!checkAutorization(req, loc, ser))
+				client.setStatusCode( 401);
+			if (!checkMethods(ser, loc, req))
+				client.setStatusCode( 405);
+		}
 		return -1;
 	}
 	return client.getWhere();
