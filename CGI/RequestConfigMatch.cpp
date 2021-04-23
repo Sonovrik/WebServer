@@ -9,8 +9,9 @@ void	setErrorCode(const std::string& str, Client &client) {
 }
 
 std::vector<std::string>	splitString(std::string &str) {
-	std::vector<std::string> ret;
-	size_t pos;
+	std::vector<std::string>	ret;
+	size_t						pos;
+
 	while ((pos = str.find(' ')) != std::string::npos) {
 		ret.push_back(str.substr(0, pos));
 		str.erase(0, pos + 1);
@@ -56,6 +57,7 @@ std::string			b64decode(const void* data, const size_t len)
 int	compareLocation(std::string &uri, const location_t &loc) {
 	std::string name = loc._name;
 	size_t len = name.length();
+
 	if (len > 1 && name[len - 1] == '/')
 		len -= 1;
 	if(name.compare(0, len, uri.substr(0,len)) == 0) {
@@ -64,7 +66,8 @@ int	compareLocation(std::string &uri, const location_t &loc) {
 		return 1;
 	}
 	else if (std::regex_match(uri.substr(0,len), std::regex(name))) {
-		uri.erase(0, len);
+		if (len > 1)
+			uri.erase(0, len);
 		return 1;
 	}
 	return 0;
@@ -73,6 +76,7 @@ int	compareLocation(std::string &uri, const location_t &loc) {
 void	getLocation(std::string &uri, Server &ser, int &pos) {
 	size_t count = ser.get_locations().size();
 	int i = 0;
+
 	while (i < count) {
 		if (compareLocation(uri, ser.get_locations()[i]))
 			break;
@@ -93,19 +97,23 @@ int	autoIndex(std::string &ret, Server const &serv, const location_t &location) 
 int	checkIndex(std::string &ret, Server const &serv, const location_t &location) {
 	struct stat info;
 	std::string tmp;
-	std::string str = location._directives.find("index")->second;
-	if (!str.empty()) {
-		std::vector<std::string> index = splitString(str);
-		size_t size = index.size();
-		size_t i;
-		for (i = 0; i < size; ++i) {
-			tmp = ret + index[i];
-			if(stat(tmp.c_str() , &info) == 0)
-				break;
+	size_t i;
+
+	if(location._directives.find("index") != location._directives.end()) {
+		std::string str = location._directives.find("index")->second;
+		if (!str.empty()) {
+			std::vector<std::string> index = splitString(str);
+			size_t size = index.size();
+			for (i = 0; i < size; ++i) {
+				tmp = ret + index[i];
+				if(stat(tmp.c_str() , &info) == 0)
+					break;
+			}
+			if(i != size) {
+				ret = tmp;
+				return 0;
+			}
 		}
-		ret = tmp;
-		if(i != size)
-			return 0;
 	}
 	return (autoIndex(ret, serv, location));
 }
@@ -113,6 +121,7 @@ int	checkIndex(std::string &ret, Server const &serv, const location_t &location)
 std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser) {
 	struct stat info;
 	std::string tmp;
+
 	tmp = ser.get_locations()[loc]._directives.find("root")->second + uri;
 	size_t count = countChar(tmp, '/');
 	size_t pos = tmp.find('/');
@@ -120,7 +129,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 	tmp.erase(0, pos + 1);
 	const char *path = ret.c_str();
 	for (size_t i = 0; i <= count; ++i) {
-		if (stat(path, &info) == 0){
+		if (stat(path, &info) == 0) {
 			if ((pos = tmp.find('/')) == std::string::npos) {
 				if(tmp.length())
 					pos = tmp.length() - 1;
@@ -132,18 +141,14 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		}
 		break;
 	}
-	size_t last = ret.length() - 1;
-	if (ret[last] == '/' && tmp.length() == 0) {			//папка, checkIndex
-		if (checkIndex(ret, ser, ser.get_locations()[loc])) {
-			req.setPath(ret);
-			throw std::runtime_error("243");
-		}
-	} else if(ret[last] == '/' && tmp.length() != 0) {		//точно файл, проверить его наличие
-		ret.erase(ret.length() - 1, 1);
+//	if (S_ISREG(info.st_mode))
+	if(tmp.length() != 0) {
+		if (ret[ret.length() - 1] == '/')
+			ret.erase(ret.length() - 1, 1);
 		path = ret.c_str();
 		req.setPathInfo(tmp);
 		if (stat(path, &info) != 0)
-			throw std::runtime_error("404");				//"paht not found. code: 404 Not Found";
+			throw std::runtime_error("404");
 	} else {
 		path = ret.c_str();
 		if (stat(path, &info) != 0) {
@@ -152,7 +157,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		}
 		else {
 			if (S_ISDIR(info.st_mode)) {
-				ret = ret + '/';
+				ret += ret.back() != '/' ? "/" : "";
 				if (checkIndex(ret, ser, ser.get_locations()[loc])) {
 					req.setPath(ret);
 					throw std::runtime_error("243");
@@ -178,8 +183,10 @@ int	checkHost(size_t &pos, std::string &uri, Server &ser) {
 	std::string host;
 	std::string hostName;
 	size_t colon;
+
 	host.assign(uri, 0, pos);
-	if(host != ser.get_serverName() && host != (ser.get_serverName() + ":" + ser.get_port()) && host != (ser.get_ip() + ":" + ser.get_port())) {
+	if(host != ser.get_serverName() && host != (ser.get_serverName() + ":" + ser.get_port())
+	&& host != (ser.get_ip() + ":" + ser.get_port())) {
 		if((colon = host.find(':')) != std::string::npos) {
 			hostName.assign(host, 0, colon);
 			compareHostName(hostName, ser.get_ip(), ser.get_serverName());
@@ -200,45 +207,63 @@ void	checkBodySize(Server &ser, int &locIndex, Request &req) {
 }
 
 bool	getWhere(std::map<std::string, std::string> const &dir, Request &req) {
-	std::string extReq;
-	size_t pos;
+	std::string	extReq;
+	size_t		pos;
+
 	if((pos = req.getPath().rfind('.')) != std::string::npos)
 		extReq = req.getPath().substr(pos);
-	size_t i;
 	if (dir.find("cgi_extensions")->second.find(extReq) == std::string::npos)
 		return false;
+	if (req.getPathInfo().empty())
+		req.setPathInfo(dir.find("cgi_path")->second);
 	if(req.getPathInfo() != dir.find("cgi_path")->second)
 		return false;
 	const std::string& method = req.getMethod();
 	if(method == "GET" || method == "HEAD" || method == "POST")
-		return true; // true == cgi in Where
+		return true;
 	return false;
 }
 bool passUser(const std::string& user, const std::string& pas, const std::string &path) {
-	std::string line;
-	std::ifstream file(path);
-	if (!file.is_open())
+	std::string	file;
+	std::string	line;
+	int			fd;
+	char		buf[10240];
+	ssize_t		pos;
+
+	if ((fd = open(path.c_str(), O_RDWR, S_IRWXU | S_IRWXO | S_IRWXG)) == -1)
 		throw std::runtime_error("500");
-	while (getline(file, line)){
+	while ((pos = read(fd, (void *)buf, (10240 - 1))) > 0) {
+		buf[pos] = '\0';
+		file.append(buf);
+	}
+	if(pos == -1)
+		throw std::runtime_error("500");
+	while (!file.empty()) {
+		if ((pos = file.find('\n')) != std::string::npos) {
+			line = file.substr(0, pos);
+			file.erase(0, pos + 1);
+		}
+		else {
+			line = file;
+			file.erase(0);
+		}
 		trimString(line);
-		if (!line.empty()) {
-			size_t pos = line.find(':');
-			if(pos != std::string::npos) {
-				if (line.substr(0, pos) == user && line.substr(pos + 1) == pas) {
-					file.close();
-					return true;
-				}
+		if ((pos = line.find(':')) != std::string::npos) {
+			if (line.substr(0, pos) == user && line.substr(pos + 1) == pas) {
+				close(fd);
+				return true;
 			}
 		}
 	}
-	file.close();
+	close(fd);
 	return false;
 }
 
 bool checkAutorization(Request &req, int &locIndex, Server &ser) {
 	std::map<std::string, std::string> map =  ser.get_locations()[locIndex]._directives;
 	if(map.find("auth_basic") != map.end()) {
-		if(req.getHeaders().find("AUTHORIZATION") == req.getHeaders().end() || req.getHeaders().find("AUTHORIZATION")->second.empty())
+		if(req.getHeaders().find("AUTHORIZATION") == req.getHeaders().end() ||
+		req.getHeaders().find("AUTHORIZATION")->second.empty())
 			return false;
 		size_t pos = req.getHeaders().find("AUTHORIZATION")->second.rfind(' ');
 		if(pos == std::string::npos)
@@ -250,7 +275,8 @@ bool checkAutorization(Request &req, int &locIndex, Server &ser) {
 		if((pos = tmpFoIdent.find(':')) == std::string::npos)
 			return false;
 		if(map.find("auth_basic_user_file") != map.end()) {
-			return passUser(tmpFoIdent.substr(0, pos), tmpFoIdent.substr(pos + 1), map.find("auth_basic_user_file")->second);
+			return passUser(tmpFoIdent.substr(0, pos), tmpFoIdent.substr(pos + 1),
+			map.find("auth_basic_user_file")->second);
 		}
 		else
 			throw std::runtime_error("500");
@@ -258,11 +284,17 @@ bool checkAutorization(Request &req, int &locIndex, Server &ser) {
 	return true;
 }
 
-void	checkConf(Server &ser, int &locIndex, Request &req, Client &client) {
+int checkMethods(Server &ser, int &locIndex, Request &req) {
 	if(ser.get_locations()[locIndex]._directives.find("method") != ser.get_locations()[locIndex]._directives.end()) {
 		if(ser.get_locations()[locIndex]._directives.find("method")->second.find(req.getMethod()) == std::string::npos)
-			throw std::runtime_error("405");
+			return 0;
 	}
+	return 1;
+}
+
+void	checkConf(Server &ser, int &locIndex, Request &req, Client &client) {
+	if(!checkMethods(ser, locIndex, req))
+			throw std::runtime_error("405");
 	checkBodySize(ser, locIndex, req);
 	if (!checkAutorization(req, locIndex, ser))
 		throw std::runtime_error("401");
@@ -278,8 +310,9 @@ void	checkConf(Server &ser, int &locIndex, Request &req, Client &client) {
 int RequestConfigMatch(Client &client, Server &ser) {
 	Request &req = client.getRequest();
 	std::string uri = req.getPath();
-	int loc = -1;
+	int loc = 0;
 	size_t pos;
+
 	try {
 		if((pos = uri.rfind('?')) != std::string::npos)
 			uri.erase(pos);
@@ -297,6 +330,12 @@ int RequestConfigMatch(Client &client, Server &ser) {
 	catch (std::exception &exception) {
 		client.setPathToFile(req.getPath());
 		setErrorCode(exception.what(), client);
+		if(client.getStatusCode() == 243) {
+			if (!checkAutorization(req, loc, ser))
+				client.setStatusCode( 401);
+			if (!checkMethods(ser, loc, req))
+				client.setStatusCode( 405);
+		}
 		return -1;
 	}
 	return client.getWhere();

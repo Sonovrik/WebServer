@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.cpp
-CGI.hpp
-/Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
-
 /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
 map
 -
@@ -34,10 +30,6 @@ string
 RequestConfigMatch.hpp
 /Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp
 
-/Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.cpp
-RequestConfigMatch.hpp
-/Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp
-
 /Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp
 CGI.hpp
 /Users/kmoaning/Desktop/ToGit/CGI/CGI.hpp
@@ -50,25 +42,11 @@ CGI.hpp
 regex
 -
 
-/Users/kmoaning/Desktop/ToGit/CGI/mainCGI.cpp
-RequestConfigMatch.hpp
-/Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp
-
-/Users/kmoaning/Desktop/ToGit/Client/Client.cpp
-Client.hpp
-/Users/kmoaning/Desktop/ToGit/Client/Client.hpp
-unistd.h
--
-
 /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 ../Request/Request.hpp
 /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
 iostream
 -
-
-/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.cpp
-ConfigParser.hpp
-/Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
 
 /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
 iostream
@@ -88,14 +66,6 @@ array
 sys/stat.h
 -
 
-/Users/kmoaning/Desktop/ToGit/MIMEtypes.cpp
-utils.hpp
-/Users/kmoaning/Desktop/ToGit/utils.hpp
-
-/Users/kmoaning/Desktop/ToGit/Request/Request.cpp
-Request.hpp
-/Users/lbagg/Desktop/WebServer/Request/Request.hpp
-
 /Users/kmoaning/Desktop/ToGit/Request/Request.hpp
 iostream
 -
@@ -105,10 +75,6 @@ map
 -
 vector
 -
-
-/Users/kmoaning/Desktop/ToGit/Response.cpp
-Response.hpp
-/Users/kmoaning/Desktop/ToGit/Response.hpp
 
 /Users/kmoaning/Desktop/ToGit/Response.hpp
 iostream
@@ -131,10 +97,6 @@ sys/stat.h
 -
 fcntl.h
 -
-
-/Users/kmoaning/Desktop/ToGit/Server.cpp
-Server.hpp
-/Users/kmoaning/Desktop/ToGit/Server.hpp
 
 /Users/kmoaning/Desktop/ToGit/Server.hpp
 map
@@ -162,14 +124,6 @@ utils.hpp
 ./Client/Client.hpp
 /Users/kmoaning/Desktop/ToGit/Client/Client.hpp
 
-/Users/kmoaning/Desktop/ToGit/errors.cpp
-istream
--
-utils.hpp
-/Users/kmoaning/Desktop/ToGit/utils.hpp
-Server.hpp
-/Users/kmoaning/Desktop/ToGit/Server.hpp
-
 /Users/kmoaning/Desktop/ToGit/startServer.cpp
 ConfigParser/ConfigParser.hpp
 /Users/kmoaning/Desktop/ToGit/ConfigParser/ConfigParser.hpp
@@ -185,10 +139,6 @@ CGI/RequestConfigMatch.hpp
 /Users/kmoaning/Desktop/ToGit/CGI/RequestConfigMatch.hpp
 signal.h
 -
-
-/Users/kmoaning/Desktop/ToGit/utils.cpp
-utils.hpp
-/Users/kmoaning/Desktop/ToGit/utils.hpp
 
 /Users/kmoaning/Desktop/ToGit/utils.hpp
 iostream

@@ -46,9 +46,9 @@ static int		resetServers(fd_set *readfds, fd_set *writefds, std::vector<Server> 
 	return findMaxSD(serversList);
 }
 
-static void		readRequest(Server	&serv, Client	&client, std::string &buf){
+static void		readRequest(Server	&serv, Client	&client, char *buf){
 	int ret;
-	if ((ret = read(client.getSd(), (void *)buf.c_str(), 100000)) == 0){
+	if ((ret = read(client.getSd(), buf, 1000000 - 1)) == 0){
 		close(client.getSd());
 		serv.delete_client(client);
 	}
@@ -57,11 +57,12 @@ static void		readRequest(Server	&serv, Client	&client, std::string &buf){
 		client.setFlag(REQUEST_END);
 	}
 	else{
+		buf[ret] = '\0';
 		client.setFlag(parseRequest(buf, client.getRequest(), atoi(serv.get_maxBodySize().c_str())));
 		if (client.getFlag() == WAIT)
 			return;
 		else if (client.getFlag() == ERR_BAD_REQUEST || client.getFlag() == ERR_LENGTH_REQUIRED
-					|| client.getFlag() == ERR_TOO_LARGE_BODY) {
+				 || client.getFlag() == ERR_TOO_LARGE_BODY) {
 			if (client.getFlag() == ERR_LENGTH_REQUIRED)
 				client.setStatusCode(411);
 			if (client.getFlag() == ERR_BAD_REQUEST)
@@ -78,9 +79,7 @@ static void		sendResponse(Server &serv, Client &client){
 		if (RequestConfigMatch(client, serv) == toCGI) {
 			try {
 				CGI qqq(client.getRequest(), serv);
-				qqq.init(client.getRequest(), serv);
-				qqq.creatENV();
-				qqq.exec(client.getRequest());
+				qqq.exec(client.getRequest(), serv);
 			}
 			catch (std::exception &exception) {
 				setErrorCode(exception.what(), client);
@@ -104,8 +103,10 @@ static void		sendResponse(Server &serv, Client &client){
 				close(client.getSd());
 				serv.delete_client(client);
 			}
-			else
+			else {
+				std::cout << " status " << client.getStatusCode() << std::endl;
 				client.clear();
+			}
 		}
 	}
 }
@@ -118,7 +119,8 @@ static void		startServer(std::vector<Server> &serversList){
 	bool	flag = false;
 	int		ret = 0;
 	std::vector<Server>::iterator it;
-	std::string buf(100000, '\0');
+	// std::string buf(100000, '\0');
+	char buf[1000000];
 	timeval time;
 	time.tv_sec = 10;
 	time.tv_usec = 0;
@@ -139,7 +141,7 @@ static void		startServer(std::vector<Server> &serversList){
 					sd = client.getSd();
 					if (client.getFlag() != REQUEST_END && FD_ISSET(sd, &readfds)){
 						readRequest(*it, client, buf);
-						cleanString(buf);
+						// cleanString(buf);
 						flag = true;
 						break;
 					}
@@ -170,7 +172,7 @@ int		main(){
 		startServer(serversList);
 	}
 	catch (std::exception &e){
-		std::cerr << e.what() << "asd" << std::endl;
+		std::cerr << e.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 }
