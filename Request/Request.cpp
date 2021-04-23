@@ -10,7 +10,7 @@ Request::Request():
 		_version(""),
 		_body(""),
 		_queryString(""),
-		_pathInfo("cgi_tester"),
+		_pathInfo(""),
 		_return(WAIT),
 		_toClose(false),
 		_bodyLen(0),

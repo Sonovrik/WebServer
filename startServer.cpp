@@ -103,8 +103,10 @@ static void		sendResponse(Server &serv, Client &client){
 				close(client.getSd());
 				serv.delete_client(client);
 			}
-			else
+			else {
+				std::cout << " status " << client.getStatusCode() << std::endl;
 				client.clear();
+			}
 		}
 	}
 }

@@ -109,9 +109,10 @@ int	checkIndex(std::string &ret, Server const &serv, const location_t &location)
 				if(stat(tmp.c_str() , &info) == 0)
 					break;
 			}
-			ret = tmp;
-			if(i != size)
+			if(i != size) {
+				ret = tmp;
 				return 0;
+			}
 		}
 	}
 	return (autoIndex(ret, serv, location));
@@ -156,7 +157,7 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		}
 		else {
 			if (S_ISDIR(info.st_mode)) {
-				ret = ret + '/';
+				ret += ret.back() != '/' ? "/" : "";
 				if (checkIndex(ret, ser, ser.get_locations()[loc])) {
 					req.setPath(ret);
 					throw std::runtime_error("243");
@@ -213,6 +214,8 @@ bool	getWhere(std::map<std::string, std::string> const &dir, Request &req) {
 		extReq = req.getPath().substr(pos);
 	if (dir.find("cgi_extensions")->second.find(extReq) == std::string::npos)
 		return false;
+	if (req.getPathInfo().empty())
+		req.setPathInfo(dir.find("cgi_path")->second);
 	if(req.getPathInfo() != dir.find("cgi_path")->second)
 		return false;
 	const std::string& method = req.getMethod();

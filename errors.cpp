@@ -8,6 +8,7 @@ void	initErrors(std::vector<Server> &serverList){
 	for (; itServ != serverList.end(); itServ++){
 		std::map<int, std::string> errorsNames;
 		errorsNames.insert(std::make_pair(400, "Bad Request"));
+		errorsNames.insert(std::make_pair(401, "Unauthorized"));
 		errorsNames.insert(std::make_pair(403, "Forbidden"));
 		errorsNames.insert(std::make_pair(404, "Not Found"));
 		errorsNames.insert(std::make_pair(405, "Method Not Allowed"));
