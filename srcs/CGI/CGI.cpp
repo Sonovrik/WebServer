@@ -161,16 +161,3 @@ void		CGI::exec(Request &req, Server &ser) {
 		close(fd[0]);
 	}
 }
-
-
-//	std::cout << "ARGV 0 " << this->argv[0] << std::endl;
-//	std::cout << "ARGV 1 " << this->argv[1] << std::endl;
-//	int i = 0;
-//	while(i < envMap.size())
-//	{
-//		std::cout << "ENV "<< i << " " << env[i] << std::endl;
-//		i++;
-//	}
-//		if(argv[0] != "/Users/kmoaning/Desktop/ToGit/cgi_tester")    // ENV для php-cgi
-//			env = NULL;
-//	req.setPathInfo("/Users/kmoaning/Desktop/ToGit/cgi_tester"); //  /Users/kmoaning/.brew/bin/php-cgi

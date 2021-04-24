@@ -35,21 +35,5 @@ void						setErrorCode(const std::string& str, Client &client);
 std::string					b64decode(const void* data, const size_t len);
 bool						checkAutorization(Request &req, int &locIndex, Server &ser);
 
-//size_t						countChar(const std::string& str, char c);
-//std::vector<std::string>	splitString(std::string method);
-//int	compareLocation(std::string &uri, location_t &loc);
-//void	getLocation(std::string &uri, Server &ser, int &pos);
-//int	checkIndex(std::string &ret, Server const &serv, const location_t &location);
-//std::string					getPath(std::string &uri, int &loc, Request &req, const Server &ser);
-//void						compareHostName(const std::string& hostName, const std::string& ip, const std::string& servName);
-//void						comparePort(const std::string& port, const std::string& servPort);
-//int							checkHost(int pos, std::string &uri, Server &ser);
-//void						checkBodySize(Server &ser, int locIndex, Request &req);
-//bool						getWhere(std::map<std::string, std::string> dir, Request &req);
-//void						checkConf(Server &ser, int locIndex, Request &req, Client &client);
-//int							RequestConfigMatch(Client &client, Server &ser);
-//void						setErrorCode(const std::string& str, Client &client);
-//std::string					b64decode(const void* data, const size_t len);
-
 #endif
 

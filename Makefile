@@ -21,13 +21,18 @@ DIR_SRC = srcs/
 
 DIR_OBJ = objects/
 
-SRCS = $(addprefix $(DIR_SRC),$(CGI_SRC) $(CLIENT_SRC) $(SERVER_SRC) $(CONFIG_PARSER_SRC) $(REQUEST_SRC) $(RESPONSE_SRC) $(UTILS_SRC) startServer.cpp)
+ALL_SRCS = RequestConfigMatch.cpp Client.cpp Server.cpp ConfigParser.cpp Request.cpp Response.cpp \
+				utils.cpp MIMEtypes.cpp errors.cpp startServer.cpp
 
-OBJS = $(addprefix $(DIR_OBJ),$(SRCS:.c=.o))
+SRCS = $(addprefix $(DIR_SRC), $(CGI_SRC) $(CLIENT_SRC) $(SERVER_SRC) $(CONFIG_PARSER_SRC) $(REQUEST_SRC) $(RESPONSE_SRC) $(UTILS_SRC) startServer.cpp)
 
-SRCO = $(SRCS:.c=.o)
+SRCSH = $(CGI_SRC:.cpp=.hpp) $(CLIENT_SRC:.cpp=.hpp) $(SERVER_SRC:.cpp=.hpp) $(CONFIG_PARSER_SRC:.cpp=.hpp) $(REQUEST_SRC:.cpp=.hpp) $(RESPONSE_SRC:.cpp=.hpp) utils/utils.hpp
 
 CC = clang++
+
+OBJS = $(addprefix $(DIR_OBJ),$(ALL_SRCS:.cpp=.o))
+
+SRCO = $(SRCS:.cpp=.o)
 
 OK_COLOR=\x1b[32;01m
 
@@ -36,18 +41,18 @@ DELETE_COLOR=\x1b[31;01m
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) -g startServer.cpp $(OBJS) -o $(NAME)
+	@$(CC) $(SRCS) -o $(NAME)
+	@echo "$(OK_COLOR)Done"
+	@tput sgr0
 
-$(DIR_OBJ)%.o: $(DIR_SRC)%.c $(DIR_SRC)parser.h
+$(DIR_OBJ)%.o: $(SRCS) $(SRCSH)
 	@mkdir -p objects
 	@$(CC) -I $(DIR_SRC) -c $< -o $@
 
-clean:
-	rm -rf $(OBJS_CLIENT) $(OBJS)
+# clean:
+# 	rm -rf $(OBJS_CLIENT) $(OBJS)
 
-fclean: clean
-	rm -rf $(NAME)
+# fclean: clean
+# 	rm -rf $(NAME)
 
-re: fclean all
-
-.PHONY: all clean fclean re
+# re: fclean all
