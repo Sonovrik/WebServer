@@ -1,7 +1,7 @@
 #include "ConfigParser/ConfigParser.hpp"
-#include "Server.hpp"
+#include "Server/Server.hpp"
 #include "Client/Client.hpp"
-#include "Response.hpp"
+#include "Response/Response.hpp"
 #include "CGI/CGI.hpp"
 #include "CGI/RequestConfigMatch.hpp"
 #include <signal.h>
@@ -14,6 +14,17 @@ static int		findMaxSD(std::vector<Server> &servers){
 			maxSd = it->get_maxSd();
 	}
 	return maxSd;
+}
+
+static void		checkServerNames(std::vector<Server> &serversList){
+	std::vector<Server>::iterator it = serversList.begin();
+	std::vector<Server>::iterator it2;
+	for (; it != serversList.end(); it++){
+		for (it2 = it + 1; it2 != serversList.end(); it2++){
+			if (it->get_serverName() == it2->get_serverName())
+				throw std::domain_error("Server has same name as another");
+		}
+	}
 }
 
 static std::vector<Server>		initServers(std::string const &config){
@@ -29,7 +40,7 @@ static std::vector<Server>		initServers(std::string const &config){
 		it->listen_socket(SOMAXCONN);
 		it->fullConfigEnvironment();
 	}
-
+	checkServerNames(serversList);
 	return serversList;
 }
 
@@ -75,6 +86,8 @@ static void		readRequest(Server	&serv, Client	&client, char *buf){
 }
 
 static void		sendResponse(Server &serv, Client &client){
+	int ret;
+	int bufSize;
 	if (client.getResponse().empty() && client.getStatusCode() == 200){
 		if (RequestConfigMatch(client, serv) == toCGI) {
 			try {
@@ -90,24 +103,23 @@ static void		sendResponse(Server &serv, Client &client){
 		Response resp(serv, client);
 		client.setResponse(resp.createResponse());
 	}
-	if (client.getResponse().size() > 1000000){
-		std::string str = client.getResponse().substr(0, 1000000);
-		int res = send(client.getSd(), str.c_str(), str.size(), 0);
-		client.getResponse().erase(0, res);
+	if (client.getResponse().size() > 1000000)
+		bufSize = 1000000;
+	else
+		bufSize = client.getResponse().size();
+	if ((ret = send(client.getSd(), client.getResponse().c_str(), bufSize, 0)) == -1){
+		client.setStatusCode(500);
+		client.setToClose(true);
 	}
-	else{
-		int res = send(client.getSd(), client.getResponse().c_str(), client.getResponse().size(), 0);
-		client.getResponse().erase(0, res);
-		if (client.getResponse().empty()) {
-			if (client.getToClose()) {
-				close(client.getSd());
-				serv.delete_client(client);
-			}
-			else {
-				std::cout << " status " << client.getStatusCode() << std::endl;
-				client.clear();
-			}
+	else
+		client.getResponse().erase(0, ret);
+	if (client.getResponse().empty() || client.getStatusCode() == 500) {
+		if (client.getToClose()) {
+			close(client.getSd());
+			serv.delete_client(client);
 		}
+		else
+			client.clear();
 	}
 }
 
@@ -119,7 +131,6 @@ static void		startServer(std::vector<Server> &serversList){
 	bool	flag = false;
 	int		ret = 0;
 	std::vector<Server>::iterator it;
-	// std::string buf(100000, '\0');
 	char buf[1000000];
 	timeval time;
 	time.tv_sec = 10;
@@ -141,7 +152,6 @@ static void		startServer(std::vector<Server> &serversList){
 					sd = client.getSd();
 					if (client.getFlag() != REQUEST_END && FD_ISSET(sd, &readfds)){
 						readRequest(*it, client, buf);
-						// cleanString(buf);
 						flag = true;
 						break;
 					}

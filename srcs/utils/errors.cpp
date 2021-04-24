@@ -1,6 +1,6 @@
 #include <istream>
 #include "utils.hpp"
-#include "Server.hpp"
+#include "../Server/Server.hpp"
 
 void	initErrors(std::vector<Server> &serverList){
 

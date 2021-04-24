@@ -11,8 +11,8 @@
 #include <array>
 #include <fcntl.h>
 #include <sys/time.h>
-#include "utils.hpp"
-#include "./Client/Client.hpp"
+#include "../utils/utils.hpp"
+#include "../Client/Client.hpp"
 
 class Server{
 

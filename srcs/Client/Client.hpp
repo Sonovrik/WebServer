@@ -3,6 +3,7 @@
 
 #include "../Request/Request.hpp"
 #include <iostream>
+#include <unistd.h>
 
 #define	toCGI		1
 #define	toServer	0

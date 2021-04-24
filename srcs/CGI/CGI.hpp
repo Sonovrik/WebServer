@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <string>
 #include "../Request/Request.hpp"
-#include "../Server.hpp"
+#include "../Server/Server.hpp"
 #include "../ConfigParser/ConfigParser.hpp"
 #include "RequestConfigMatch.hpp"
 

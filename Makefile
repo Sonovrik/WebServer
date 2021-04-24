@@ -1,28 +1,52 @@
 
-NAME_SERVER = webserv
+.PHONY: all re fclean clean
 
-CC = clang++ 
+NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror
+CGI_SRC = CGI/CGI.cpp CGI/RequestConfigMatch.cpp
 
-SRCS_SERVER = Server.cpp Request/Request.cpp Client/Client.cpp ConfigParser/ConfigParser.cpp \
-				Response.cpp utils.cpp errors.cpp CGI/CGI.cpp MIMEtypes.cpp CGI/RequestConfigMatch.cpp
+CLIENT_SRC = Client/Client.cpp
 
-HEADERS = Server.hpp Request/Request.hpp Client/Client.hpp ConfigParser/ConfigParser.hpp Response.hpp \
-				utils.hpp CGI/CGI.hpp CGI/RequestConfigMatch.hpp
+SERVER_SRC = Server/Server.cpp
 
-OBJS_SERVER = $(SRCS_SERVER:.cpp=.o)
+CONFIG_PARSER_SRC = ConfigParser/ConfigParser.cpp
 
-all: $(NAME_SERVER)
+REQUEST_SRC = Request/Request.cpp
 
-$(NAME_SERVER): $(OBJS_SERVER) $(HEADERS)
-	$(CC) -g startServer.cpp $(OBJS_SERVER) -o $(NAME_SERVER)
+RESPONSE_SRC = Response/Response.cpp
+
+UTILS_SRC = utils/utils.cpp utils/MIMEtypes.cpp utils/errors.cpp
+
+DIR_SRC = srcs/
+
+DIR_OBJ = objects/
+
+SRCS = $(addprefix $(DIR_SRC),$(CGI_SRC) $(CLIENT_SRC) $(SERVER_SRC) $(CONFIG_PARSER_SRC) $(REQUEST_SRC) $(RESPONSE_SRC) $(UTILS_SRC) startServer.cpp)
+
+OBJS = $(addprefix $(DIR_OBJ),$(SRCS:.c=.o))
+
+SRCO = $(SRCS:.c=.o)
+
+CC = clang++
+
+OK_COLOR=\x1b[32;01m
+
+DELETE_COLOR=\x1b[31;01m
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	$(CC) -g startServer.cpp $(OBJS) -o $(NAME)
+
+$(DIR_OBJ)%.o: $(DIR_SRC)%.c $(DIR_SRC)parser.h
+	@mkdir -p objects
+	@$(CC) -I $(DIR_SRC) -c $< -o $@
 
 clean:
-	rm -rf $(OBJS_CLIENT) $(OBJS_SERVER)
+	rm -rf $(OBJS_CLIENT) $(OBJS)
 
 fclean: clean
-	rm -rf $(NAME_SERVER)
+	rm -rf $(NAME)
 
 re: fclean all
 

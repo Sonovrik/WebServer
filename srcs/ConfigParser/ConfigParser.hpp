@@ -7,7 +7,7 @@
 #include <string>
 #include <fstream>
 #include <array>
-#include "../Server.hpp"
+#include "../Server/Server.hpp"
 #include <sys/stat.h>
 
 class ConfigParser{

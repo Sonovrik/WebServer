@@ -1,5 +1,4 @@
 #include "Client.hpp"
-#include <unistd.h>
 
 //////////////////////////   Coplin   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -62,7 +61,6 @@ void	Client::setResponse(std::string const &resp) {
 	this->_response = resp;
 }
 
-
 //////////////////////////   Setters   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -84,11 +82,9 @@ void	Client::setLocPos(int pos){
 	this->_locPos = pos;
 }
 
-
 int		Client::getLocPos(void) const{
 	return this->_locPos;
 }
-
 
 int		Client::getStatusCode(void) const {
 	return this->_statusCode;
@@ -118,7 +114,6 @@ std::string		&Client::getResponse(void){
 	return	this->_response;
 }
 
-
 //////////////////////////   Getters   \\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -127,6 +122,7 @@ std::string		&Client::getResponse(void){
 void	Client::clear(void){
 	this->_where = toServer;
 	this->_flag = WAIT;
+	this->_locPos = 0;
 	this->_statusCode = 200;
 	this->_request.reset();
 	this->pathToFile.clear();

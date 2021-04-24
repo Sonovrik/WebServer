@@ -8,9 +8,9 @@
 			"type": "lldb",
 			"request": "launch",
 			"name": "Debug",
-			"program": "/Users/lmidori/Desktop/web_server/a.out",
+			"program": "/Users/lmidori/Desktop/fish/WebServer/a.out",
 			"args": [],
-			"cwd": "/Users/lmidori/Desktop/web_server"
+			"cwd": "/Users/lmidori/Desktop/fish/WebServer"
 		}
 	]
 }

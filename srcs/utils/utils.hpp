@@ -37,7 +37,7 @@ void	initErrors(std::vector<Server> &serverList);
 std::string		getListing(std::string const &path, Server const &serv, location_t const &loc);
 
 
-#include "Server.hpp"
+#include "../Server/Server.hpp"
 
 
 #endif

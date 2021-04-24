@@ -5,8 +5,8 @@
 #ifndef REQUESTCONFIGMATCH_HPP
 #define REQUESTCONFIGMATCH_HPP
 #include "CGI.hpp"
-#include "../utils.hpp"
-#include "../Response.hpp"
+#include "../utils/utils.hpp"
+#include "../Response/Response.hpp"
 #include "../Client/Client.hpp"
 #include <regex>
 
