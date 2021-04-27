@@ -1,58 +1,62 @@
 
-.PHONY: all re fclean clean
+.PHONY: all clean fclean re
 
-NAME = webserv
+NAME		=	webserv
 
-CGI_SRC = CGI/CGI.cpp CGI/RequestConfigMatch.cpp
+SRCS		=	RequestConfigMatch.cpp Client.cpp Server.cpp ConfigParser.cpp Request.cpp Response.cpp \
+				CGI.cpp MIMEtypes.cpp errors.cpp signals.cpp startServer.cpp utils.cpp 
 
-CLIENT_SRC = Client/Client.cpp
+CONFIG		= ./webserv.conf
 
-SERVER_SRC = Server/Server.cpp
+SRCS_DIR		= ./srcs/
 
-CONFIG_PARSER_SRC = ConfigParser/ConfigParser.cpp
+HEADERS_DIR		= ./includes/
 
-REQUEST_SRC = Request/Request.cpp
+OBJECTS_DIR		=	./objects
 
-RESPONSE_SRC = Response/Response.cpp
+OBJECTS			=	$(addprefix $(OBJECTS_DIR)/, $(SRCS:cpp=o))
 
-UTILS_SRC = utils/utils.cpp utils/MIMEtypes.cpp utils/errors.cpp
+DEPS			=	$(OBJECTS:%.o=%.d)
 
-DIR_SRC = srcs/
+CC				=	clang++
 
-DIR_OBJ = objects/
+FLAGS			=	-std=c++98
 
-ALL_SRCS = RequestConfigMatch.cpp Client.cpp Server.cpp ConfigParser.cpp Request.cpp Response.cpp \
-				utils.cpp MIMEtypes.cpp errors.cpp startServer.cpp
 
-SRCS = $(addprefix $(DIR_SRC), $(CGI_SRC) $(CLIENT_SRC) $(SERVER_SRC) $(CONFIG_PARSER_SRC) $(REQUEST_SRC) $(RESPONSE_SRC) $(UTILS_SRC) startServer.cpp)
-
-SRCSH = $(CGI_SRC:.cpp=.hpp) $(CLIENT_SRC:.cpp=.hpp) $(SERVER_SRC:.cpp=.hpp) $(CONFIG_PARSER_SRC:.cpp=.hpp) $(REQUEST_SRC:.cpp=.hpp) $(RESPONSE_SRC:.cpp=.hpp) utils/utils.hpp
-
-CC = clang++
-
-OBJS = $(addprefix $(DIR_OBJ),$(ALL_SRCS:.cpp=.o))
-
-SRCO = $(SRCS:.cpp=.o)
-
-OK_COLOR=\x1b[32;01m
-
-DELETE_COLOR=\x1b[31;01m
+DELETE_COLOR	= \x1b[31;01m
+OK_COLOR		= \x1b[32;01m
+COMPINIG_COLOR	= \033[35;5;3m
+INFORM_COLOR 	= \033[36;5;1m
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	@$(CC) $(SRCS) -o $(NAME)
-	@echo "$(OK_COLOR)Done"
-	@tput sgr0
+$(OBJECTS_DIR)/%.o: $(SRCS_DIR)%.cpp | $(OBJECTS_DIR)
+	@echo "\n$(COMPINIG_COLOR)Compiling \n$<\033[0m"
+	$(CC) $(FLAGS) -MMD -I $(HEADERS_DIR) -c $< -o $@
 
-$(DIR_OBJ)%.o: $(SRCS) $(SRCSH)
-	@mkdir -p objects
-	@$(CC) -I $(DIR_SRC) -c $< -o $@
+$(NAME): $(OBJECTS)
+	@echo "\n$(COMPINIG_COLOR)Compiling $@\n\033[0m"
+	$(CC) $(FLAGS) $^ -o $@
+	@echo "\n$(OK_COLOR)Webserver compiled successfully\n\033[0m"
+	@echo "\n$(INFORM_COLOR)Please, run make test\nOr start Webserver with configuration file\033[0m\n\n"
 
-# clean:
-# 	rm -rf $(OBJS_CLIENT) $(OBJS)
+-include $(DEPS)
 
-# fclean: clean
-# 	rm -rf $(NAME)
+$(OBJECTS_DIR):
+	@mkdir -p $(OBJECTS_DIR)
 
-# re: fclean all
+clean:
+	@rm -rf $(OBJECTS_DIR)
+	@echo "\n$(DELETE_COLOR)Webserver's object files deleted\033[0m\n"
+
+fclean: clean
+	@rm -f $(NAME)
+	@echo "$(DELETE_COLOR)Binary file deleted\033[0m\n"
+
+start: all
+	./$(NAME) $(CONFIG)
+
+test: all
+	./$(NAME) $(CONFIG) & ./tester http://localhost:8081
+
+re: fclean all

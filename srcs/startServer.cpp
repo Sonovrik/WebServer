@@ -1,9 +1,9 @@
-#include "ConfigParser/ConfigParser.hpp"
-#include "Server/Server.hpp"
-#include "Client/Client.hpp"
-#include "Response/Response.hpp"
-#include "CGI/CGI.hpp"
-#include "CGI/RequestConfigMatch.hpp"
+#include "ConfigParser.hpp"
+#include "Server.hpp"
+#include "Client.hpp"
+#include "Response.hpp"
+#include "CGI.hpp"
+#include "RequestConfigMatch.hpp"
 #include <signal.h>
 
 static int		findMaxSD(std::vector<Server> &servers){
@@ -172,11 +172,15 @@ static void		startServer(std::vector<Server> &serversList){
 	}
 }
 
-int		main(){
+int		main(int argc, char **argv){
 	std::vector<Server>	serversList;
 	sigignore(SIGPIPE);
+	signal(SIGINT, sigint);
+	signal(SIGQUIT, sigquit);
 	try{
-		serversList = initServers("webserv.conf");
+		if (argc < 2)
+			throw std::runtime_error("Error: Config expected");
+		serversList = initServers(argv[1]);
 		initErrors(serversList);
 		initMimeTypes();
 		startServer(serversList);
