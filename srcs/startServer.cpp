@@ -37,7 +37,7 @@ static std::vector<Server>		initServers(std::string const &config){
 		it->create_masterSocket(AF_INET, SOCK_STREAM, 0);
 		it->set_addressSocket(it->get_ip().c_str(), atoi(it->get_port().c_str()), AF_INET);
 		it->bind_masterSocket();
-		it->listen_socket(SOMAXCONN);
+		it->listen_socket(-1);
 		it->fullConfigEnvironment();
 	}
 	checkServerNames(serversList);
@@ -131,7 +131,7 @@ static void		startServer(std::vector<Server> &serversList){
 	bool	flag = false;
 	int		ret = 0;
 	std::vector<Server>::iterator it;
-	char buf[1000000];
+	char *buf = new char[1000000];
 	timeval time;
 	time.tv_sec = 10;
 	time.tv_usec = 0;
