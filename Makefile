@@ -20,7 +20,7 @@ DEPS			=	$(OBJECTS:%.o=%.d)
 
 CC				=	clang++
 
-FLAGS			=	-std=c++98
+FLAGS			=	-std=c++98 -g
 
 
 DELETE_COLOR	= \x1b[31;01m

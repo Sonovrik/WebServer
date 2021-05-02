@@ -2,11 +2,10 @@
 .vscode
 *.dSYM
 *.o
+*.d
 webserv
-.DS_Store
 *.idea
 .DS_Store
 cmake-build-debug
-*.gradle
+.gradle
 *.orig
-
