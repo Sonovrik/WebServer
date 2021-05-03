@@ -65,7 +65,7 @@ int	compareLocation(std::string &uri, const location_t &loc) {
 			uri.erase(0, len);
 		return 1;
 	}
-	else if (std::regex_match(uri.substr(0,len), std::regex(name))) {
+	else if (std::regex_match(uri, std::regex(name))) {
 		if (len > 1)
 			uri.erase(0, len);
 		return 1;
@@ -141,7 +141,6 @@ std::string	getPath(std::string &uri, int &loc, Request &req, const Server &ser)
 		}
 		break;
 	}
-//	if (S_ISREG(info.st_mode))
 	if(tmp.length() != 0) {
 		if (ret[ret.length() - 1] == '/')
 			ret.erase(ret.length() - 1, 1);

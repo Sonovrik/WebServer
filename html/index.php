@@ -1,4 +1,4 @@
 <?php
-    echo "Hello TOXIGEN!!!!!";
+    echo "Hello TOXIGEN!!!!!\n";
     exit;
 ?>

@@ -38,7 +38,7 @@ $(NAME): $(OBJECTS)
 	@echo "\n$(COMPINIG_COLOR)Compiling $@\n\033[0m"
 	$(CC) $(FLAGS) $^ -o $@
 	@echo "\n$(OK_COLOR)Webserver compiled successfully\n\033[0m"
-	@echo "\n$(INFORM_COLOR)Please, run make test\nOr start Webserver with configuration file\033[0m\n\n"
+	@echo "\n$(INFORM_COLOR)Please, run make test or make start\nElse start Webserver with configuration file\033[0m\n\n"
 
 -include $(DEPS)
 

@@ -91,8 +91,8 @@ static void		sendResponse(Server &serv, Client &client){
 	if (client.getResponse().empty() && client.getStatusCode() == 200){
 		if (RequestConfigMatch(client, serv) == toCGI) {
 			try {
-				CGI qqq(client.getRequest(), serv);
-				qqq.exec(client.getRequest(), serv);
+				CGI cgi(client.getRequest(), serv);
+				cgi.exec(client.getRequest(), serv);
 			}
 			catch (std::exception &exception) {
 				setErrorCode(exception.what(), client);
@@ -107,7 +107,6 @@ static void		sendResponse(Server &serv, Client &client){
 		bufSize = 1000000;
 	else
 		bufSize = client.getResponse().size();
-	std::cout << client.getResponse() << std::endl;
 	if ((ret = send(client.getSd(), client.getResponse().c_str(), bufSize, 0)) == -1){
 		client.setStatusCode(500);
 		client.setToClose(true);

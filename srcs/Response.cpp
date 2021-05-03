@@ -56,10 +56,11 @@ void	Response::setError(Server const &serv, Client const &client) {
 	_headers.insert(std::make_pair("Content-Type", "text/html"));
 	_headers.insert(std::make_pair("Content-Length", to_string(_body.size())));
 	_headers.insert(std::make_pair("Server", serv.get_serverName()));
-	setDate();
+	if (this->_statusCode == 401)
+		_headers.insert(std::make_pair("WWW-Authenticate", "Basic realm=\"" + serv.get_locations()[client.getLocPos()]._directives.find("auth_basic")->second + "\", charset=\"UTF-8\""));
 	if (this->_statusCode == 405)
 		_headers.insert(std::make_pair("Allow", serv.getLocationMethods(client.getLocPos())));
-
+	setDate();
 }
 
 void	Response::cmpFileAndBody(Client &client) const{

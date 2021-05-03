@@ -148,7 +148,7 @@ void	Request::reset() {
 	_path = "";
 	_version = "";
 	_queryString = "";
-	_pathInfo = "cgi_tester";
+	_pathInfo = "";
 	_headers.clear();
 	_body = "";
 	_toClose = false;
@@ -394,13 +394,11 @@ int			parseRequest(std::string req, Request &request, int maxBodySize) {
 		std::string	tmp(req.substr(0, pos + 2));
 		if (!request.parseStartLine(tmp)) {
 			request.setReturn(ERR_BAD_REQUEST);
-			std::cout << "start line problem" << std::endl;
 			return request.getReturn();
 		}
 		req.erase(0, pos + 2);
 	}
 	if (!request.getWaitBody() && !request.parseHeaders(req)) {
-		std::cout << "header problem" << std::endl;
 		request.setReturn(ERR_BAD_REQUEST);
 		return request.getReturn();
 	}
@@ -409,7 +407,6 @@ int			parseRequest(std::string req, Request &request, int maxBodySize) {
 			return request.getReturn();
 		else if (request.getBody().length() > maxBodySize) {
 			request.setReturn(ERR_TOO_LARGE_BODY);
-			std::cerr << "tooo large" << std::endl;
 			return request.getReturn();
 		}
 	}
