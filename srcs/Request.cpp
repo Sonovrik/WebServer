@@ -368,6 +368,12 @@ bool		Request::parseBody(std::string &req) {
 			if (_bodyLen == 0)
 				this->_return = REQUEST_END;
 		}
+		else if (req.length() == this->_bodyLen) {
+			this->_body.append(req);
+			this->_bodyLen = 0;
+			req.erase();
+			this->_return = REQUEST_END;
+		}
 	}
 	else {
 		this->_return = ERR_LENGTH_REQUIRED;
