@@ -107,6 +107,7 @@ static void		sendResponse(Server &serv, Client &client){
 		bufSize = 1000000;
 	else
 		bufSize = client.getResponse().size();
+	std::cout << client.getResponse() << std::endl;
 	if ((ret = send(client.getSd(), client.getResponse().c_str(), bufSize, 0)) == -1){
 		client.setStatusCode(500);
 		client.setToClose(true);
