@@ -14,6 +14,8 @@
 #include "utils.hpp"
 #include "Client.hpp"
 
+static bool	SERVER_CLOSE;
+
 class Server{
 
 private:

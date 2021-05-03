@@ -177,6 +177,7 @@ int		main(int argc, char **argv){
 	sigignore(SIGPIPE);
 	signal(SIGINT, sigint);
 	signal(SIGQUIT, sigquit);
+	SERVER_CLOSE = false;
 	try{
 		if (argc < 2)
 			throw std::runtime_error("Error: Config expected");

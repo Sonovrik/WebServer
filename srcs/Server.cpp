@@ -13,7 +13,16 @@ Server::Server():
 	_maxBufferSize(""),
 	_maxSd(0){}
 
-Server::~Server(){}
+Server::~Server(){
+	if (!SERVER_CLOSE)
+		return ;
+	std::vector<Client>::iterator it = this->_clients.begin();
+	while (it != this->_clients.end()){
+		close(it->getSd());
+		it++;
+	}
+	close (this->_masterSocket);
+}
 
 Server	&Server::operator=(Server const &other){
 	if (this != &other){
