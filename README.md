@@ -12,3 +12,8 @@ Of course you can change server configuration.
 
 ## Run server
 Run "make start" or "make test" to run the test
+
+## Authors
+1. <a href="https://github.com/LickSun">LickSun</a>
+1. <a href="https://github.com/Bulina08">Bulina08</a>
+3. <a href="https://github.com/mshmnv">mshmnv</a>
